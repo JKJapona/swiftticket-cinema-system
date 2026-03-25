@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/SwiftTicket_Abreeza_Pill.svg" alt="SwiftTicket Abreeza Logo" width="400">
+  <img src="public/images/SwiftTicket_Abreeza_Pill.svg" alt="SwiftTicket Abreeza Logo" width="1000">
 </p>
 
 # SwiftTicket 🎟️
