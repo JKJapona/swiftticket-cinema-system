@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Movie Showtime Scheduling
+    |--------------------------------------------------------------------------
+    |
+    | This migration creates the 'showtimes' table, acting as a bridge between 
+    | movies and cinema halls. It defines the specific date, time, and pricing 
+    | for screenings, while tracking real-time capacity and occupancy to 
+    | manage ticket availability.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

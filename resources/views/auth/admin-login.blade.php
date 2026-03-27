@@ -15,16 +15,37 @@
     <h1 class="fw-bold text-center mb-1 text-slate-900" style="font-size: 32px;">Admin Sign In</h1>
     <p class="text-muted text-center mb-3 small">Access the admin dashboard</p>
 
-    <form action="{{ route('login') }}" method="POST">
+    {{-- Admin Global Error --}}
+    @if ($errors->any())
+        <div class="alert alert-danger border-0 small rounded-3 mb-3 d-flex align-items-center gap-2 py-2" role="alert">
+            <i class="bi bi-shield-lock-fill"></i>
+            <div>Authentication failed. Please check your admin credentials.</div>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.login.submit') }}" method="POST">
         @csrf
+        
+        {{-- Admin Email --}}
         <div class="mb-2">
             <label class="form-label fw-medium text-secondary mb-1 small">Admin Email</label>
-            <input type="email" name="email" class="form-control border-secondary-subtle bg-light" required>
+            <input type="email" name="email" value="{{ old('email') }}"
+                   class="form-control border-secondary-subtle bg-light @error('email') is-invalid @enderror" 
+                   required autofocus>
+            @error('email')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
         
+        {{-- Password --}}
         <div class="mb-3">
             <label class="form-label fw-medium text-secondary mb-1 small">Password</label>
-            <input type="password" name="password" class="form-control border-secondary-subtle bg-light" required>
+            <input type="password" name="password" 
+                   class="form-control border-secondary-subtle bg-light @error('password') is-invalid @enderror" 
+                   required>
+            @error('password')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn w-100 py-2.5 fw-semibold text-white rounded-3 border-0 shadow-sm" style="font-size: 18px; background-color: #004AAD;">

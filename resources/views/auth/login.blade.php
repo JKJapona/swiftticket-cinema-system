@@ -29,21 +29,42 @@
     <h1 class="fw-bold text-center mb-1 text-slate-900" style="font-size: 32px;">Sign in</h1>
     <p class="text-muted text-center mb-3 small">Enter your credentials to proceed</p>
 
+    {{-- Global Error Alert --}}
+    @if ($errors->any())
+        <div class="alert alert-danger border-0 small rounded-3 mb-3 d-flex align-items-center gap-2 py-2" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <div>Invalid email or password. Please try again.</div>
+        </div>
+    @endif
+
     <form action="{{ route('login') }}" method="POST">
         @csrf
+        
+        {{-- Email Address --}}
         <div class="mb-2">
             <label class="form-label fw-medium text-secondary mb-1 small">Email Address</label>
-            <input type="email" name="email" class="form-control border-secondary-subtle bg-light" required>
+            <input type="email" name="email" value="{{ old('email') }}" 
+                   class="form-control border-secondary-subtle bg-light @error('email') is-invalid @enderror" 
+                   required autofocus>
+            @error('email')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
         
+        {{-- Password --}}
         <div class="mb-3">
             <label class="form-label fw-medium text-secondary mb-1 small">Password</label>
-            <input type="password" name="password" class="form-control border-secondary-subtle bg-light" required>
+            <input type="password" name="password" 
+                   class="form-control border-secondary-subtle bg-light @error('password') is-invalid @enderror" 
+                   required>
+            @error('password')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3 d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
-                <input class="form-check-input mt-0" type="checkbox" id="remember">
+                <input class="form-check-input mt-0" type="checkbox" name="remember" id="remember">
                 <label class="form-check-label text-secondary fw-medium small" for="remember">Keep me signed in</label>
             </div>
             <a href="#" class="text-primary text-decoration-none fw-medium small">Forgot password?</a>

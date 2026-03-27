@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Cinema Hall Infrastructure Definition
+    |--------------------------------------------------------------------------
+    |
+    | This migration defines the physical theater rooms within the cinema.
+    | It stores configuration for screen types, audio systems, and seat
+    | layouts, utilizing a virtual column to automatically calculate
+    | total seating capacity based on the row/seat grid.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

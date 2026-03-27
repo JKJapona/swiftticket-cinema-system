@@ -6,9 +6,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Registration Logic
+    |--------------------------------------------------------------------------
+    */
+
     public function showRegister() 
     {
         return view('auth.register');
@@ -33,14 +40,15 @@ class AuthController extends Controller
         return redirect('/login')->with('success', 'Registered successfully. Please login.');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication & Role-Based Redirection
+    |--------------------------------------------------------------------------
+    */
+
     public function showLogin() 
     {
         return view('auth.login');
-    }
-
-    public function showAdminLogin() 
-    {
-        return view('auth.admin-login');
     }
 
     public function login(Request $request) 
@@ -50,20 +58,64 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
+            $user = Auth::user();
+            
+            $isAdminRoute = $request->is('admin-login') || Str::contains(url()->previous(), 'admin-login');
 
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
+            if ($isAdminRoute && $user->role !== 'admin') {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Unauthorized. Admin access only.'])->onlyInput('email');
             }
 
-            return redirect()->intended('/');
+            $request->session()->regenerate();
+
+            return ($user->role === 'admin') 
+                ? redirect()->intended('/admin/dashboard') 
+                : redirect()->intended('/');
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ])->onlyInput('email');
+        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin-Specific Secure Login
+    |--------------------------------------------------------------------------
+    */
+
+    public function showAdminLogin() 
+    {
+        return view('auth.admin-login');
+    }
+
+    public function adminLogin(Request $request) 
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
+            $user = Auth::user();
+
+            if ($user->role !== 'admin') {
+                Auth::logout(); 
+                return back()->withErrors(['email' => 'Access denied. Admin privileges required.'])->onlyInput('email');
+            }
+
+            $request->session()->regenerate();
+            return redirect()->intended('/admin/dashboard');
+        }
+
+        return back()->withErrors(['email' => 'Invalid admin credentials.'])->onlyInput('email');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Session Termination
+    |--------------------------------------------------------------------------
+    */
 
     public function logout(Request $request) 
     {

@@ -8,6 +8,17 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /*
+    |--------------------------------------------------------------------------
+    | User Authentication & Profile Model
+    |--------------------------------------------------------------------------
+    |
+    | This model represents the identity of every person using the system.
+    | It handles secure authentication using 'password_hash', manages
+    | user roles (Admin/Customer), and tracks all associated bookings.
+    |
+    */
+    
     use HasFactory, Notifiable;
 
     protected $fillable = [

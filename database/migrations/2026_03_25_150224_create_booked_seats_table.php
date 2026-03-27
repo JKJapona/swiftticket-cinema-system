@@ -6,6 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Atomic Seat Reservation Inventory
+    |--------------------------------------------------------------------------
+    |
+    | This migration defines the 'booked_seats' table, which acts as the 
+    | granular record for every occupied chair in the cinema. It enforces 
+    | a composite unique constraint to provide a database-level "Hard Guard," 
+    | ensuring that a specific seat code cannot be booked more than once 
+    | for the same showtime.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

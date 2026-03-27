@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | System Caching & Atomic Locks
+    |--------------------------------------------------------------------------
+    |
+    | This migration provides the database-driven infrastructure for 
+    | performance optimization and concurrency control. It allows 
+    | SwiftTicket to store temporary data and manage atomic locks 
+    | to prevent race conditions during sensitive operations.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

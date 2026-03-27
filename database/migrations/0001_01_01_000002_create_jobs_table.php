@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Queued Task & Background Job Management
+    |--------------------------------------------------------------------------
+    |
+    | This migration sets up the database infrastructure for asynchronous 
+    | processing. It allows SwiftTicket to offload time-consuming tasks, 
+    | such as sending booking confirmation emails, to background workers 
+    | while maintaining a log of batches and failed attempts.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

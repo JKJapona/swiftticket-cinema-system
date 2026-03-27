@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Movie Catalog Definition
+    |--------------------------------------------------------------------------
+    |
+    | This migration defines the 'movies' table, which stores all cinematic 
+    | metadata for SwiftTicket. It includes fields for classification ratings, 
+    | media paths, and availability status (now showing vs. coming soon) 
+    | to drive the front-end catalog.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

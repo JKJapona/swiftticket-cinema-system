@@ -11,24 +11,46 @@
 
     <form action="{{ route('register') }}" method="POST">
         @csrf
+        
+        {{-- Full Name --}}
         <div class="mb-2">
             <label class="form-label fw-medium text-secondary mb-1 small">Full Name</label>
-            <input type="text" name="full_name" class="form-control border-secondary-subtle bg-light" required>
+            <input type="text" name="full_name" value="{{ old('full_name') }}" 
+                   class="form-control border-secondary-subtle bg-light @error('full_name') is-invalid @enderror" 
+                   required autofocus>
+            @error('full_name')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Email Address --}}
         <div class="mb-2">
             <label class="form-label fw-medium text-secondary mb-1 small">Email Address</label>
-            <input type="email" name="email" class="form-control border-secondary-subtle bg-light" required>
+            <input type="email" name="email" value="{{ old('email') }}" 
+                   class="form-control border-secondary-subtle bg-light @error('email') is-invalid @enderror" 
+                   required>
+            @error('email')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
         
+        {{-- Password --}}
         <div class="mb-2">
             <label class="form-label fw-medium text-secondary mb-1 small">Password</label>
-            <input type="password" name="password" class="form-control border-secondary-subtle bg-light" required>
+            <input type="password" name="password" 
+                   class="form-control border-secondary-subtle bg-light @error('password') is-invalid @enderror" 
+                   required>
+            @error('password')
+                <div class="invalid-feedback small fw-500">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Confirm Password --}}
         <div class="mb-3">
             <label class="form-label fw-medium text-secondary mb-1 small">Confirm Password</label>
-            <input type="password" name="password_confirmation" class="form-control border-secondary-subtle bg-light" required>
+            <input type="password" name="password_confirmation" 
+                   class="form-control border-secondary-subtle bg-light" 
+                   required>
         </div>
 
         <button type="submit" class="btn w-100 py-2.5 fw-semibold text-dark rounded-3 border-0 shadow-sm" style="font-size: 18px; background-color: #FFD700;">

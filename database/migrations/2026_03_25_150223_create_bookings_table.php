@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Booking Transaction Records
+    |--------------------------------------------------------------------------
+    |
+    | This migration defines the 'bookings' table, which serves as the 
+    | financial and status ledger for ticket purchases. It links users 
+    | to showtimes, generates a unique reference number for checkout, 
+    | and tracks the specific payment method used for the transaction.
+    |
+    */
+    
     /**
      * Run the migrations.
      */

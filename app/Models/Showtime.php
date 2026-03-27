@@ -6,6 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Showtime extends Model
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Movie Showtime Schedule Model
+    |--------------------------------------------------------------------------
+    |
+    | This model acts as the junction between a specific movie and a cinema 
+    | hall. It defines the scheduling, pricing, and capacity constraints 
+    | required to facilitate ticket sales and seat availability checks.
+    |
+    */
+
     protected $fillable = ['movie_id', 'hall_id', 'show_date', 'show_time', 'price', 'total_capacity'];
 
     public function movie() { return $this->belongsTo(Movie::class); }

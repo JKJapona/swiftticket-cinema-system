@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /*
+    |--------------------------------------------------------------------------
+    | User & Session Management Tables
+    |--------------------------------------------------------------------------
+    |
+    | This migration handles the core identity and session infrastructure.
+    | It defines the 'users' table with custom 'password_hash' and role 
+    | columns, alongside standard Laravel token and session storage 
+    | for secure authentication and persistence.
+    |
+    */
+    
     /**
      * Run the migrations.
      */
