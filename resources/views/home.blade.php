@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="pt-3">
-    <div class="container-fluid px-4">
+    <div class="container-fluid" style="padding-left: 80px; padding-right: 80px;">
         
         {{-- Hero Carousel --}}
         @if($movies->count() > 0)
