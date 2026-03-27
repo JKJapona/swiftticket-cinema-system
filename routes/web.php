@@ -40,8 +40,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     Route::get('/checkout/payment', function() {
-        return redirect()->route('home');
-    });
+    return redirect()->route('home');
+});
 });
 
 /*
@@ -51,3 +51,4 @@ Route::middleware(['auth'])->group(function () {
 */
 Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
+Route::get('/checkout/success/{reference}', [BookingController::class, 'success'])->name('checkout.success');

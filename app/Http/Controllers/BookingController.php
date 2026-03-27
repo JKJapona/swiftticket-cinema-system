@@ -22,14 +22,13 @@ class BookingController extends Controller
             'selected_seats' => 'required|string', 
         ]);
 
-        $showtime = Showtime::findOrFail($request->showtime_id);
+        $showtime = Showtime::with(['movie', 'hall'])->findOrFail($request->showtime_id);
         $seatsArray = explode(',', $request->selected_seats);
         $totalPrice = count($seatsArray) * $showtime->price;
 
         try {
             DB::beginTransaction();
 
-            // 1. Create the main Booking record
             $booking = Booking::create([
                 'user_id' => Auth::id() ?? 1, 
                 'showtime_id' => $showtime->id,
@@ -39,7 +38,6 @@ class BookingController extends Controller
                 'status' => 'pending',
             ]);
 
-            // 2. Save each seat into the booked_seats table
             foreach ($seatsArray as $seatCode) {
                 BookedSeat::create([
                     'booking_id' => $booking->id,
@@ -50,12 +48,31 @@ class BookingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with('success', 'Booking confirmed! Ref: ' . $booking->reference_number);
+            return redirect()->route('checkout.success', ['reference' => $booking->reference_number]);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Booking failed: ' . $e->getMessage());
         }
+    }
+
+    public function success($reference)
+    {
+        // Fetch the booking using the reference number from the URL
+        $booking = Booking::with(['showtime.movie', 'showtime.hall'])
+            ->where('reference_number', $reference)
+            ->firstOrFail();
+
+        $selectedSeats = $booking->showtime->bookedSeats()
+            ->where('booking_id', $booking->id)
+            ->pluck('seat_code')
+            ->toArray();
+
+        return view('booking.success', [
+            'booking' => $booking,
+            'showtime' => $booking->showtime,
+            'selectedSeats' => $selectedSeats
+        ]);
     }
 
     /**

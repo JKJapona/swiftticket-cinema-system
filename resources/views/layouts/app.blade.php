@@ -85,15 +85,36 @@
             opacity: 0; transition: opacity 0.3s; 
         }
         .movie-card:hover .hover-overlay { opacity: 1; }
+
+        .success-header { 
+            background-color: #10b981 !important; 
+            border: none !important;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-white py-2 sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg {{ Request::is('checkout/success/*') ? 'success-header' : 'bg-white shadow-sm' }} py-2 sticky-top">
     <div class="container-fluid px-4">
 
-        {{-- VIEW 1: SEAT SELECTION NAVBAR --}}
-        @if(Route::is('book.seats'))
+        {{-- VIEW 1: SUCCESS BANNER --}}
+        @if(Request::is('checkout/success/*'))
+        <div class="container d-flex justify-content-center align-items-center gap-3 py-3">
+            <i class="bi bi-check-circle-fill text-white" style="font-size: 24px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));"></i>
+            
+            <div class="text-start text-white">
+                <div style="font-size: 18px; font-weight: 700; line-height: 1.2; letter-spacing: 0.2px;">
+                    Booking Confirmed!
+                </div>
+                <div style="font-size: 12px; font-weight: 400; opacity: 0.9; line-height: 1.4;">
+                    Your tickets are ready at Ayala Malls Abreeza
+                </div>
+            </div>
+        </div>
+
+        {{-- VIEW 2: SEAT SELECTION NAVBAR --}}
+        @elseif(Route::is('book.seats'))
             <div class="d-flex align-items-center w-100">
                 <a href="{{ url('/movies/' . $showtime->movie->id) }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
                     <i class="bi bi-chevron-left fs-5"></i>
@@ -111,17 +132,25 @@
                             {{ $showtime->hall->name }}
                         </p>
                     </div>
+
+                    <div class="d-flex align-items-center gap-2 bg-light px-3 py-2 rounded-pill border ms-auto me-3">
+                        <i class="bi bi-clock-history text-primary"></i>
+                        <span class="caption mb-0 d-none d-sm-inline">Time Left:</span>
+                        <span id="timer-display" class="fw-bold text-dark" style="min-width: 45px; font-variant-numeric: tabular-nums;">15:00</span>
+                    </div>
                     
-                    <div class="ms-auto d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2" style="min-width: 100px; justify-content: flex-end;">
                         <span class="text-secondary small text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.5px; white-space: nowrap;">
                             Selected Seats
                         </span>
-                        <div class="h5 fw-bold mb-0 text-slate-900" id="nav-count-display" style="line-height: 1;">0</div>
+                        <div class="h5 fw-bold mb-0 text-slate-900" id="nav-count-display" style="line-height: 1; min-width: 20px; text-align: right;">0</div>
                     </div>
                 @endif
             </div>
 
-        {{-- VIEW 2: CHECKOUT / PAYMENT NAVBAR --}}
+        
+
+        {{-- VIEW 3: CHECKOUT / PAYMENT NAVBAR --}}
         @elseif(Request::is('checkout/payment'))
             <div class="d-flex align-items-center w-100">
                 <a href="{{ url()->previous() }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
@@ -132,9 +161,17 @@
                 <a href="{{ url('/') }}">
                     <img src="{{ asset('images/swiftticket_abreeza.svg') }}" style="height: 32px;" alt="SwiftTicket">
                 </a>
+
+                <div class="d-flex align-items-center gap-2 bg-light px-3 py-2 rounded-pill border ms-auto">
+                    <i class="bi bi-clock-history text-primary"></i>
+                    <span class="caption mb-0 d-none d-sm-inline">Time Left:</span>
+                    <span id="timer-display" class="fw-bold text-dark" style="min-width: 45px; font-variant-numeric: tabular-nums;">15:00</span>
+                </div>
             </div>
 
-        {{-- VIEW 3: GENERAL NAVBAR (Home, Movie Details) --}}
+
+
+        {{-- VIEW 4: GENERAL NAVBAR (Home, Movie Details) --}}
         @else
             <div class="d-flex align-items-center">
                 @if(Request::is('movies/*'))
@@ -160,6 +197,8 @@
                 @endif
             </div>
 
+
+            {{-- User Actions --}}
             <div class="d-flex align-items-center gap-4">
                 @auth
                     <a href="#" class="nav-link-custom d-flex align-items-center gap-2 small fw-medium">
@@ -199,5 +238,59 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const DURATION = 15 * 60 * 1000;
+    const KEY = 'swift_booking_expiry';
+    const REDIRECT = "{{ route('home') }}";
+
+    function initializeTimer() {
+        const isBookingPath = @json(Request::is('book/*', 'checkout/payment*', 'movies/*'));
+        let expiry = localStorage.getItem(KEY);
+
+        if (!isBookingPath) {
+            localStorage.removeItem(KEY);
+            return null;
+        }
+
+        if (!expiry) {
+            expiry = Date.now() + DURATION;
+            localStorage.setItem(KEY, expiry);
+        }
+
+        return parseInt(expiry);
+    }
+
+    const expiryTime = initializeTimer();
+    if (!expiryTime) return;
+
+    const timerInterval = setInterval(() => {
+        const distance = expiryTime - Date.now();
+        const display = document.getElementById('timer-display');
+
+        if (distance <= 0) {
+            clearInterval(timerInterval);
+            localStorage.removeItem(KEY);
+            alert("Session expired. Please select your seats again.");
+            window.location.href = REDIRECT;
+            return;
+        }
+
+        if (display) {
+            const mins = Math.floor(distance / 60000);
+            const secs = Math.floor((distance % 60000) / 1000);
+            display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+            if (distance < 120000) {
+                display.classList.add('text-danger', 'fw-bold');
+            }
+        }
+    }, 1000);
+
+    if (@json(Request::is('checkout/success/*'))) {
+        localStorage.removeItem(KEY);
+    }
+});
+</script>
 </body>
 </html>

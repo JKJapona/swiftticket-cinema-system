@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Movie extends Model
 {
     protected $fillable = ['title', 'synopsis', 'genre', 'runtime_minutes', 'rating', 'status'];
+    protected $casts = ['release_date' => 'date',];
 
     public function showtimes()
     {

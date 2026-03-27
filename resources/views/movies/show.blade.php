@@ -7,7 +7,7 @@
         {{-- Left Column: Poster & Trailer --}}
         <div class="col-lg-3 col-md-4">
             <div class="position-sticky" style="top: 100px;">
-                <div class="rounded-3 overflow-hidden shadow-sm mb-2">
+                <div class="rounded-3 overflow-hidden shadow-sm mb-2 border">
                     <img src="{{ Str::startsWith($movie->poster_path, 'http') ? $movie->poster_path : asset($movie->poster_path) }}" 
                          class="img-fluid w-100" 
                          alt="{{ $movie->title }}" 
@@ -21,6 +21,7 @@
                 @endif
             </div>
         </div>
+
 
         {{-- Right Column: Details & Showtimes --}}
         <div class="col-lg-9 col-md-8">
@@ -42,12 +43,14 @@
                 </div>
             </div>
 
+
             {{-- Showtime Selection --}}
             <section class="mb-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-calendar4-event text-primary fs-5"></i>
                     <h2 class="h5 fw-700 text-slate-900 mb-0">Select Date & Time</h2>
                 </div>
+
 
                 {{-- Date Picker --}}
                 <div class="mb-3">
@@ -65,33 +68,38 @@
                     </div>
                 </div>
 
+
                 {{-- Grouped Time Slots Container --}}
-                <div id="showtimes-container" style="transition: opacity 0.2s ease;">
-                    <div class="bg-light-soft rounded-3 p-3 border-dashed">
-                        @if($showtimes->isEmpty())
-                            <div class="py-4 text-center">
-                                <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
-                                <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
-                            </div>
-                        @else
-                            <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
-                            <div class="row g-3">
-                                @foreach($showtimes as $show)
-                                    <div class="col-md-4 col-sm-6">
-                                        <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
-                                            <div class="fw-800 text-slate-900 fs-5 mb-1">{{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}</div>
-                                            <div class="text-muted small mb-1">
-                                                {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
-                                            </div>
-                                            <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
-                                        </a>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+                <div id="showtimes-wrapper" style="transition: opacity 0.2s ease;">
+                    {{-- The inner div is what we replace --}}
+                    <div id="showtimes-content">
+                        <div class="bg-light-soft rounded-3 p-3 border-dashed">
+                            @if($showtimes->isEmpty())
+                                <div class="py-4 text-center">
+                                    <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
+                                    <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
+                                </div>
+                            @else
+                                <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
+                                <div class="row g-3">
+                                    @foreach($showtimes as $show)
+                                        <div class="col-md-4 col-sm-6">
+                                            <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
+                                                <div class="fw-800 text-slate-900 fs-5 mb-1">{{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}</div>
+                                                <div class="text-muted small mb-1">
+                                                    {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
+                                                </div>
+                                                <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </section>
+
 
             {{-- Synopsis & Cast --}}
             <div class="row g-3">
@@ -148,7 +156,6 @@
         --slate-500: #64748B; 
         --swift-blue: #004AAD; 
     }
-
     .text-slate-900 { color: var(--slate-900); }
     .text-secondary { color: var(--slate-500); }
     .bg-swift-blue { background-color: var(--swift-blue); color: white; }
@@ -156,90 +163,47 @@
     .fw-700 { font-weight: 700; }
     .fw-800 { font-weight: 800; }
     
-    /* Date Picker Cards */
     .date-card {
-        min-width: 65px; 
-        height: 75px; 
-        background: white; 
-        border: 1px solid #E2E8F0;
-        border-radius: 10px; 
-        transition: all 0.2s ease; 
-        color: var(--slate-900); 
-        cursor: pointer;
+        min-width: 65px; height: 75px; background: white; border: 1px solid #E2E8F0;
+        border-radius: 10px; transition: all 0.2s ease; color: var(--slate-900); cursor: pointer;
     }
+    .date-card:hover { border: 1px solid #7f8388; }
+    .date-card .date-label { color: #64748B; font-size: 9px; }
+    .date-card.active { background: var(--swift-blue) !important; border-color: var(--swift-blue) !important; }
+    .date-card.active .date-label { color: rgba(255, 255, 255, 0.7) !important; }
+    .date-card.active .date-number { color: #ffffff !important; }
 
-    .date-card .date-label {
-        color: #64748B;
-        font-size: 9px;
-    }
-
-    .date-card .date-number {
-        color: var(--slate-900);
-    }
-
-    .date-card.active { 
-        background: var(--swift-blue) !important; 
-        border-color: var(--swift-blue) !important; 
-    }
-
-    .date-card.active .date-label {
-        color: rgba(255, 255, 255, 0.7) !important;
-    }
-
-    .date-card.active .date-number {
-        color: #ffffff !important;
-    }
-
-    /* Showtime Cards */
     .showtime-card {
-        background: #ffffff; 
-        border: 1px solid #eef2f7; 
-        border-radius: 12px;
-        transition: all 0.2s ease-in-out; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        background: #ffffff; border: 1px solid #eef2f7; border-radius: 12px;
+        transition: all 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-
     .showtime-card:hover { 
-        border-color: var(--swift-blue); 
-        transform: translateY(-3px); 
+        border-color: var(--swift-blue); transform: translateY(-3px); 
         box-shadow: 0 10px 15px -3px rgba(0, 74, 173, 0.1); 
     }
-
     .price-tag-green { color: #2dc275; font-size: 13px; }
     .bg-light-soft { background-color: #F8FAFC; }
     .border-dashed { border: 1px dashed #E2E8F0; }
-    
-    .scrollbar-hidden { 
-        -ms-overflow-style: none; 
-        scrollbar-width: none; 
-    }
+    .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
     .scrollbar-hidden::-webkit-scrollbar { display: none; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- Trailer Logic ---
     const trailerModal = document.getElementById('trailerModal');
     const videoIframe = document.getElementById('trailerVideo');
-
     if (trailerModal && videoIframe) {
         const baseSrc = videoIframe.src;
-
-        trailerModal.addEventListener('shown.bs.modal', () => { 
-            videoIframe.src = `${baseSrc}&autoplay=1`; 
-        });
-
-        trailerModal.addEventListener('hide.bs.modal', () => { 
-            videoIframe.src = ""; 
-        });
+        trailerModal.addEventListener('shown.bs.modal', () => { videoIframe.src = `${baseSrc}&autoplay=1`; });
+        trailerModal.addEventListener('hide.bs.modal', () => { videoIframe.src = ""; });
     }
 
-    // --- Showtime Date Selection ---
     const datePicker = document.getElementById('date-picker-container');
-    const showtimesContainer = document.getElementById('showtimes-container');
+    const wrapper = document.getElementById('showtimes-wrapper');
+    const movieId = "{{ $movie->id }}";
     
-    let fetchController = null;
+    const baseUrl = window.location.origin + '/movies/' + movieId;
+    
     let isLoading = false;
 
     if (datePicker) {
@@ -249,39 +213,36 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!btn || btn.classList.contains('active') || isLoading) return;
 
             isLoading = true;
-
-            if (fetchController) fetchController.abort();
-            fetchController = new AbortController();
-
             const selectedDate = btn.getAttribute('data-date');
-            const movieId = "{{ $movie->id }}";
 
-            // Update UI State
             document.querySelectorAll('.date-picker-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-            showtimesContainer.style.opacity = '0.5';
+            wrapper.style.opacity = '0.3';
 
-            fetch(`?date=${selectedDate}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                signal: fetchController.signal
+            const targetUrl = `${baseUrl}/${selectedDate}`;
+
+            fetch(targetUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(res => res.text())
             .then(html => {
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                const newContent = doc.getElementById('showtimes-container').innerHTML;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newInnerContent = doc.getElementById('showtimes-content');
+
+                if (newInnerContent) {
+                    document.getElementById('showtimes-content').innerHTML = newInnerContent.innerHTML;
+                }
                 
-                showtimesContainer.innerHTML = newContent;
-                showtimesContainer.style.opacity = '1';
-                
-                window.history.pushState({}, '', `/movies/${movieId}/${selectedDate}`);
+                wrapper.style.opacity = '1';
+                // Update browser URL to /movies/2/2026-04-02
+                window.history.pushState({}, '', targetUrl);
                 isLoading = false;
             })
             .catch(err => {
-                if (err.name !== 'AbortError') {
-                    console.error("Fetch Error:", err);
-                    showtimesContainer.style.opacity = '1';
-                    isLoading = false;
-                }
+                console.error("AJAX Error:", err);
+                wrapper.style.opacity = '1';
+                isLoading = false;
             });
         });
     }
