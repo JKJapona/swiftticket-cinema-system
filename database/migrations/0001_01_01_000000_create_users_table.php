@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('full_name', 100);
             $table->string('email', 150)->unique();
-            $table->string('password');
+            $table->string('password_hash');
             $table->string('phone_number', 20)->nullable();
             $table->enum('role', ['customer', 'admin'])->default('customer');
             $table->enum('status', ['active', 'banned'])->default('active');
