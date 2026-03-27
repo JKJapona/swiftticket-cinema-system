@@ -13,4 +13,6 @@ class Showtime extends Model
     public function hall() { return $this->belongsTo(CinemaHall::class, 'hall_id'); }
 
     public function bookings() { return $this->hasMany(Booking::class); }
+
+    public function bookedSeats() { return $this->hasMany(BookedSeat::class, 'showtime_id'); }
 }

@@ -80,7 +80,9 @@
                                     <div class="col-md-4 col-sm-6">
                                         <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
                                             <div class="fw-800 text-slate-900 fs-5 mb-1">{{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}</div>
-                                            <div class="text-muted small mb-1">Cinema {{ $show->hall->hall_number }}</div>
+                                            <div class="text-muted small mb-1">
+                                                {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
+                                            </div>
                                             <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
                                         </a>
                                     </div>

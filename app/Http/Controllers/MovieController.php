@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use App\Models\Showtime;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class MovieController extends Controller
@@ -21,9 +20,9 @@ class MovieController extends Controller
     public function show($id, $date = null)
     {
         $movie = Movie::findOrFail($id);
-        
         $selectedDate = $date ?? Carbon::now()->format('Y-m-d');
         
+        // Generate 7-day range for date picker
         $dates = collect(range(0, 6))->map(fn($i) => Carbon::now()->addDays($i));
 
         $showtimes = Showtime::with('hall')
@@ -37,8 +36,11 @@ class MovieController extends Controller
 
     public function showSeatMap($showtime_id)
     {
-        $showtime = Showtime::with(['movie', 'hall'])->findOrFail($showtime_id);
-        
-        return view('booking.seats', compact('showtime'));
+        $showtime = Showtime::with(['movie', 'hall', 'bookedSeats'])->findOrFail($showtime_id);
+
+        // Convert booked seats to array for selection logic
+        $takenSeats = $showtime->bookedSeats->pluck('seat_code')->toArray();
+
+        return view('booking.seats', compact('showtime', 'takenSeats'));
     }
 }
