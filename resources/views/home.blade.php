@@ -3,22 +3,36 @@
 @section('content')
 
 <div class="pt-3">
-    <div class="container-fluid" style="padding-left: 80px; padding-right: 80px;">
+    <div class="container-fluid" style="padding: 0 80px;">
         
-        {{-- Hero Carousel --}}
+        {{-- HERO SECTION: CAROUSEL --}}
         @if($movies->count() > 0)
         <div id="heroCarousel" class="carousel slide mb-4 shadow-lg rounded-3 overflow-hidden" data-bs-ride="carousel">
+            
+            {{-- Carousel Indicators --}}
             <div class="carousel-indicators" style="z-index: 5;">
-                @foreach($movies->take(5) as $index => $movie)
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}"></button>
+                @foreach($movies as $index => $movie)
+                    <button type="button" 
+                            data-bs-target="#heroCarousel" 
+                            data-bs-slide-to="{{ $index }}" 
+                            class="{{ $index == 0 ? 'active' : '' }}">
+                    </button>
                 @endforeach
             </div>
 
+            {{-- Carousel Items --}}
             <div class="carousel-inner">
-                @foreach($movies->take(5) as $index => $movie)
+                @foreach($movies as $index => $movie)
+                @php
+                    $path = $movie->cover_path ?? $movie->poster_path;
+                    $imageUrl = str_contains($path, 'http') ? $path : Storage::url($path);
+                @endphp
+
                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                    <div class="hero-compact position-relative overflow-hidden" style="background-color: #004AAD !important; height: 330px;">
+                    <div class="hero-compact position-relative overflow-hidden" style="background-color: #004AAD !important;">
                         <div class="container-fluid h-100">
+                            
+                            {{-- Info Layer --}}
                             <div class="row align-items-center h-100 position-relative mx-0" style="z-index: 2;">
                                 <div class="col-lg-7 ps-5"> 
                                     <span class="badge bg-warning text-dark mb-2 text-uppercase fw-bold">Featured Blockbuster</span>
@@ -37,16 +51,21 @@
                                 </div>
                             </div>
 
+                            {{-- Backdrop Image Layer --}}
                             <div class="position-absolute end-0 top-0 h-100 w-100 d-none d-lg-block">
-                                <div class="w-100 h-100" style="background: linear-gradient(to right, #004AAD 10%, transparent); position: absolute; z-index: 1;"></div>
-                                <img src="{{ asset($movie->poster_path) }}" class="w-100 h-100 object-fit-cover">
+                                <div class="w-100 h-100" style="background: linear-gradient(to right, #004AAD 5%, transparent); position: absolute; z-index: 1;"></div>
+                                <img src="{{ $imageUrl }}" 
+                                     class="w-100 h-100 object-fit-cover" 
+                                     alt="{{ $movie->title }} Backdrop">
                             </div>
+
                         </div>
                     </div>
                 </div>
                 @endforeach
             </div>
 
+            {{-- Controls --}}
             <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="z-index: 5; width: 5%;">
                 <span class="carousel-control-prev-icon"></span>
             </button>
@@ -56,72 +75,60 @@
         </div>
         @endif
 
-        {{-- Navigation & Filter --}}
+        {{-- NAVIGATION & FILTER BAR --}}
         <div class="d-flex justify-content-between align-items-center border-bottom mb-3 pb-2">
             <div class="nav nav-underline gap-3">
-                <a class="nav-link active fw-bold text-primary pb-2 border-primary border-3" href="#">Now Showing</a>
-                <a class="nav-link text-slate-500 fw-bold pb-2" href="#">Coming Soon</a>
+                <a class="nav-link active fw-bold text-primary pb-2 border-primary border-3 filter-status" href="#" data-status="Now Showing">Now Showing</a>
+                <a class="nav-link text-muted fw-bold pb-2 filter-status" href="#" data-status="Coming Soon">Coming Soon</a>
             </div>
+            
             <div class="d-flex align-items-center gap-2">
-                <span class="text-slate-500 fw-bold text-uppercase small">Filter:</span>
-                <select class="form-select form-select-sm border-0 bg-light fw-bold text-slate-900" style="width: auto;">
-                    <option>All Genres</option>
-                    @foreach(['Action', 'Horror', 'Sci-Fi', 'Drama'] as $genre)
-                        <option>{{ $genre }}</option>
+                <span class="text-secondary fw-bold text-uppercase small">Filter:</span>
+                <select id="genreSelect" class="form-select form-select-sm border-0 bg-light fw-bold text-dark" style="width: auto;">
+                    <option value="All Genres">All Genres</option>
+                    @php $genres = $movies->pluck('genre')->unique(); @endphp
+                    @foreach($genres as $genre)
+                        <option value="{{ $genre }}">{{ $genre }}</option>
                     @endforeach
                 </select>
             </div>
         </div>
 
-        {{-- Movie Grid --}}
-        <div class="row g-4 mb-5 row-cols-2 row-cols-md-3 row-cols-lg-6 mx-0">
+        {{-- MOVIE GRID --}}
+        <div class="row g-4 mb-5 row-cols-2 row-cols-md-3 row-cols-lg-6 mx-0" id="movieGrid">
             @foreach($movies as $movie)
-            <div class="col px-2">
-                <div class="movie-card border-0">
-                    <div class="movie-poster-container position-relative">
-                        <img src="{{ asset($movie->poster_path) }}" class="w-100 object-fit-cover rounded-3" style="height: 280px !important;">
-                        <div class="hover-overlay d-flex align-items-center justify-content-center p-3">
-                            <a href="{{ route('movies.show', $movie->id) }}" class="btn btn-warning w-100 py-2 rounded-3 fw-bold shadow">
-                                Book Now
-                            </a>
+                @php $isComingSoon = \Carbon\Carbon::parse($movie->release_date)->isFuture(); @endphp
+                <div class="col px-2 movie-item" 
+                     data-genre="{{ $movie->genre }}" 
+                     data-status="{{ $isComingSoon ? 'Coming Soon' : 'Now Showing' }}">
+                    
+                    <div class="movie-card border-0">
+                        <div class="movie-poster-container position-relative">
+                            <img src="{{ asset($movie->poster_path) }}" class="w-100 object-fit-cover rounded-3 shadow-sm" style="height: 280px !important;">
+                            <div class="hover-overlay d-flex align-items-center justify-content-center p-3">
+                                <a href="{{ route('movies.show', $movie->id) }}" class="btn btn-warning w-100 py-2 rounded-3 fw-bold shadow">
+                                    Book Now
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2 text-center text-lg-start">
+                            <h3 class="text-dark mb-0 fw-bold text-truncate" style="font-size: 0.9rem; line-height: 1.2;">
+                                {{ $movie->title }}
+                            </h3>
+                            <p class="text-secondary fw-medium mb-0 small">
+                                {{ $movie->genre }} • {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m
+                            </p>
                         </div>
                     </div>
-                    
-                    <div class="mt-2 text-center text-lg-start">
-                        <h3 class="text-slate-900 mb-0 fw-bold" style="font-size: 0.9rem; line-height: 1.2;">
-                            {{ $movie->title }}
-                        </h3>
-                        <p class="text-slate-500 fw-medium mb-0 small">
-                            {{ $movie->genre }} • {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m
-                        </p>
-                    </div>
                 </div>
-            </div>
             @endforeach
         </div>
+
     </div>
 </div>
 
-<style>
-    .hero-compact, .carousel-item { height: 330px; min-height: 330px; }
-    
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;  
-        overflow: hidden;
-    }
-
-    .footer-swift { background-color: #004AAD !important; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-    .footer-title { color: #FFFFFF; font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
-    .footer-subtitle { color: rgba(255, 255, 255, 0.75); font-size: 12px; }
-    .footer-copyright { color: rgba(255, 255, 255, 0.6); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .footer-divider { height: 1px; width: 40px; background-color: rgba(255, 255, 255, 0.2); margin: 0 auto; }
-
-    body { display: flex; flex-direction: column; min-height: 100vh; }
-    main { flex: 1; }
-</style>
-
+{{-- FOOTER SECTION --}}
 <footer class="footer-swift mt-auto py-4">
     <div class="container text-center">
         <h5 class="footer-title mb-1">
@@ -133,4 +140,68 @@
     </div>
 </footer>
 
+{{-- CLIENT-SIDE FILTERING SCRIPT --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusLinks = document.querySelectorAll('.filter-status');
+    const genreSelect = document.getElementById('genreSelect');
+    const movieItems = document.querySelectorAll('.movie-item');
+    const grid = document.getElementById('movieGrid');
+
+    let currentStatus = 'Now Showing';
+    let currentGenre = 'All Genres';
+
+    function applyFilters() {
+        let visibleCount = 0;
+        
+        movieItems.forEach(item => {
+            const matchStatus = (item.getAttribute('data-status') === currentStatus);
+            const matchGenre = (currentGenre === 'All Genres' || item.getAttribute('data-genre') === currentGenre);
+
+            if (matchStatus && matchGenre) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const existingMsg = document.getElementById('empty-msg');
+        if (visibleCount === 0) {
+            if (!existingMsg) {
+                const msg = document.createElement('div');
+                msg.id = 'empty-msg';
+                msg.className = 'col-12 text-center py-5 text-muted';
+                msg.innerHTML = '<i class="bi bi-search mb-2 d-block fs-1"></i> No movies found in this category.';
+                grid.appendChild(msg);
+            }
+        } else if (existingMsg) {
+            existingMsg.remove();
+        }
+    }
+
+    // Tab Logic
+    statusLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            statusLinks.forEach(l => {
+                l.classList.remove('active', 'text-primary', 'border-primary', 'border-3');
+                l.classList.add('text-muted');
+            });
+            this.classList.add('active', 'text-primary', 'border-primary', 'border-3');
+            this.classList.remove('text-muted');
+            currentStatus = this.getAttribute('data-status');
+            applyFilters();
+        });
+    });
+
+    // Dropdown Logic
+    genreSelect.addEventListener('change', function() {
+        currentGenre = this.value;
+        applyFilters();
+    });
+
+    applyFilters();
+});
+</script>
 @endsection

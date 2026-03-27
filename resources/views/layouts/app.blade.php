@@ -8,90 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        :root { 
-            --swift-blue: #004AAD; 
-            --slate-900: #1E293B; 
-            --slate-500: #64748B; 
-        }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #ffffff; 
-            color: var(--slate-900); 
-        }
-        
-        /* Navigation Links */
-        .nav-link-custom { 
-            color: var(--slate-900) !important; 
-            text-decoration: none !important;
-            transition: color 0.2s ease;
-        }
-        .nav-link-custom:hover { 
-            color: var(--swift-blue) !important; 
-        }
-
-        /* Search Bar */
-        .search-input { 
-            background-color: #f1f3f5; 
-            border: 1px solid #e9ecef; 
-            border-radius: 8px; 
-            padding: 6px 12px 6px 40px; 
-            font-size: 14px; 
-            width: 100%; 
-        }
-
-        /* Buttons & Auth */
-        .btn-signin { 
-            color: var(--swift-blue); 
-            border: 1.5px solid var(--swift-blue); 
-            border-radius: 8px; 
-            padding: 5px 20px; 
-            font-weight: 600; 
-            font-size: 14px; 
-            text-decoration: none; 
-        }
-        .btn-signin:hover { 
-            background-color: var(--swift-blue); 
-            color: white; 
-        }
-        .user-avatar { 
-            width: 32px; 
-            height: 32px; 
-            background-color: #f1f5f9; 
-            color: var(--swift-blue); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 50%; 
-        }
-        .dropdown-toggle::after { display: none; }
-
-        /* Movie Cards */
-        .movie-card { transition: transform 0.3s ease; cursor: pointer; }
-        .movie-card:hover { transform: translateY(-8px); }
-        .movie-poster-container { 
-            position: relative; 
-            overflow: hidden; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-        }
-        .hover-overlay { 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 74, 173, 0.4); 
-            display: flex; align-items: center; justify-content: center; 
-            opacity: 0; transition: opacity 0.3s; 
-        }
-        .movie-card:hover .hover-overlay { opacity: 1; }
-
-        .success-header { 
-            background-color: #10b981 !important; 
-            border: none !important;
-            box-shadow: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
 
@@ -171,10 +88,11 @@
 
 
 
-        {{-- VIEW 4: GENERAL NAVBAR (Home, Movie Details) --}}
+        {{-- VIEW 4: GENERAL NAVBAR --}}
         @else
             <div class="d-flex align-items-center">
-                @if(Request::is('movies/*'))
+                {{-- Show Back Button ONLY on Movie Details and My Bookings --}}
+                @if(Request::is('movies/*', 'my-bookings'))
                     <a href="{{ url('/') }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
                         <i class="bi bi-chevron-left fs-5"></i>
                         <span>Back</span>
@@ -188,10 +106,13 @@
                 <span class="text-uppercase fw-bold text-muted ms-2 d-none d-sm-inline" style="font-size: 10px; letter-spacing: 2px;">Davao City</span>
             </div>
 
-            <div class="flex-grow-1 mx-5 d-none d-md-block">
-                @if(!Request::is('movies/*'))
+            <div class="flex-grow-1 mx-5 d-none d-md-block text-center">
+                {{-- Hide search bar IF we are on Movie Details OR My Bookings --}}
+                @if(!Request::is('movies/*', 'my-bookings'))
                     <div class="position-relative" style="max-width: 500px; margin: 0 auto;">
-                        <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"><i class="bi bi-search small"></i></span>
+                        <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
+                            <i class="bi bi-search small"></i>
+                        </span>
                         <input type="text" class="search-input" placeholder="Search movies or genres...">
                     </div>
                 @endif
@@ -201,7 +122,7 @@
             {{-- User Actions --}}
             <div class="d-flex align-items-center gap-4">
                 @auth
-                    <a href="#" class="nav-link-custom d-flex align-items-center gap-2 small fw-medium">
+                    <a href="{{ route('bookings.my-bookings') }}" class="nav-link-custom d-flex align-items-center gap-2 small fw-medium">
                         <i class="bi bi-ticket-perforated fs-5"></i>
                         <span class="d-none d-lg-inline">My Bookings</span>
                     </a>
@@ -287,9 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    if (@json(Request::is('checkout/success/*'))) {
-        localStorage.removeItem(KEY);
-    }
+if ("{{ Request::is('checkout/success/*') }}") {
+    localStorage.removeItem(KEY);
+}
 });
 </script>
 </body>

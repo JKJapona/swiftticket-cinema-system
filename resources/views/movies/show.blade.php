@@ -150,44 +150,6 @@
     </div>
 @endif
 
-<style>
-    :root { 
-        --slate-900: #1E293B; 
-        --slate-500: #64748B; 
-        --swift-blue: #004AAD; 
-    }
-    .text-slate-900 { color: var(--slate-900); }
-    .text-secondary { color: var(--slate-500); }
-    .bg-swift-blue { background-color: var(--swift-blue); color: white; }
-    .fw-600 { font-weight: 600; }
-    .fw-700 { font-weight: 700; }
-    .fw-800 { font-weight: 800; }
-    
-    .date-card {
-        min-width: 65px; height: 75px; background: white; border: 1px solid #E2E8F0;
-        border-radius: 10px; transition: all 0.2s ease; color: var(--slate-900); cursor: pointer;
-    }
-    .date-card:hover { border: 1px solid #7f8388; }
-    .date-card .date-label { color: #64748B; font-size: 9px; }
-    .date-card.active { background: var(--swift-blue) !important; border-color: var(--swift-blue) !important; }
-    .date-card.active .date-label { color: rgba(255, 255, 255, 0.7) !important; }
-    .date-card.active .date-number { color: #ffffff !important; }
-
-    .showtime-card {
-        background: #ffffff; border: 1px solid #eef2f7; border-radius: 12px;
-        transition: all 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .showtime-card:hover { 
-        border-color: var(--swift-blue); transform: translateY(-3px); 
-        box-shadow: 0 10px 15px -3px rgba(0, 74, 173, 0.1); 
-    }
-    .price-tag-green { color: #2dc275; font-size: 13px; }
-    .bg-light-soft { background-color: #F8FAFC; }
-    .border-dashed { border: 1px dashed #E2E8F0; }
-    .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
-    .scrollbar-hidden::-webkit-scrollbar { display: none; }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const trailerModal = document.getElementById('trailerModal');

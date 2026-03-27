@@ -59,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
 Route::get('/checkout/success/{reference}', [BookingController::class, 'success'])->name('checkout.success');
+Route::middleware(['auth'])->group(function () {
+    // This name must match exactly what is in your {{ route('...') }}
+    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
+});
 
 /*
 |--------------------------------------------------------------------------

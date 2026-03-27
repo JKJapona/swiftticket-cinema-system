@@ -54,24 +54,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    html, body { 
-        height: 100% !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
-        overflow: hidden !important; 
-        background-color: #F8FAFC !important;
-    }
-    
-    .transition-all { 
-        transition: all 0.2s ease-in-out; 
-    }
-    
-    .btn:hover { 
-        transform: translateY(-2px); 
-        filter: brightness(92%); 
-        box-shadow: 0 4px 12px rgba(0, 42, 173, 0.15) !important;
-    }
-</style>
 @endsection

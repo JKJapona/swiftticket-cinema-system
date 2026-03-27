@@ -1,143 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    /* Layout & Spacing */
-    .success-container {
-        padding-top: 1.5rem; 
-        padding-bottom: 4rem;
-        background-color: #f1f5f9;
-        min-height: 100vh;
-    }
 
-    .ticket-main-card { 
-        background: #ffffff; 
-        border: 2px solid #e2e8f0; 
-        border-radius: 16px; 
-        overflow: hidden; 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
-    }
-
-    .details-body { 
-        padding: 30px !important; 
-    }
-
-    /* Typography */
-    .ref-text { 
-        font-size: 28px;
-        font-weight: 700; 
-        color: #1E293B;
-        letter-spacing: 0.05em;
-        line-height: 1.1;
-        text-transform: uppercase;
-    }
-
-    .movie-title-success {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1E293B;
-        line-height: 1.2;
-    }
-
-    .info-label { 
-        color: #64748B; 
-        font-size: 12px;
-        text-transform: uppercase; 
-        font-weight: 600; 
-        letter-spacing: 0.5px;
-        margin-bottom: 2px; 
-    }
-
-    .info-data { 
-        font-weight: 600; 
-        color: #334155; 
-        font-size: 15px; 
-        margin-bottom: 12px;
-    }
-
-    .price-display {
-        font-size: 20px;
-        font-weight: 700;
-        color: #10B981;
-    }
-
-    /* Digital Stub & Notches */
-    .digital-ticket-vibe { 
-        background: #f8fafc; 
-        border-left: 3px dashed #cbd5e1; 
-        padding: 30px 20px; 
-        position: relative; 
-    }
-
-    .digital-ticket-vibe::before, 
-    .digital-ticket-vibe::after {
-        content: ''; 
-        position: absolute; 
-        left: -11px; 
-        width: 22px; 
-        height: 22px; 
-        background: #f1f5f9;
-        border: 2px solid #e2e8f0;
-        border-radius: 50%;
-        z-index: 2;
-    }
-
-    .digital-ticket-vibe::before { top: -11px; }
-    .digital-ticket-vibe::after { bottom: -11px; }
-
-    /* Components */
-    .movie-poster-thum { 
-        width: 70px; 
-        height: 100px; 
-        object-fit: cover; 
-        border-radius: 8px;
-    }
-
-    .qr-box { 
-        background: white; 
-        padding: 12px; 
-        border-radius: 12px; 
-        border: 2px solid #e2e8f0; 
-        display: inline-block;
-    }
-
-    .seat-pill { 
-        background: #10B981; 
-        color: white; 
-        padding: 4px 12px; 
-        border-radius: 8px; 
-        font-size: 13px; 
-        font-weight: 700; 
-    }
-
-    .btn-swift-home, 
-    .btn-outline-custom { 
-        padding: 10px 25px; 
-        font-size: 14px;
-        border-radius: 10px;
-    }
-
-    .btn-swift-home { 
-        background: #004AAD; 
-        color: #ffffff; 
-        font-weight: 600; 
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .btn-swift-home:hover { 
-        background: #00357a; 
-        transform: translateY(-2px); 
-        color: white; 
-    }
-
-    .btn-outline-custom {
-        border: 2px solid #e2e8f0;
-        background: white;
-        color: #1E293B;
-        font-weight: 600;
-    }
-</style>
 
 <div class="success-container">
     <div class="container" style="max-width: 1000px;">
@@ -155,7 +19,7 @@
                     </div>
 
                     <div class="d-flex gap-4 align-items-center mb-4 pb-4 border-bottom">
-                        <img src="{{ asset($booking->showtime->movie->poster_path) }}" class="movie-poster-thum">
+                        <img src="{{ asset($showtime->movie->poster_path) }}" class="movie-poster-thum">
                         <div>
                             <h2 class="movie-title-success mb-2">{{ $showtime->movie->title }}</h2>
                             <div class="d-flex gap-2">

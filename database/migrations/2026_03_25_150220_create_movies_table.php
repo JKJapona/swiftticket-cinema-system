@@ -32,6 +32,7 @@ return new class extends Migration
             $table->integer('runtime_minutes')->nullable();
             $table->enum('rating', ['G', 'PG', 'R-13', 'R-16', 'R-18'])->default('G');
             $table->string('poster_path', 500)->nullable();
+            $table->string('cover_path', 500)->nullable();
             $table->string('trailer_url', 255)->nullable();
             $table->date('release_date')->nullable();
             $table->enum('status', ['now_showing', 'coming_soon', 'archived'])->default('coming_soon');
