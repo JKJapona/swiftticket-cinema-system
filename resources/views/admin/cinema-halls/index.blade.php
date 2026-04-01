@@ -83,7 +83,7 @@
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                                 
-                                <form id="deleteForm" action="{{ route('admin.cinema-halls.destroy', $hall->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this hall?');">
+                                <form action="{{ route('admin.cinema-halls.destroy', $hall->id) }}" method="POST" class="d-inline hall-action-form" onsubmit="return confirm('Delete this hall?');">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-light border text-danger shadow-sm">
                                         <i class="bi bi-trash"></i>

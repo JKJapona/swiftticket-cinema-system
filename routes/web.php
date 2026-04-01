@@ -58,6 +58,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::patch('movies/{movie}/toggle-archive', [AdminMovieController::class, 'toggleArchive'])
+        ->name('movies.toggle-archive');
+        
     Route::resource('movies', AdminMovieController::class)->only([
         'index', 'store', 'update', 'destroy'
     ]);

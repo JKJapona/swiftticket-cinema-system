@@ -46,8 +46,10 @@
         document.addEventListener('submit', function (e) {
             const form = e.target;
             
-            const isTargetForm = form.id.includes('MovieForm') || 
-                                form.id === 'deleteForm';
+            const isTargetForm = form.classList.contains('movie-action-form') ||
+                                form.classList.contains('showtime-action-form') ||
+                                form.classList.contains('hall-action-form') ||
+                                form.id.includes('MovieForm');
 
             if (isTargetForm) {
                 if (e.defaultPrevented) {

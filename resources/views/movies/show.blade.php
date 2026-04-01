@@ -27,6 +27,9 @@
             <div class="mb-3">
                 <h1 class="h2 fw-700 text-slate-900 mb-1">{{ $movie->title }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">
+                    @if($movie->status === 'coming_soon')
+                        <span class="badge bg-warning text-dark px-2 py-1 rounded-1 small fw-800">COMING SOON</span>
+                    @endif
                     <span class="badge bg-swift-blue px-2 py-1 rounded-1 small">
                         {{ $movie->release_date ? $movie->release_date->format('Y') : 'TBA' }}
                     </span>
@@ -47,65 +50,94 @@
                 </div>
             </div>
 
-            {{-- Showtime Selection --}}
+            {{-- Dynamic Section --}}
             <section class="mb-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-calendar4-event text-primary fs-5"></i>
-                    <h2 class="h5 fw-700 text-slate-900 mb-0">Select Date & Time</h2>
-                </div>
-
-                {{-- Date Picker --}}
-                <div class="mb-3">
-                    <div class="d-flex gap-2 overflow-auto pb-2 scrollbar-hidden" id="date-picker-container">
-                        @foreach($dates as $date)
-                            @php $dateStr = $date->format('Y-m-d'); @endphp
-                            <button type="button" 
-                                    data-date="{{ $dateStr }}" 
-                                    class="btn date-picker-btn date-card {{ $dateStr == $selectedDate ? 'active' : '' }} d-flex flex-column align-items-center justify-content-center">
-                                <span class="date-label text-uppercase">{{ $date->format('D') }}</span>
-                                <span class="date-number fw-700 fs-5 my-0">{{ $date->format('d') }}</span>
-                                <span class="date-label text-uppercase">{{ $date->format('M') }}</span>
-                            </button>
-                        @endforeach
+                @if($movie->display_status === 'Now Showing')
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-calendar4-event text-primary fs-5"></i>
+                        <h2 class="h5 fw-700 text-slate-900 mb-0">Select Date & Time</h2>
                     </div>
-                </div>
 
-                {{-- Distribution Container --}}
-                <div id="showtimes-wrapper">
-                    <div class="bg-light-soft rounded-3 p-3 border-dashed">
-                        <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
-                        <div class="row g-3" id="showtimes-list">
-                            @foreach($showtimes as $show)
-
-                                <div class="col-md-4 col-sm-6 showtime-item {{ $show->show_date == $selectedDate ? '' : 'd-none' }}" 
-                                     data-date="{{ $show->show_date }}">
-                                    <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
-                                        <div class="fw-800 text-slate-900 fs-5 mb-1">
-                                            {{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}
-                                        </div>
-                                        <div class="text-muted small mb-1">
-                                            {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
-                                        </div>
-                                        <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
-                                    </a>
-                                </div>
+                    {{-- Date Picker --}}
+                    <div class="mb-3">
+                        <div class="d-flex gap-2 overflow-auto pb-2 scrollbar-hidden" id="date-picker-container">
+                            @foreach($dates as $date)
+                                @php $dateStr = $date->format('Y-m-d'); @endphp
+                                <button type="button" 
+                                        data-date="{{ $dateStr }}" 
+                                        class="btn date-picker-btn date-card {{ $dateStr == $selectedDate ? 'active' : '' }} d-flex flex-column align-items-center justify-content-center">
+                                    <span class="date-label text-uppercase">{{ $date->format('D') }}</span>
+                                    <span class="date-number fw-700 fs-5 my-0">{{ $date->format('d') }}</span>
+                                    <span class="date-label text-uppercase">{{ $date->format('M') }}</span>
+                                </button>
                             @endforeach
+                        </div>
+                    </div>
 
-                            {{-- No showtimes placeholder --}}
-                            <div id="no-showtimes-msg" class="col-12 py-4 text-center d-none">
-                                <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
-                                <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
+                    {{-- Showtime List --}}
+                    <div id="showtimes-wrapper">
+                        <div class="bg-light-soft rounded-3 p-3 border-dashed">
+                            <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
+                            <div class="row g-3" id="showtimes-list">
+                                @foreach($showtimes as $show)
+                                    <div class="col-md-4 col-sm-6 showtime-item {{ $show->show_date == $selectedDate ? '' : 'd-none' }}" 
+                                        data-date="{{ $show->show_date }}">
+                                        <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block shadow-sm">
+                                            <div class="fw-800 text-slate-900 fs-5 mb-1">
+                                                {{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}
+                                            </div>
+                                            <div class="text-muted small mb-1">
+                                                {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
+                                            </div>
+                                            <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
+                                        </a>
+                                    </div>
+                                @endforeach
+
+                                <div id="no-showtimes-msg" class="col-12 py-4 text-center d-none">
+                                    <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
+                                    <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                @elseif($movie->display_status === 'Archived')
+                    {{-- ARCHIVED PLACEHOLDER --}}
+                    <div class="bg-light rounded-4 p-5 text-center border">
+                        <div class="mb-3">
+                            <i class="bi bi-archive text-secondary display-5"></i>
+                        </div>
+                        <h3 class="h5 fw-800 text-slate-900 mb-2">Movie Archived</h3>
+                        <p class="text-secondary small mb-0 mx-auto" style="max-width: 450px;">
+                            This movie has completed its theatrical run and is no longer available for booking.
+                        </p>
+                    </div>
+
+                @else
+                    {{-- COMING SOON PLACEHOLDER --}}
+                    <div class="bg-light rounded-4 p-5 text-center border">
+                        <div class="mb-3">
+                            <i class="bi bi-stars text-warning display-5"></i>
+                        </div>
+                        <h3 class="h5 fw-800 text-slate-900 mb-2">Coming Soon to Theaters</h3>
+                        <p class="text-secondary small mb-4 mx-auto" style="max-width: 450px;">
+                            We're currently preparing the schedules for this movie. 
+                            @if($movie->release_date)
+                                Catch it on the big screen starting <strong>{{ $movie->release_date->format('F d, Y') }}</strong>!
+                            @else
+                                Stay tuned for the official schedule announcement.
+                            @endif
+                        </p>
+                    </div>
+                @endif
             </section>
 
             {{-- Synopsis & Cast --}}
-            <div class="row g-3">
+            <div class="row g-3 mt-2">
                 <div class="col-12">
                     <h5 class="h6 fw-700 text-slate-900 mb-1">Synopsis</h5>
-                    <p class="small text-secondary mb-3" style="line-height: 1.5;">{{ $movie->synopsis ?? 'No synopsis available.' }}</p>
+                    <p class="small text-secondary mb-3" style="line-height: 1.6;">{{ $movie->synopsis ?? 'No synopsis available.' }}</p>
                 </div>
                 <div class="col-12">
                     <h5 class="h6 fw-700 text-slate-900 mb-1">Cast</h5>
@@ -151,58 +183,49 @@
 @endif
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Trailer Logic
-    const trailerModal = document.getElementById('trailerModal');
-    const videoIframe = document.getElementById('trailerVideo');
-    if (trailerModal && videoIframe) {
-        const baseSrc = videoIframe.src;
-        trailerModal.addEventListener('shown.bs.modal', () => { videoIframe.src = `${baseSrc}&autoplay=1`; });
-        trailerModal.addEventListener('hide.bs.modal', () => { videoIframe.src = ""; });
-    }
-
-    // Distribution Filter Logic
-    const dateButtons = document.querySelectorAll('.date-picker-btn');
-    const showtimeItems = document.querySelectorAll('.showtime-item');
-    const noMsg = document.getElementById('no-showtimes-msg');
-
-    function updateFilter(selectedDate) {
-        let foundCount = 0;
-        showtimeItems.forEach(item => {
-            if (item.getAttribute('data-date') === selectedDate) {
-                item.classList.remove('d-none');
-                foundCount++;
-            } else {
-                item.classList.add('d-none');
-            }
-        });
-
-        if (foundCount === 0) {
-            noMsg.classList.remove('d-none');
-        } else {
-            noMsg.classList.add('d-none');
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Trailer Logic
+        const trailerModal = document.getElementById('trailerModal');
+        const videoIframe = document.getElementById('trailerVideo');
+        if (trailerModal && videoIframe) {
+            const baseSrc = videoIframe.src;
+            trailerModal.addEventListener('shown.bs.modal', () => { videoIframe.src = `${baseSrc}&autoplay=1`; });
+            trailerModal.addEventListener('hide.bs.modal', () => { videoIframe.src = ""; });
         }
-    }
 
-    // Initialize with the default selected date
-    updateFilter("{{ $selectedDate }}");
+        // 2. Filter Logic
+        const dateButtons = document.querySelectorAll('.date-picker-btn');
+        const showtimeItems = document.querySelectorAll('.showtime-item');
+        const noMsg = document.getElementById('no-showtimes-msg');
 
-    dateButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetDate = this.getAttribute('data-date');
+        if (dateButtons.length > 0) {
+            function updateFilter(selectedDate) {
+                let foundCount = 0;
+                showtimeItems.forEach(item => {
+                    if (item.getAttribute('data-date') === selectedDate) {
+                        item.classList.remove('d-none');
+                        foundCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+                if (noMsg) noMsg.classList.toggle('d-none', foundCount > 0);
+            }
 
-            // 1. Update UI
-            dateButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+            updateFilter("{{ $selectedDate }}");
 
-            // 2. Filter distribution items
-            updateFilter(targetDate);
+            dateButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetDate = this.getAttribute('data-date');
+                    dateButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateFilter(targetDate);
 
-            // 3. Update URL without reloading
-            const newUrl = window.location.origin + '/movies/{{ $movie->id }}/' + targetDate;
-            window.history.pushState({ date: targetDate }, '', newUrl);
-        });
+                    const newUrl = window.location.origin + '/movies/{{ $movie->id }}/' + targetDate;
+                    window.history.pushState({ date: targetDate }, '', newUrl);
+                });
+            });
+        }
     });
-});
 </script>
 @endsection

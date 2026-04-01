@@ -141,4 +141,26 @@ class MovieController extends Controller
         
         return redirect()->back()->with('success', 'Movie deleted.');
     }
+
+    public function toggleArchive(Movie $movie)
+{
+    if ($movie->status === 'archived') {
+        // Check if there are showtimes for today or the future
+        $hasActiveShowtimes = $movie->showtimes()
+            ->where('show_date', '>=', now()->toDateString())
+            ->exists();
+
+        // If it has showtimes, return it to 'now_showing', otherwise 'coming_soon'
+        $movie->status = $hasActiveShowtimes ? 'now_showing' : 'coming_soon';
+        
+        $message = 'Movie unarchived and set to ' . str_replace('_', ' ', $movie->status) . '.';
+    } else {
+        $movie->status = 'archived';
+        $message = 'Movie moved to archives.';
+    }
+
+    $movie->save();
+
+    return back()->with('success', $message);
+}
 }

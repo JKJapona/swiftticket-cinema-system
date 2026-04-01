@@ -35,19 +35,23 @@ class MovieController extends Controller
      * Display movie details and filterable showtimes.
      */
     public function show($id, $date = null)
-    {
+        {
         $movie = Movie::findOrFail($id);
-        
-        $showtimes = Showtime::with('hall')
-            ->where('movie_id', $id)
-            ->where('show_date', '>=', now()->toDateString())
-            ->orderBy('show_date', 'asc')
-            ->orderBy('show_time', 'asc')
-            ->get();
 
-        $dates = collect(range(0, 6))->map(fn($i) => now()->addDays($i));
-        
+        $showtimes = collect();
+        $dates = collect();
         $selectedDate = $date ?? now()->format('Y-m-d');
+        
+    if ($movie->display_status === 'Now Showing') {
+            $showtimes = Showtime::with('hall')
+                ->where('movie_id', $id)
+                ->where('show_date', '>=', now()->toDateString())
+                ->orderBy('show_date', 'asc')
+                ->orderBy('show_time', 'asc')
+                ->get();
+
+            $dates = collect(range(0, 6))->map(fn($i) => now()->addDays($i));
+        }
 
         return view('movies.show', compact('movie', 'showtimes', 'dates', 'selectedDate'));
     }

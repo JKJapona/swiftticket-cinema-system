@@ -68,22 +68,40 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-light border text-slate-900 fw-600 me-2 shadow-sm" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editMovieModal{{ $movie->id }}">
-                                        <i class="bi bi-pencil-square"></i>
+                            <div class="btn-group">
+
+                                {{-- Archive/Unarchive Button --}}
+                                <form action="{{ route('admin.movies.toggle-archive', $movie->id) }}" method="POST" class="d-inline movie-action-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-light border shadow-sm me-2 {{ $movie->status === 'archived' ? 'text-success' : 'text-warning' }}" 
+                                            title="{{ $movie->status === 'archived' ? 'Unarchive Movie' : 'Archive Movie' }}">
+                                        @if($movie->status === 'archived')
+                                            <i class="bi bi-archive-fill"></i>
+                                        @else
+                                            <i class="bi bi-archive"></i>
+                                        @endif
                                     </button>
-                                    
-                                    <form id="deleteForm" action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this movie?');">
-                                        @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-light border text-danger shadow-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                                </form>
+
+                                {{-- Edit Button --}}
+                                <button type="button" 
+                                        class="btn btn-sm btn-light border text-slate-900 fw-600 me-2 shadow-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editMovieModal{{ $movie->id }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                
+                                {{-- Delete Button --}}
+                                <form action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST" class="d-inline movie-action-form" onsubmit="return confirm('Delete this movie permanently?');">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-light border text-danger shadow-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                         </tr>
                         @include('admin.movies.edit')
                     @empty

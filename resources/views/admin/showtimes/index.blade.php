@@ -101,7 +101,7 @@
                                 </button>
 
                                 <form action="{{ route('admin.showtimes.destroy', $showtime->id) }}" method="POST" 
-                                    class="d-inline" id="deleteForm"
+                                    class="d-inline showtime-action-form"
                                     onsubmit="return confirm('Are you sure you want to delete this showtime?');">
                                     @csrf
                                     @method('DELETE')

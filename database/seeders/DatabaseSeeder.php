@@ -147,7 +147,7 @@ class DatabaseSeeder extends Seeder
         'cover_path' => 'covers/1775019230_gladiator-ii_cover.jpg',
         'trailer_url' => 'https://www.youtube.com/embed/4rgYUipGJNo',
         'release_date' => '2024-11-22',
-        'status' => 'now_showing',
+        'status' => 'archived',
     ],
     [
         'title' => 'War Machine',
