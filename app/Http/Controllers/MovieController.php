@@ -21,60 +21,70 @@ class MovieController extends Controller
     */
 
     /**
-     * Display a listing of movies currently available for booking.
+     * Display movies currently available for booking.
      */
     public function index()
     {
-        // Fetch movies flagged as 'now_showing', prioritized by the most recent releases
-        $movies = Movie::where('status', 'now_showing')
-            ->orderBy('release_date', 'desc')
+        $movies = Movie::orderBy('release_date', 'desc')
             ->get();
 
         return view('home', compact('movies'));
     }
 
     /**
-     * Display movie details and available showtimes for a specific date.
-     * * @param int $id
-     * @param string|null $date
+     * Display movie details and filterable showtimes.
      */
     public function show($id, $date = null)
     {
         $movie = Movie::findOrFail($id);
         
-        // Default to today if no date is selected
-        $selectedDate = $date ?? Carbon::now()->format('Y-m-d');
+        $today        = Carbon::now()->format('Y-m-d');
+        $selectedDate = $date ?? $today;
         
-        // Generate a 7-day rolling window for the date-picker UI
-        $dates = collect(range(0, 6))->map(fn($i) => Carbon::now()->addDays($i));
+        $datePickerRange = collect(range(0, 6))->map(fn($i) => Carbon::now()->addDays($i));
 
-        // Query showtimes for the specific date
         $query = Showtime::with('hall')
             ->where('movie_id', $id)
             ->whereDate('show_time', $selectedDate);
 
-        // UI Optimization: If the selected date is today, hide showtimes that have already passed
-        if ($selectedDate === Carbon::now()->format('Y-m-d')) {
+        if ($selectedDate === $today) {
             $query->where('show_time', '>=', Carbon::now());
         }
 
         $showtimes = $query->orderBy('show_time', 'asc')->get();
 
-        return view('movies.show', compact('movie', 'showtimes', 'dates', 'selectedDate'));
+        if (request()->ajax()) {
+        return view('movies.show', [
+            'movie'        => $movie,
+            'showtimes'    => $showtimes,
+            'dates'        => $datePickerRange,
+            'selectedDate' => $selectedDate
+        ])->render(); 
+    }
+
+        return view('movies.show', [
+            'movie'        => $movie,
+            'showtimes'    => $showtimes,
+            'dates'        => $datePickerRange,
+            'selectedDate' => $selectedDate
+        ]);
     }
 
     /**
      * Display the interactive seat map for a specific showtime.
-     * * @param int $showtime_id
      */
-    public function showSeatMap($showtime_id)
+    public function showSeatMap($showtimeId)
     {
-        // Eager load relationships to prevent N+1 query issues
-        $showtime = Showtime::with(['movie', 'hall', 'bookedSeats'])->findOrFail($showtime_id);
+        $showtime = Showtime::with(['movie', 'hall', 'bookedSeats'])
+            ->findOrFail($showtimeId);
 
-        // Extract already booked seat codes into a flat array for the front-end 'disabled' state
-        $takenSeats = $showtime->bookedSeats->pluck('seat_code')->toArray();
+        $occupiedSeats = $showtime->bookedSeats
+            ->pluck('seat_code')
+            ->toArray();
 
-        return view('booking.seats', compact('showtime', 'takenSeats'));
+        return view('booking.seats', [
+            'showtime'   => $showtime,
+            'takenSeats' => $occupiedSeats
+        ]);
     }
 }

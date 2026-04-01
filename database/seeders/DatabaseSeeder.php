@@ -5,25 +5,29 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        Storage::disk('public')->deleteDirectory('posters');
+        Storage::disk('public')->deleteDirectory('covers');
+
         // 1. Seed Users
         DB::table('users')->insert([
             [
                 'full_name' => 'Admin User',
-                'email' => 'admin@swiftticket.com',
-                'password_hash' => Hash::make('password'),
+                'email' => 'admin@asd.asd',
+                'password_hash' => Hash::make('asdasd'),
                 'role' => 'admin',
                 'created_at' => now(),
             ],
             [
                 'full_name' => 'Test Customer',
-                'email' => 'test@example.com',
-                'password_hash' => Hash::make('password'),
+                'email' => 'asd@asd.asd',
+                'password_hash' => Hash::make('asdasd'),
                 'role' => 'customer',
                 'created_at' => now(),
             ],
@@ -185,29 +189,31 @@ DB::table('cinema_halls')->insert([
 ]);
 
 // 4. Mass Seed Showtimes
+// We fetch the halls with their total_seats so we can use them in the loop
+$halls = DB::table('cinema_halls')->where('status', 'Active')->get();
 $movieIds = DB::table('movies')->pluck('id');
-$hallIds = DB::table('cinema_halls')->where('status', 'Active')->pluck('id')->toArray();
 $times = ['10:00:00', '13:15:00', '16:30:00', '19:45:00', '22:30:00'];
 
 foreach ($movieIds as $movieId) {
-    // Generate showtimes for the next 7 days for each movie
     for ($i = 0; $i < 7; $i++) {
         $date = Carbon::today()->addDays($i)->toDateString();
-        
-        // Assign 2-3 random showtimes per movie per day
         $selectedTimes = (array) array_rand(array_flip($times), rand(2, 3));
 
         foreach ($selectedTimes as $time) {
-            $hallId = $hallIds[array_rand($hallIds)];
+            // Pick a random hall from our list of Active halls
+            $randomHall = $halls->random();
             
             DB::table('showtimes')->insert([
                 'movie_id' => $movieId,
-                'hall_id' => $hallId,
+                'hall_id' => $randomHall->id, // Use the ID from the hall object
                 'show_date' => $date,
                 'show_time' => $time,
-                // Higher price for IMAX/Premium halls
-                'price' => ($hallId == 1 || $hallId == 4) ? 550.00 : 350.00,
-                'total_capacity' => 120, // This could also be calculated from hall rows * seats
+                // Logic for price remains same
+                'price' => ($randomHall->screen_type == 'IMAX' || $randomHall->screen_type == 'Premium') ? 550.00 : 350.00,
+                
+                // FIXED: Use the actual total_seats from the specific hall
+                'total_capacity' => $randomHall->total_seats, 
+                
                 'booked_seats' => 0,
                 'created_at' => now(),
             ]);

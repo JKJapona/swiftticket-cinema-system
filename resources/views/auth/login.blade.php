@@ -5,7 +5,7 @@
     $prev = url()->previous();
     $current = url()->current();
     
-    $authPages = ['login', 'register', 'admin-login'];
+    $authPages = ['login', 'register'];
 
     if ($prev == $current || Str::contains($prev, $authPages)) {
         $backTarget = url('/');
@@ -79,7 +79,7 @@
         <p class="mb-1 text-muted small">Don't have an account? <a href="{{ route('register') }}" class="fw-bold text-primary text-decoration-none">Sign up</a></p>
         <div class="mt-3">
             <p class="text-muted opacity-50 mb-1" style="font-size: 10px;">Protected by reCAPTCHA</p>
-            <a href="{{ route('admin.login') }}" class="small text-secondary text-uppercase fw-bold opacity-75 text-decoration-none" style="font-size: 11px; letter-spacing: 0.05em;">Admin Login</a>
+            {{-- Admin Login Button Removed --}}
         </div>
     </div>
 </div>

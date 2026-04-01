@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -25,19 +24,19 @@ class AuthController extends Controller
     {
         $request->validate([
             'full_name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed'
+            'email'     => 'required|email|unique:users',
+            'password'  => 'required|min:6|confirmed'
         ]);
 
         User::create([
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'password_hash' => Hash::make($request->password),
-            'role' => 'customer',
-            'status' => 'active',
+            'full_name'     => $request->full_name,
+            'email'         => $request->email,
+            'password_hash'      => Hash::make($request->password), 
+            'role'          => 'customer',
+            'status'        => 'active',
         ]);
 
-        return redirect('/login')->with('success', 'Registered successfully. Please login.');
+        return redirect()->route('login')->with('success', 'Registered successfully. Please login.');
     }
 
     /*
@@ -54,61 +53,24 @@ class AuthController extends Controller
     public function login(Request $request) 
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'    => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-            $user = Auth::user();
-            
-            $isAdminRoute = $request->is('admin-login') || Str::contains(url()->previous(), 'admin-login');
-
-            if ($isAdminRoute && $user->role !== 'admin') {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Unauthorized. Admin access only.'])->onlyInput('email');
-            }
-
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return ($user->role === 'admin') 
-                ? redirect()->intended('/admin/dashboard') 
-                : redirect()->intended('/');
-        }
-
-        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Admin-Specific Secure Login
-    |--------------------------------------------------------------------------
-    */
-
-    public function showAdminLogin() 
-    {
-        return view('auth.admin-login');
-    }
-
-    public function adminLogin(Request $request) 
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-            $user = Auth::user();
-
-            if ($user->role !== 'admin') {
-                Auth::logout(); 
-                return back()->withErrors(['email' => 'Access denied. Admin privileges required.'])->onlyInput('email');
+            // Dynamic Redirection based on user role
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
             }
 
-            $request->session()->regenerate();
-            return redirect()->intended('/admin/dashboard');
+            return redirect()->intended(route('home'));
         }
 
-        return back()->withErrors(['email' => 'Invalid admin credentials.'])->onlyInput('email');
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
     /*
@@ -120,6 +82,7 @@ class AuthController extends Controller
     public function logout(Request $request) 
     {
         Auth::logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         

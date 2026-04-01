@@ -42,6 +42,7 @@ class BookingController extends Controller
 
         $showtime = Showtime::findOrFail($request->showtime_id);
         $seatsArray = explode(',', $request->selected_seats);
+        $seatCount = count($seatsArray);
 
         try {
             DB::beginTransaction();
@@ -64,6 +65,8 @@ class BookingController extends Controller
                 'total_price' => count($seatsArray) * $showtime->price,
                 'status' => $status,
             ]);
+
+            $showtime->increment('booked_seats', $seatCount);
 
             foreach ($seatsArray as $seatCode) {
                 BookedSeat::create([

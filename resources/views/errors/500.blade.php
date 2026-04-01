@@ -5,12 +5,9 @@
      style="min-height: 100vh; width: 100vw; background-color: #F8FAFC; position: fixed; top: 0; left: 0; z-index: 9999;">
     
     <div class="text-center p-4 p-md-5">
-        
-        <div class="d-flex align-items-center justify-content-center mb-5 opacity-75" 
-             style="font-size: 12px; font-weight: 400; color: #64748B; letter-spacing: 0.15em; text-transform: uppercase;">
-            <span>Ayala Malls Abreeza</span>
-            <div class="mx-3" style="width: 1px; height: 12px; background-color: #CBD5E1;"></div>
-            <span style="color: #004AAD; font-weight: 700;">SwiftTicket</span>
+        <div class="d-flex align-items-center justify-content-center mb-5">
+            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" alt="SwiftTicket Abreeza" 
+                style="height: 45px;">
         </div>
 
         <div class="mb-4 d-flex flex-column align-items-center justify-content-center">

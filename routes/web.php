@@ -1,14 +1,18 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MovieController;
-use App\Http\Controllers\AdminController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MovieController as AdminMovieController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\CinemaHallController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ShowtimeController;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| 1. PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 Route::get('/', [MovieController::class, 'index'])->name('home');
@@ -16,62 +20,51 @@ Route::get('/movies/{movie}/{date?}', [MovieController::class, 'show'])->name('m
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
+| 2. AUTHENTICATION ROUTES (Universal)
 |--------------------------------------------------------------------------
 */
-// User Registration
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-// User Login
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-
-// Admin Authentication
-Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.submit');
-
-// Global Logout
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Protected User Routes (Auth Required)
+| 3. PROTECTED CUSTOMER ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    Route::get('/book/{showtime_id}', [MovieController::class, 'showSeatMap'])->name('book.seats');
-
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
-    Route::get('/checkout/payment', function() {
-        return redirect()->route('home');
-    });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Booking & Checkout Routes
-|--------------------------------------------------------------------------
-*/
-Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
-Route::post('/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
-Route::get('/checkout/success/{reference}', [BookingController::class, 'success'])->name('checkout.success');
-Route::middleware(['auth'])->group(function () {
-    // This name must match exactly what is in your {{ route('...') }}
     Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
+
+    Route::get('/book/{showtime_id}', [MovieController::class, 'showSeatMap'])->name('book.seats');
+    Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
+    
+    Route::post('/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
+    Route::get('/checkout/success/{reference}', [BookingController::class, 'success'])->name('checkout.success');
+    
+    Route::get('/checkout/payment', fn() => redirect()->route('home'));
 });
 
 /*
 |--------------------------------------------------------------------------
-| Admin Panel Routes (Admin Middleware Required)
+| 4. ADMIN PANEL ROUTES (Admin Middleware Required)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Future Admin tasks like movie/user management go here
-    // Route::resource('movies', AdminMovieController::class);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('movies', AdminMovieController::class)->only([
+        'index', 'store', 'update', 'destroy'
+    ]);
+
+    Route::resource('cinema-halls', CinemaHallController::class);
+    Route::resource('bookings', AdminBookingController::class);
+    Route::resource('customers', CustomerController::class);
+    Route::resource('showtimes', ShowtimeController::class);
+
 });

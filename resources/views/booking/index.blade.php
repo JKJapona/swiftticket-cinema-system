@@ -11,14 +11,14 @@
             <i class="bi bi-ticket-perforated text-primary fs-2"></i>
             <h1 class="h3 fw-bold mb-0">My Bookings</h1>
         </div>
-        <a href="{{ route('home') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+        <a href="{{ route('home') }}" class="btn btn-outline-dark btn-sm rounded-1 px-3">
             <i class="bi bi-plus-lg me-1"></i> New Booking
         </a>
     </div>
 
     @if($bookings->isEmpty())
         {{-- Empty State --}}
-        <div class="text-center py-5 border rounded-4 bg-light">
+        <div class="text-center py-5 border rounded-3 bg-light">
             <i class="bi bi-camera-reels text-muted display-1"></i>
             <p class="mt-3 text-secondary">No history found. Ready for a movie?</p>
             <a href="{{ route('home') }}" class="btn btn-primary px-4">Browse Now</a>
@@ -29,11 +29,12 @@
                 <div class="col-12 col-xl-6">
                     
                     {{-- 1. LIST VIEW CARD --}}
-                    <div class="card ticket-card-border rounded-4 overflow-hidden shadow-none">
+                    <div class="card ticket-card-border rounded-3 overflow-hidden shadow-none">
                         <div class="row g-0">
                             <div class="col-4 d-none d-sm-block">
-                                <img src="{{ asset($booking->showtime->movie->poster_path) }}" 
-                                    class="img-fluid h-100 object-fit-cover" alt="Poster">
+                                <img src="{{ $booking->showtime->movie->poster_url }}" 
+                                    class="img-fluid h-100 object-fit-cover" 
+                                    alt="Poster">
                             </div>
                             <div class="col-12 col-sm-8">
                                 <div class="card-body p-4">
@@ -67,7 +68,7 @@
 
                                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                                         <span class="fw-bold text-dark fs-5">₱{{ number_format($booking->total_price, 2) }}</span>
-                                        <button type="button" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold" 
+                                        <button type="button" class="btn btn-primary btn-sm rounded-1 px-4 shadow-sm fw-bold" 
                                                 data-bs-toggle="modal" data-bs-target="#ticketModal{{ $booking->id }}">
                                             View Ticket
                                         </button>
@@ -78,104 +79,94 @@
                     </div>
                 </div>
 
-                {{-- 2. LANDSCAPE TICKET MODAL --}}
+                {{-- 2. SIMPLIFIED TICKET MODAL --}}
                 <div class="modal fade" id="ticketModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-xl">
-                        <div class="modal-content bg-transparent border-0">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 rounded-3 overflow-hidden shadow">
                             
-                            <div class="ticket-landscape">
-                                
-                                {{-- LEFT SIDE: MAIN TICKET --}}
-                                <div class="p-5 flex-grow-1 d-flex flex-column justify-content-between">
-                                    <div>
-                                        <div class="d-flex justify-content-between align-items-center mb-4">
-                                            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" style="height: 28px;">
-                                            <span class="font-monospace fw-bold text-muted">REF: {{ $booking->reference_number }}</span>
+                            <div class="modal-body p-0">
+                                <div class="row g-0">
+                                    {{-- LEFT SIDE: MOVIE & DETAILS --}}
+                                    <div class="col-md-8 p-4 p-lg-5 bg-white">
+                                        <div class="d-flex align-items-center gap-2 mb-4">
+                                            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" height="24">
+                                            <span class="text-muted ms-auto small font-monospace">{{ $booking->reference_number }}</span>
                                         </div>
 
-                                        <h1 class="t-movie-title mb-2">{{ strtoupper($booking->showtime->movie->title) }}</h1>
-                                        <p class="text-secondary fw-medium mb-4">
-                                            <i class="bi bi-geo-alt-fill me-1 text-primary"></i> {{ $booking->showtime->hall->name }} • {{ $booking->showtime->hall->screen_type }}
-                                        </p>
+                                        <div class="mb-4">
+                                            <h2 class="fw-black text-dark mb-1">{{ strtoupper($booking->showtime->movie->title) }}</h2>
+                                            <p class="text-muted mb-0">
+                                                <i class="bi bi-geo-alt-fill text-danger"></i> 
+                                                {{ $booking->showtime->hall->name }} • {{ $booking->showtime->hall->screen_type }}
+                                            </p>
+                                        </div>
 
-                                        <div class="row g-0 border-top border-bottom py-3 mb-4">
-                                            <div class="col-3">
-                                                <span class="t-stub-label d-block">Date</span>
-                                                <span class="fw-bold fs-5 text-dark">{{ \Carbon\Carbon::parse($booking->showtime->show_date)->format('M d, Y') }}</span>
+                                        <div class="row border-top border-bottom py-3 my-4 text-center text-md-start">
+                                            <div class="col-4">
+                                                <small class="text-uppercase text-muted d-block fw-bold" style="font-size: 0.7rem;">Date</small>
+                                                <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($booking->showtime->show_date)->format('M d, Y') }}</span>
                                             </div>
-                                            <div class="col-3 border-start ps-3">
-                                                <span class="t-stub-label d-block">Time</span>
-                                                <span class="fw-bold fs-5 text-dark">{{ \Carbon\Carbon::parse($booking->showtime->show_time)->format('h:i A') }}</span>
+                                            <div class="col-4 border-start">
+                                                <small class="text-uppercase text-muted d-block fw-bold" style="font-size: 0.7rem;">Time</small>
+                                                <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($booking->showtime->show_time)->format('h:i A') }}</span>
                                             </div>
-                                            <div class="col-3 border-start ps-3">
-                                                <span class="t-stub-label d-block">Total Paid</span>
-                                                <span class="price-display">₱{{ number_format($booking->total_price, 2) }}</span>
-                                            </div>
-                                            <div class="col-3 border-start ps-3">
-                                                <span class="t-stub-label d-block">Status</span>
-                                                <span class="fw-bold fs-5 {{ $booking->status == 'confirmed' ? 'text-success' : 'text-warning' }}">
-                                                    {{ strtoupper($booking->status) }}
+                                            <div class="col-4 border-start">
+                                                <small class="text-uppercase text-muted d-block fw-bold" style="font-size: 0.7rem;">Seats</small>
+                                                <span class="fw-bold text-primary">
+                                                    {{ $booking->seats->pluck('seat_code')->implode(', ') }}
                                                 </span>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {{-- Seat Visualization --}}
-                                    <div class="d-flex align-items-center gap-4 bg-light p-3 rounded-4">
-                                        <div class="t-stub-label" style="writing-mode: vertical-lr; transform: rotate(180deg);">Your Seats</div>
-                                        <div class="d-flex gap-2">
-                                            @foreach($booking->seats as $seat)
-                                                <div class="seat-mini-box">{{ $seat->seat_code }}</div>
-                                            @endforeach
-                                        </div>
-                                        <div class="ms-auto text-end border-start ps-4">
-                                            <span class="t-stub-label d-block mb-1">Gate Entry</span>
-                                            <span class="fw-bold">Level 4, Abreeza Mall</span>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-muted d-block">Gate Entry</small>
+                                                <span class="fw-medium small">Cinema Level, Abreeza Mall</span>
+                                            </div>
+                                            <div class="text-end">
+                                                <small class="text-muted d-block">Total Paid</small>
+                                                <span class="fw-bold fs-5">₱{{ number_format($booking->total_price, 2) }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {{-- MIDDLE: PERFORATION --}}
-                                <div class="ticket-divider-horizontal"></div>
-
-                                {{-- RIGHT SIDE: QR STUB --}}
-                                <div class="p-5 d-flex flex-column align-items-center justify-content-center text-center bg-white" style="width: 320px; min-width: 320px;">
-                                    <div class="qr-box mb-3 shadow-sm">
-                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ $booking->reference_number }}" 
-                                             alt="QR Code" class="img-fluid">
-                                    </div>
-                                    
-                                    <h5 class="fw-bold mb-1">ENTRY PASS</h5>
-                                    <p class="t-caption text-muted mb-4 small">Scan at entrance gate</p>
-
-                                    <div class="w-100">
-                                        @if($booking->status == 'pending')
-                                            <div class="alert alert-warning py-2 small mb-3 border-0 fw-medium">
-                                                <i class="bi bi-wallet2 me-1"></i> Pay at Counter
-                                            </div>
-                                        @else
-                                            <div class="alert alert-success py-2 small mb-3 border-0 fw-medium">
-                                                <i class="bi bi-patch-check-fill me-1"></i> Valid Ticket
-                                            </div>
-                                        @endif
+                                    {{-- RIGHT SIDE: SCANNER STUB --}}
+                                    <div class="col-md-4 bg-light border-start p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <div class="bg-white p-2 rounded-3 shadow-sm mb-3">
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data={{ $booking->reference_number }}" 
+                                                alt="QR Code" class="img-fluid" style="width: 140px;">
+                                        </div>
                                         
-                                        <button class="btn btn-outline-dark btn-sm w-100 rounded-pill py-2 fw-bold" onclick="window.print()">
-                                            <i class="bi bi-printer me-2"></i> PRINT TICKET
+                                        <div class="badge {{ $booking->status == 'confirmed' ? 'bg-success' : 'bg-warning' }} mb-3 px-3 py-2">
+                                            {{ strtoupper($booking->status) }}
+                                        </div>
+
+                                        <button class="btn btn-dark w-100 rounded-3 fw-bold mb-2" onclick="window.print()">
+                                            <i class="bi bi-printer me-2"></i> Print
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 border-0" data-bs-dismiss="modal">
+                                            Close
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- Dismiss Button --}}
-                            <div class="text-center mt-4">
-                                <button type="button" class="btn btn-link text-white text-decoration-none opacity-75" data-bs-dismiss="modal">
-                                    <i class="bi bi-x-circle me-2"></i> Dismiss
-                                </button>
-                            </div>
-
                         </div>
                     </div>
-                </div> {{-- End Modal --}}
+                </div>
+
+                <style>
+                    /* Clean typography and structure */
+                    #ticketModal{{ $booking->id }} .fw-black { font-weight: 900; }
+                    #ticketModal{{ $booking->id }} .modal-content { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+                    
+                    @media print {
+                        body * { visibility: hidden; }
+                        #ticketModal{{ $booking->id }} .modal-content, 
+                        #ticketModal{{ $booking->id }} .modal-content * { visibility: visible; }
+                        #ticketModal{{ $booking->id }} .modal-content { position: absolute; left: 0; top: 0; width: 100%; }
+                        .btn, [data-bs-dismiss="modal"] { display: none !important; }
+                    }
+                </style>
             @endforeach
         </div>
     @endif

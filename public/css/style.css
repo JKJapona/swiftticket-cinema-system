@@ -18,10 +18,9 @@
 }
 
 html, body { 
-    height: 100% !important; 
+    min-height: 100%; 
     margin: 0 !important; 
     padding: 0 !important; 
-    overflow: hidden !important; 
     background-color: #F8FAFC !important;
 }
 
@@ -96,48 +95,39 @@ main { flex: 1; }
 .dropdown-toggle::after { display: none; }
 
 /* --- 5. BUTTONS & ACTIONS --- */
-.btn:hover { 
+.btn, button, .btn-signin {
+    transition: all 0.25s ease-in-out !important;
+}
+
+.btn:hover:not(.btn-signin), 
+button:hover:not(.btn-signin) { 
     transform: translateY(-2px); 
     filter: brightness(92%); 
-    box-shadow: 0 4px 12px rgba(0, 42, 173, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
-button[type="submit"] { 
-    transition: all 0.2s ease-in-out; 
-    cursor: pointer; 
-}
-
-button[type="submit"]:active { 
-    transform: translateY(0); 
-    filter: brightness(0.9); 
-}
-
-button[style*="#004AAD"]:hover { 
-    background-color: var(--swift-blue-hover) !important; 
-    transform: translateY(-1px); 
-    box-shadow: 0 4px 12px rgba(0, 74, 173, 0.2); 
-}
-
-button[style*="#FFD700"]:hover { 
-    background-color: var(--swift-gold-hover) !important; 
-    transform: translateY(-1px); 
-    box-shadow: 0 4px 12px rgba(230, 194, 0, 0.2); 
+.btn:active, button:active {
+    transform: translateY(0);
 }
 
 .btn-signin { 
     color: var(--swift-blue); 
     border: 1.5px solid var(--swift-blue); 
     border-radius: 8px; 
-    padding: 5px 20px; 
-    font-weight: 600; 
+    padding: 6px 24px;
+    font-weight: 700; 
     font-size: 14px; 
     text-decoration: none; 
-    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    background-color: transparent;
 }
 
 .btn-signin:hover { 
-    background-color: var(--swift-blue); 
-    color: white; 
+    background-color: var(--swift-blue) !important; 
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 74, 173, 0.2) !important;
 }
 
 /* --- 6. AUTHENTICATION UI --- */
@@ -197,7 +187,10 @@ button[style*="#FFD700"]:hover {
     min-width: 65px; height: 75px; background: white; border: 1px solid #E2E8F0;
     border-radius: 10px; transition: all 0.2s ease; color: var(--slate-900); cursor: pointer;
 }
-.date-card:hover { border: 1px solid #7f8388; }
+.date-card:hover { 
+    border: 1px solid #7f8388;
+    transform: none !important;
+ }
 .date-card .date-label { color: #64748B; font-size: 9px; }
 .date-card.active { background: var(--swift-blue) !important; border-color: var(--swift-blue) !important; }
 .date-card.active .date-label { color: rgba(255, 255, 255, 0.7) !important; }
@@ -495,7 +488,7 @@ hr {
     flex-direction: row;
     background: #ffffff;
     min-height: 320px;
-    border-radius: 20px;
+    border-radius: 10px;
     overflow: hidden;
     position: relative;
     filter: drop-shadow(0 15px 25px rgba(0,0,0,0.1));

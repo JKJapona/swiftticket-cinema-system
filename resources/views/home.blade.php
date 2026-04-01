@@ -9,7 +9,6 @@
         @if($movies->count() > 0)
         <div id="heroCarousel" class="carousel slide mb-4 shadow-lg rounded-3 overflow-hidden" data-bs-ride="carousel">
             
-            {{-- Carousel Indicators --}}
             <div class="carousel-indicators" style="z-index: 5;">
                 @foreach($movies as $index => $movie)
                     <button type="button" 
@@ -20,7 +19,6 @@
                 @endforeach
             </div>
 
-            {{-- Carousel Items --}}
             <div class="carousel-inner">
                 @foreach($movies as $index => $movie)
                 @php
@@ -32,7 +30,6 @@
                     <div class="hero-compact position-relative overflow-hidden" style="background-color: #004AAD !important;">
                         <div class="container-fluid h-100">
                             
-                            {{-- Info Layer --}}
                             <div class="row align-items-center h-100 position-relative mx-0" style="z-index: 2;">
                                 <div class="col-lg-7 ps-5"> 
                                     <span class="badge bg-warning text-dark mb-2 text-uppercase fw-bold">Featured Blockbuster</span>
@@ -42,7 +39,7 @@
                                     <div class="d-flex gap-3 align-items-center mb-3 text-white">
                                         <span class="badge bg-white-50 border border-white-50 px-2 py-1">{{ $movie->rating }}</span>
                                         <span>{{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m</span>
-                                        <span>{{ \Carbon\Carbon::parse($movie->release_date)->format('Y') }}</span>
+                                        <span>{{ $movie->release_date ? $movie->release_date->format('Y') : 'TBA' }}</span>
                                     </div>
                                     
                                     <a href="{{ route('movies.show', $movie->id) }}" class="btn btn-warning px-4 py-2 rounded-3 fw-bold shadow-sm">
@@ -51,13 +48,12 @@
                                 </div>
                             </div>
 
-                            {{-- Backdrop Image Layer --}}
                             <div class="position-absolute end-0 top-0 h-100 w-100 d-none d-lg-block">
                                 <div class="w-100 h-100" style="background: linear-gradient(to right, #004AAD 5%, transparent); position: absolute; z-index: 1;"></div>
-                                <img src="{{ $imageUrl }}" 
+                                <img src="{{ $movie->cover_url }}" 
                                      class="w-100 h-100 object-fit-cover" 
                                      alt="{{ $movie->title }} Backdrop">
-                            </div>
+                            </div>                         
 
                         </div>
                     </div>
@@ -65,7 +61,6 @@
                 @endforeach
             </div>
 
-            {{-- Controls --}}
             <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="z-index: 5; width: 5%;">
                 <span class="carousel-control-prev-icon"></span>
             </button>
@@ -86,7 +81,12 @@
                 <span class="text-secondary fw-bold text-uppercase small">Filter:</span>
                 <select id="genreSelect" class="form-select form-select-sm border-0 bg-light fw-bold text-dark" style="width: auto;">
                     <option value="All Genres">All Genres</option>
-                    @php $genres = $movies->pluck('genre')->unique(); @endphp
+                    @php 
+                        $genres = $movies->map(function($movie) {
+                            return $movie->genre ?: 'TBA';
+                        })->unique()->sort(); 
+                    @endphp
+
                     @foreach($genres as $genre)
                         <option value="{{ $genre }}">{{ $genre }}</option>
                     @endforeach
@@ -97,17 +97,23 @@
         {{-- MOVIE GRID --}}
         <div class="row g-4 mb-5 row-cols-2 row-cols-md-3 row-cols-lg-6 mx-0" id="movieGrid">
             @foreach($movies as $movie)
-                @php $isComingSoon = \Carbon\Carbon::parse($movie->release_date)->isFuture(); @endphp
+                {{-- 
+                    We use $movie->display_status (from your Model) 
+                    This handles Archived, Coming Soon, and Now Showing automatically based on your DB logic.
+                --}}
                 <div class="col px-2 movie-item" 
-                     data-genre="{{ $movie->genre }}" 
-                     data-status="{{ $isComingSoon ? 'Coming Soon' : 'Now Showing' }}">
+                    data-genre="{{ $movie->genre ?? 'TBA' }}" 
+                    data-status="{{ $movie->display_status }}">
                     
                     <div class="movie-card border-0">
                         <div class="movie-poster-container position-relative">
-                            <img src="{{ asset($movie->poster_path) }}" class="w-100 object-fit-cover rounded-3 shadow-sm" style="height: 280px !important;">
+                            <img src="{{ $movie->poster_url }}" 
+                                class="w-100 object-fit-cover rounded-3 shadow-sm" 
+                                style="height: 280px !important;">
+                                
                             <div class="hover-overlay d-flex align-items-center justify-content-center p-3">
                                 <a href="{{ route('movies.show', $movie->id) }}" class="btn btn-warning w-100 py-2 rounded-3 fw-bold shadow">
-                                    Book Now
+                                    {{ $movie->display_status === 'Now Showing' ? 'Book Now' : 'View Details' }}
                                 </a>
                             </div>
                         </div>
@@ -117,7 +123,12 @@
                                 {{ $movie->title }}
                             </h3>
                             <p class="text-secondary fw-medium mb-0 small">
-                                {{ $movie->genre }} • {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m
+                                {{ $movie->genre ?? 'TBA' }} • 
+                                @if($movie->runtime_minutes > 0)
+                                    {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}
+                                @else
+                                    Coming Soon
+                                @endif
                             </p>
                         </div>
                     </div>
@@ -140,7 +151,6 @@
     </div>
 </footer>
 
-{{-- CLIENT-SIDE FILTERING SCRIPT --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const statusLinks = document.querySelectorAll('.filter-status');
@@ -180,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Tab Logic
     statusLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -195,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Dropdown Logic
     genreSelect.addEventListener('change', function() {
         currentGenre = this.value;
         applyFilters();

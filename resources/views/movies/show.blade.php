@@ -4,15 +4,15 @@
 <div class="container py-4">
     <div class="row g-4">
         
-        {{-- Left Column: Poster & Trailer --}}
-        <div class="col-lg-3 col-md-4">
-            <div class="position-sticky" style="top: 100px;">
-                <div class="rounded-3 overflow-hidden shadow-sm mb-2 border">
-                    <img src="{{ Str::startsWith($movie->poster_path, 'http') ? $movie->poster_path : asset($movie->poster_path) }}" 
-                         class="img-fluid w-100" 
-                         alt="{{ $movie->title }}" 
-                         style="aspect-ratio: 2/3; object-fit: cover;">
-                </div>
+    {{-- Left Column: Poster & Trailer --}}
+    <div class="col-lg-3 col-md-4">
+        <div class="position-sticky" style="top: 100px;">
+            <div class="rounded-3 overflow-hidden shadow-sm mb-2 border">
+                <img src="{{ $movie->poster_url }}" 
+                    class="img-fluid w-100" 
+                    alt="{{ $movie->title }}" 
+                    style="aspect-ratio: 2/3; object-fit: cover;">
+            </div>
 
                 @if($movie->trailer_url)
                     <button type="button" class="btn btn-outline-primary btn-sm w-100 py-2 rounded-3 fw-600" data-bs-toggle="modal" data-bs-target="#trailerModal">
@@ -29,16 +29,21 @@
                 <h1 class="h2 fw-700 text-slate-900 mb-1">{{ $movie->title }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <span class="badge bg-swift-blue px-2 py-1 rounded-1 small">
-                        {{ \Carbon\Carbon::parse($movie->release_date)->format('Y') }}
+                        {{ $movie->release_date ? $movie->release_date->format('Y') : 'TBA' }}
                     </span>
                     <div class="badge border border-warning text-warning fw-700 small px-2 py-1">
-                        {{ $movie->rating }}
+                        {{ $movie->rating ?: 'TBA' }}
                     </div>
                     <span class="text-secondary small fw-500">
-                        <i class="bi bi-clock me-1"></i> {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m
+                        <i class="bi bi-clock me-1"></i> 
+                        @if($movie->runtime_minutes > 0)
+                            {{ floor($movie->runtime_minutes / 60) }}h {{ $movie->runtime_minutes % 60 }}m
+                        @else
+                            TBA
+                        @endif
                     </span>
                     <span class="badge border text-secondary border-secondary px-2 py-1" style="font-size: 10px;">
-                        {{ $movie->genre }}
+                        {{ $movie->genre ?? 'Uncategorized' }}
                     </span>
                 </div>
             </div>
@@ -105,11 +110,11 @@
             <div class="row g-3">
                 <div class="col-12">
                     <h5 class="h6 fw-700 text-slate-900 mb-1">Synopsis</h5>
-                    <p class="small text-secondary mb-3" style="line-height: 1.5;">{{ $movie->synopsis }}</p>
+                    <p class="small text-secondary mb-3" style="line-height: 1.5;">{{ $movie->synopsis ?? 'No synopsis available.' }}</p>
                 </div>
                 <div class="col-12">
                     <h5 class="h6 fw-700 text-slate-900 mb-1">Cast</h5>
-                    <p class="small text-secondary mb-0">{{ $movie->cast_members }}</p>
+                    <p class="small text-secondary mb-0">{{ $movie->cast_members ?? 'Cast information TBA' }}</p>
                 </div>
             </div>
         </div>
@@ -197,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 wrapper.style.opacity = '1';
-                // Update browser URL to /movies/2/2026-04-02
                 window.history.pushState({}, '', targetUrl);
                 isLoading = false;
             })

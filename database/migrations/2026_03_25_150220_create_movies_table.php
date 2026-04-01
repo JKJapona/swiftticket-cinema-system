@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('cast_members')->nullable();
             $table->string('genre', 50)->nullable();
             $table->integer('runtime_minutes')->nullable();
-            $table->enum('rating', ['G', 'PG', 'R-13', 'R-16', 'R-18'])->default('G');
+            $table->enum('rating', ['G', 'PG', 'R-13', 'R-16', 'R-18', 'TBA'])->default('TBA');
             $table->string('poster_path', 500)->nullable();
             $table->string('cover_path', 500)->nullable();
             $table->string('trailer_url', 255)->nullable();

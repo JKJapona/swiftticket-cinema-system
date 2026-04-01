@@ -17,7 +17,7 @@ class Showtime extends Model
     |
     */
 
-    protected $fillable = ['movie_id', 'hall_id', 'show_date', 'show_time', 'price', 'total_capacity'];
+    protected $fillable = [ 'movie_id', 'hall_id', 'show_date', 'show_time', 'price', 'total_capacity', 'booked_seats' ];
 
     public function movie() { return $this->belongsTo(Movie::class); }
     

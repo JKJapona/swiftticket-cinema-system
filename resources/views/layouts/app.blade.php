@@ -106,19 +106,6 @@
                 <span class="text-uppercase fw-bold text-muted ms-2 d-none d-sm-inline" style="font-size: 10px; letter-spacing: 2px;">Davao City</span>
             </div>
 
-            <div class="flex-grow-1 mx-5 d-none d-md-block text-center">
-                {{-- Hide search bar IF we are on Movie Details OR My Bookings --}}
-                @if(!Request::is('movies/*', 'my-bookings'))
-                    <div class="position-relative" style="max-width: 500px; margin: 0 auto;">
-                        <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
-                            <i class="bi bi-search small"></i>
-                        </span>
-                        <input type="text" class="search-input" placeholder="Search movies or genres...">
-                    </div>
-                @endif
-            </div>
-
-
             {{-- User Actions --}}
             <div class="d-flex align-items-center gap-4">
                 @auth

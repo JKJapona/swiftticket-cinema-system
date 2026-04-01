@@ -109,7 +109,7 @@
                     <h2 class="heading-h4">Booking Summary</h2>
                     
                     <div class="d-flex gap-3 align-items-center mb-2">
-                        <img src="{{ asset($showtime->movie->poster_path) }}" class="movie-thumb">
+                        <img src="{{ $showtime->movie->poster_url }}" class="movie-thumb" alt="{{ $showtime->movie->title }}">
                         <div>
                             <h3 class="fw-bold mb-0" style="font-size: 16px;">{{ $showtime->movie->title }}</h3>
                             <p class="text-muted mb-1" style="font-size: 12px;">{{ $showtime->movie->genre }} • {{ \Carbon\Carbon::parse($showtime->movie->release_date)->format('Y') }}</p>

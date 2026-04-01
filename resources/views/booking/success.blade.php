@@ -19,7 +19,7 @@
                     </div>
 
                     <div class="d-flex gap-4 align-items-center mb-4 pb-4 border-bottom">
-                        <img src="{{ asset($showtime->movie->poster_path) }}" class="movie-poster-thum">
+                        <img src="{{ $showtime->movie->poster_url }}" class="movie-poster-thum" alt="{{ $showtime->movie->title }}">
                         <div>
                             <h2 class="movie-title-success mb-2">{{ $showtime->movie->title }}</h2>
                             <div class="d-flex gap-2">

@@ -1,0 +1,140 @@
+/* SWIFTTICKET ADMIN STYLESHEET */
+
+/* --- 1. DESIGN SYSTEM VARIABLES --- */
+:root { 
+    --swift-blue: #004AAD; 
+    --swift-blue-hover: #003580;
+    --swift-gold: #FFD700;
+    --swift-gold-hover: #e6c200;
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e9ecef;
+    --slate-300: #CBD5E1;
+    --slate-500: #64748B; 
+    --slate-900: #1E293B; 
+}
+
+/* --- 2. GLOBAL RESET & BASE STYLES --- */
+html, body { 
+    min-height: 100%; 
+    background-color: var(--slate-50) !important;
+}
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    color: var(--slate-900); 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- 3. COMMON UTILITIES & ANIMATIONS --- */
+.transition-all { transition: all 0.2s ease-in-out; }
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+    background: var(--slate-300); 
+    border-radius: 10px; 
+}
+
+.text-slate-900 { color: var(--slate-900); }
+.text-secondary { color: var(--slate-500); }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+
+/* --- 4. SHARED UI ELEMENTS --- */
+.bg-swift-blue { background-color: var(--swift-blue); color: white; }
+
+.btn {
+    transition: all 0.1s ease-in-out !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn:hover { 
+    transform: translateY(-2px); 
+    filter: brightness(92%); 
+    box-shadow: 0 4px 12px rgba(0, 42, 173, 0.15) !important;
+}
+
+.btn:active { transform: translateY(0); }
+
+.section-card { 
+    background: #fff; 
+    border: 1.5px solid var(--slate-300); 
+    border-radius: 10px; 
+    padding: 16px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+}
+
+/* --- 5. COMPACT ADMIN CORE LAYOUT --- */
+.admin-sidebar {
+    width: 240px; 
+    height: 100vh;
+    background: #FFFFFF;
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-right: 1px solid #E2E8F0;
+    z-index: 1000;
+}
+
+.admin-sidebar .nav-link {
+    color: #64748B; 
+    font-size: 14px; 
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.admin-sidebar .nav-link:hover {
+    background-color: #F1F5F9;
+    color: var(--swift-blue);
+}
+
+.admin-sidebar .nav-link.active {
+    background-color: var(--swift-blue) !important; 
+    color: #FFFFFF !important;
+}
+
+.admin-main-content {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    padding: 40px !important;
+    background-color: #F8FAFC;
+    min-height: 100vh;
+}
+
+/* --- 6. DATA & TABLE COMPONENTS --- */
+.caption {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--slate-500);
+}
+
+.table thead th {
+    background-color: var(--slate-50);
+    border-bottom: 2px solid var(--slate-200);
+}
+
+.bg-success-soft {
+    background-color: #ecfdf5;
+    color: #10b981;
+    border: 1px solid #d1fae5;
+}
+
+.profile-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--swift-blue);
+}
+
+.user-profile-link:hover { background-color: #f8f9fa; }
+.dropdown-item:active { background-color: var(--swift-blue); }
