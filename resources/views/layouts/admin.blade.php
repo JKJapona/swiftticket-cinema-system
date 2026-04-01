@@ -49,7 +49,9 @@
             const isTargetForm = form.classList.contains('movie-action-form') ||
                                 form.classList.contains('showtime-action-form') ||
                                 form.classList.contains('hall-action-form') ||
-                                form.id.includes('MovieForm');
+                                form.id.includes('MovieForm') ||
+                                form.id.includes('ShowtimeForm') ||
+                                form.id.includes('HallForm');
 
             if (isTargetForm) {
                 if (e.defaultPrevented) {

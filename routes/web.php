@@ -65,6 +65,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         'index', 'store', 'update', 'destroy'
     ]);
 
+    Route::get('showtimes/movie/{movie}', [ShowtimeController::class, 'showByMovie'])
+        ->name('showtimes.movie');
+
     Route::resource('cinema-halls', CinemaHallController::class);
     Route::resource('bookings', AdminBookingController::class);
     Route::resource('customers', CustomerController::class);

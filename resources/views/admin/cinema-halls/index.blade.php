@@ -92,6 +92,7 @@
                             </div>
                         </td>
                     </tr>
+                    @include('admin.cinema-halls.edit')
                     @empty
                     <tr>
                         <td colspan="5" class="text-center py-5 text-secondary">
@@ -143,25 +144,39 @@
     .border-dashed { border-style: dashed !important; border-color: #CBD5E1 !important; }
     .cursor-pointer { cursor: pointer; }
 
-    #createMovieModal .h2, [id^="editMovieModal"] .h2 { font-size: 20px !important; font-weight: 700; color: var(--slate-900); line-height: 1.2; }
-    #createMovieModal .h4, [id^="editMovieModal"] .h4 { font-size: 16px !important; font-weight: 600; color: var(--slate-900); }
-    #createMovieModal .label, [id^="editMovieModal"] .label { font-size: 11px !important; font-weight: 600; color: var(--slate-500); letter-spacing: 0.025em; }
-    #createMovieModal .caption, [id^="editMovieModal"] .caption { font-size: 10px !important; font-weight: 500; color: var(--slate-500); }
+    #createHallModal .h2, [id^="editHallModal"] .h2 { font-size: 20px !important; font-weight: 700; color: var(--slate-900); line-height: 1.2; }
+    #createHallModal .h4, [id^="editHallModal"] .h4 { font-size: 16px !important; font-weight: 600; color: var(--slate-900); }
+    #createHallModal .label, [id^="editHallModal"] .label { font-size: 11px !important; font-weight: 600; color: var(--slate-500); letter-spacing: 0.025em; }
+    #createHallModal .caption, [id^="editHallModal"] .caption { font-size: 10px !important; font-weight: 500; color: var(--slate-500); }
 
-    #createMovieModal .form-control:focus, 
-    #createMovieModal .form-select:focus {
+    #createHallModal .form-control:focus, 
+    #createHallModal .form-select:focus {
         border-color: #3b82f6 !important;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        outline: none;
     }
 
-    [id^="editMovieModal"] .form-control:focus, 
-    [id^="editMovieModal"] .form-select:focus {
+    [id^="editHallModal"] .form-control:focus, 
+    [id^="editHallModal"] .form-select:focus {
         border-color: #f59e0b !important; 
         box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
+        outline: none;
     }
 
     .media-dropzone { transition: all 0.2s ease-in-out; }
     #createMovieModal .media-dropzone:hover { border-color: var(--swift-blue) !important; background-color: #f1f5f9 !important; }
-    [id^="editMovieModal"] .media-dropzone:hover { border-color: #f0ad4e !important; background-color: #fcf8e3 !important; }
+    [id^="editHallModal"] .media-dropzone:hover { border-color: #f0ad4e !important; background-color: #fcf8e3 !important; }
+
+    [id^="editHallModal"] .form-check-input:checked {
+        background-color: #ffc107 !important;
+        border-color: #ffc107 !important;
+    }
+
+    [id^="editHallModal"] .form-check-input:focus {
+        border-color: #ffc107;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
 </style>
+@include('admin.cinema-halls.create')
 @endsection

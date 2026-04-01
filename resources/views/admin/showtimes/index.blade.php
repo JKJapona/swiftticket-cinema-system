@@ -2,16 +2,16 @@
 
 @section('content')
 <div class="admin-container">
-
     {{-- 1. HEADER SECTION --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="fw-800 text-slate-900 mb-1" style="font-size: 32px;">Showtimes</h1>
-            <p class="text-secondary mb-0">Schedule and manage movie showtimes</p>
+            <p class="text-secondary mb-0">Select a movie to manage its scheduled screenings</p>
         </div>
+        {{-- Global Create (Select Movie manually) --}}
         <button class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 transition-all shadow-sm" 
                 data-bs-toggle="modal" data-bs-target="#createShowtimeModal">
-            <i class="bi bi-plus-lg me-2"></i> Create Showtime
+            <i class="bi bi-plus-lg me-2"></i> Create New Slot
         </button>
     </div>
 
@@ -20,103 +20,72 @@
         <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm">
                 <span class="caption d-block mb-1">Total Showtimes</span>
-                <h3 class="fw-800 mb-0" style="font-size: 28px;">{{ $showtimes->count() }}</h3>
+                <h3 class="fw-800 mb-0" style="font-size: 28px;">{{ $totalShowtimes }}</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm">
                 <span class="caption d-block mb-1">Total Bookings</span>
-                <h3 class="fw-800 mb-0" style="font-size: 28px;">{{ $showtimes->sum('booked_seats') }}</h3>
+                <h3 class="fw-800 mb-0" style="font-size: 28px;">{{ $totalBookings }}</h3>
             </div>
         </div>
     </div>
 
-    {{-- 3. TABLE SECTION --}}
+    {{-- 3. MOVIE SELECTION TABLE --}}
     <div class="section-card shadow-sm border-0 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4 py-3 caption">Movie</th>
-                        <th class="py-3 caption">Date & Time</th>
-                        <th class="py-3 caption">Cinema Room</th>
-                        <th class="py-3 caption">Price</th>
-                        <th class="py-3 caption">Occupancy</th>
+                        <th class="py-3 caption">Schedule Status</th>
+                        <th class="py-3 caption">Halls Used</th>
+                        <th class="py-3 caption">Price Range</th>
                         <th class="py-3 caption text-end pe-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($showtimes as $showtime)
+                    @forelse($movies as $movie)
                     <tr>
-                        <td class="ps-4" style="width: 30%;">
+                        <td class="ps-4" style="width: 35%;">
                             <div class="d-flex align-items-center gap-3">
-                                <img src="{{ $showtime->movie->poster_url }}" 
-                                    alt="Poster" class="rounded shadow-sm" 
+                                <img src="{{ $movie->poster_url }}" class="rounded shadow-sm" 
                                     style="width: 48px; height: 68px; object-fit: cover; border: 1px solid #e2e8f0;">
                                 <div>         
-                                    <div class="fw-800 text-slate-700 mb-0" style="font-size: 16px;">{{ $showtime->movie->title }}</div>
+                                    <div class="fw-800 text-slate-700 mb-0" style="font-size: 16px;">{{ $movie->title }}</div>
                                     <div class="caption text-uppercase fw-700" style="font-size: 10px; color: #64748b;">
-                                        {{ $showtime->movie->genre ?? 'General' }}
+                                        {{ $movie->genre ?? 'General' }}
                                     </div>
                                 </div>
                             </div> 
                         </td>
                         <td>
-                            <div>
-                                <div class="fw-700 text-slate-900 mb-0" style="font-size: 14px;">
-                                    {{ \Carbon\Carbon::parse($showtime->show_date)->format('M d, Y') }}
-                                </div>
-                                <div class="caption text-uppercase fw-700" style="font-size: 10px; color: #64748b;">
-                                    Starts at {{ \Carbon\Carbon::parse($showtime->show_time)->format('h:i A') }}
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-light text-secondary border fw-500 text-uppercase px-2 py-1" style="font-size: 11px;">
-                                <i class="bi bi-door-open me-1"></i> {{ $showtime->hall->name }}
+                            <span class="badge bg-light text-primary border fw-700 text-uppercase px-2 py-1" style="font-size: 11px;">
+                                {{ $movie->showtimes_count }} Active Slots
                             </span>
                         </td>
                         <td>
-                            <span class="fw-800 text-slate-900" style="font-size: 16px;">₱{{ number_format($showtime->price, 0) }}</span>
-                        </td>
-                        <td style="min-width: 160px;">
-                            <div class="d-flex flex-column">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span class="fw-800 text-slate-700" style="font-size: 11px;">{{ $showtime->booked_seats }}/{{ $showtime->total_capacity }}</span>
-                                    <span class="caption" style="font-size: 10px;">{{ number_format(($showtime->booked_seats / $showtime->total_capacity) * 100, 0) }}%</span>
-                                </div>
-                                <div class="progress rounded-pill" style="height: 6px; background-color: #f1f5f9;">
-                                    @php 
-                                        $percentage = ($showtime->booked_seats / $showtime->total_capacity) * 100;
-                                        $barColor = $percentage > 80 ? '#ef4444' : '#004AAD';
-                                    @endphp
-                                    <div class="progress-bar rounded-pill" style="width: {{ $percentage }}%; background-color: {{ $barColor }};"></div>
-                                </div>
+                            <div class="text-slate-600 fw-600" style="font-size: 13px;">
+                                {{ $movie->showtimes->unique('hall_id')->count() }} Cinema Rooms
                             </div>
+                        </td>
+                        <td>
+                            <span class="fw-800 text-slate-900" style="font-size: 15px;">
+                                ₱{{ number_format($movie->showtimes->min('price'), 0) }} - ₱{{ number_format($movie->showtimes->max('price'), 0) }}
+                            </span>
                         </td>
                         <td class="text-end pe-4">
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-light border text-slate-900 fw-700 me-2 shadow-sm">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-
-                                <form action="{{ route('admin.showtimes.destroy', $showtime->id) }}" method="POST" 
-                                    class="d-inline showtime-action-form"
-                                    onsubmit="return confirm('Are you sure you want to delete this showtime?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-light border text-danger shadow-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
+                            <a href="{{ route('admin.showtimes.movie', $movie->id) }}" 
+                               class="btn btn-sm btn-light border text-slate-900 fw-700 px-3 shadow-sm">
+                                Manage Schedule <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-secondary">
-                            <i class="bi bi-calendar-x d-block mb-2 text-slate-300" style="font-size: 3rem;"></i>
-                            <span class="fw-700 text-slate-400">No showtimes scheduled.</span>
+                        <td colspan="5" class="text-center py-5 text-secondary">
+                            <i class="bi bi-film d-block mb-2 text-slate-300" style="font-size: 3rem;"></i>
+                            <span class="fw-700 text-slate-400">No movies found in the schedule.</span>
                         </td>
                     </tr>
                     @endforelse
