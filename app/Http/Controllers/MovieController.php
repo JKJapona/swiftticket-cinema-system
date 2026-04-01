@@ -38,36 +38,18 @@ class MovieController extends Controller
     {
         $movie = Movie::findOrFail($id);
         
-        $today        = Carbon::now()->format('Y-m-d');
-        $selectedDate = $date ?? $today;
-        
-        $datePickerRange = collect(range(0, 6))->map(fn($i) => Carbon::now()->addDays($i));
-
-        $query = Showtime::with('hall')
+        $showtimes = Showtime::with('hall')
             ->where('movie_id', $id)
-            ->whereDate('show_time', $selectedDate);
+            ->where('show_date', '>=', now()->toDateString())
+            ->orderBy('show_date', 'asc')
+            ->orderBy('show_time', 'asc')
+            ->get();
 
-        if ($selectedDate === $today) {
-            $query->where('show_time', '>=', Carbon::now());
-        }
+        $dates = collect(range(0, 6))->map(fn($i) => now()->addDays($i));
+        
+        $selectedDate = $date ?? now()->format('Y-m-d');
 
-        $showtimes = $query->orderBy('show_time', 'asc')->get();
-
-        if (request()->ajax()) {
-        return view('movies.show', [
-            'movie'        => $movie,
-            'showtimes'    => $showtimes,
-            'dates'        => $datePickerRange,
-            'selectedDate' => $selectedDate
-        ])->render(); 
-    }
-
-        return view('movies.show', [
-            'movie'        => $movie,
-            'showtimes'    => $showtimes,
-            'dates'        => $datePickerRange,
-            'selectedDate' => $selectedDate
-        ]);
+        return view('movies.show', compact('movie', 'showtimes', 'dates', 'selectedDate'));
     }
 
     /**

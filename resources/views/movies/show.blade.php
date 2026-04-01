@@ -4,15 +4,15 @@
 <div class="container py-4">
     <div class="row g-4">
         
-    {{-- Left Column: Poster & Trailer --}}
-    <div class="col-lg-3 col-md-4">
-        <div class="position-sticky" style="top: 100px;">
-            <div class="rounded-3 overflow-hidden shadow-sm mb-2 border">
-                <img src="{{ $movie->poster_url }}" 
-                    class="img-fluid w-100" 
-                    alt="{{ $movie->title }}" 
-                    style="aspect-ratio: 2/3; object-fit: cover;">
-            </div>
+        {{-- Left Column: Poster & Trailer --}}
+        <div class="col-lg-3 col-md-4">
+            <div class="position-sticky" style="top: 100px;">
+                <div class="rounded-3 overflow-hidden shadow-sm mb-2 border">
+                    <img src="{{ $movie->poster_url }}" 
+                        class="img-fluid w-100" 
+                        alt="{{ $movie->title }}" 
+                        style="aspect-ratio: 2/3; object-fit: cover;">
+                </div>
 
                 @if($movie->trailer_url)
                     <button type="button" class="btn btn-outline-primary btn-sm w-100 py-2 rounded-3 fw-600" data-bs-toggle="modal" data-bs-target="#trailerModal">
@@ -21,7 +21,6 @@
                 @endif
             </div>
         </div>
-
 
         {{-- Right Column: Details & Showtimes --}}
         <div class="col-lg-9 col-md-8">
@@ -48,7 +47,6 @@
                 </div>
             </div>
 
-
             {{-- Showtime Selection --}}
             <section class="mb-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
@@ -56,15 +54,14 @@
                     <h2 class="h5 fw-700 text-slate-900 mb-0">Select Date & Time</h2>
                 </div>
 
-
                 {{-- Date Picker --}}
                 <div class="mb-3">
                     <div class="d-flex gap-2 overflow-auto pb-2 scrollbar-hidden" id="date-picker-container">
                         @foreach($dates as $date)
-                            @php $is_active = $date->format('Y-m-d') == $selectedDate; @endphp
+                            @php $dateStr = $date->format('Y-m-d'); @endphp
                             <button type="button" 
-                                    data-date="{{ $date->format('Y-m-d') }}" 
-                                    class="btn date-picker-btn date-card {{ $is_active ? 'active' : '' }} d-flex flex-column align-items-center justify-content-center">
+                                    data-date="{{ $dateStr }}" 
+                                    class="btn date-picker-btn date-card {{ $dateStr == $selectedDate ? 'active' : '' }} d-flex flex-column align-items-center justify-content-center">
                                 <span class="date-label text-uppercase">{{ $date->format('D') }}</span>
                                 <span class="date-number fw-700 fs-5 my-0">{{ $date->format('d') }}</span>
                                 <span class="date-label text-uppercase">{{ $date->format('M') }}</span>
@@ -73,38 +70,36 @@
                     </div>
                 </div>
 
+                {{-- Distribution Container --}}
+                <div id="showtimes-wrapper">
+                    <div class="bg-light-soft rounded-3 p-3 border-dashed">
+                        <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
+                        <div class="row g-3" id="showtimes-list">
+                            @foreach($showtimes as $show)
 
-                {{-- Grouped Time Slots Container --}}
-                <div id="showtimes-wrapper" style="transition: opacity 0.2s ease;">
-                    {{-- The inner div is what we replace --}}
-                    <div id="showtimes-content">
-                        <div class="bg-light-soft rounded-3 p-3 border-dashed">
-                            @if($showtimes->isEmpty())
-                                <div class="py-4 text-center">
-                                    <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
-                                    <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
-                                </div>
-                            @else
-                                <p class="text-secondary small fw-600 mb-3 text-uppercase" style="letter-spacing: 0.05em;">Available Showtimes</p>
-                                <div class="row g-3">
-                                    @foreach($showtimes as $show)
-                                        <div class="col-md-4 col-sm-6">
-                                            <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
-                                                <div class="fw-800 text-slate-900 fs-5 mb-1">{{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}</div>
-                                                <div class="text-muted small mb-1">
-                                                    {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
-                                                </div>
-                                                <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
-                                            </a>
+                                <div class="col-md-4 col-sm-6 showtime-item {{ $show->show_date == $selectedDate ? '' : 'd-none' }}" 
+                                     data-date="{{ $show->show_date }}">
+                                    <a href="{{ route('book.seats', $show->id) }}" class="showtime-card p-3 text-center text-decoration-none d-block">
+                                        <div class="fw-800 text-slate-900 fs-5 mb-1">
+                                            {{ \Carbon\Carbon::parse($show->show_time)->format('H:i') }}
                                         </div>
-                                    @endforeach
+                                        <div class="text-muted small mb-1">
+                                            {{ $show->hall->name ?? 'Cinema ' . ($show->hall->hall_number ?? '') }}
+                                        </div>
+                                        <div class="price-tag-green fw-700">₱{{ number_format($show->price, 0) }}</div>
+                                    </a>
                                 </div>
-                            @endif
+                            @endforeach
+
+                            {{-- No showtimes placeholder --}}
+                            <div id="no-showtimes-msg" class="col-12 py-4 text-center d-none">
+                                <i class="bi bi-calendar-x fs-2 text-muted opacity-50 mb-2 d-block"></i>
+                                <p class="text-secondary small fw-500 mb-0">No showtimes available for this date</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
 
             {{-- Synopsis & Cast --}}
             <div class="row g-3">
@@ -157,6 +152,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Trailer Logic
     const trailerModal = document.getElementById('trailerModal');
     const videoIframe = document.getElementById('trailerVideo');
     if (trailerModal && videoIframe) {
@@ -165,53 +161,48 @@ document.addEventListener('DOMContentLoaded', function() {
         trailerModal.addEventListener('hide.bs.modal', () => { videoIframe.src = ""; });
     }
 
-    const datePicker = document.getElementById('date-picker-container');
-    const wrapper = document.getElementById('showtimes-wrapper');
-    const movieId = "{{ $movie->id }}";
-    
-    const baseUrl = window.location.origin + '/movies/' + movieId;
-    
-    let isLoading = false;
+    // Distribution Filter Logic
+    const dateButtons = document.querySelectorAll('.date-picker-btn');
+    const showtimeItems = document.querySelectorAll('.showtime-item');
+    const noMsg = document.getElementById('no-showtimes-msg');
 
-    if (datePicker) {
-        datePicker.addEventListener('click', function(e) {
-            const btn = e.target.closest('.date-picker-btn');
-            
-            if (!btn || btn.classList.contains('active') || isLoading) return;
-
-            isLoading = true;
-            const selectedDate = btn.getAttribute('data-date');
-
-            document.querySelectorAll('.date-picker-btn').forEach(el => el.classList.remove('active'));
-            btn.classList.add('active');
-            wrapper.style.opacity = '0.3';
-
-            const targetUrl = `${baseUrl}/${selectedDate}`;
-
-            fetch(targetUrl, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newInnerContent = doc.getElementById('showtimes-content');
-
-                if (newInnerContent) {
-                    document.getElementById('showtimes-content').innerHTML = newInnerContent.innerHTML;
-                }
-                
-                wrapper.style.opacity = '1';
-                window.history.pushState({}, '', targetUrl);
-                isLoading = false;
-            })
-            .catch(err => {
-                console.error("AJAX Error:", err);
-                wrapper.style.opacity = '1';
-                isLoading = false;
-            });
+    function updateFilter(selectedDate) {
+        let foundCount = 0;
+        showtimeItems.forEach(item => {
+            if (item.getAttribute('data-date') === selectedDate) {
+                item.classList.remove('d-none');
+                foundCount++;
+            } else {
+                item.classList.add('d-none');
+            }
         });
+
+        if (foundCount === 0) {
+            noMsg.classList.remove('d-none');
+        } else {
+            noMsg.classList.add('d-none');
+        }
     }
+
+    // Initialize with the default selected date
+    updateFilter("{{ $selectedDate }}");
+
+    dateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetDate = this.getAttribute('data-date');
+
+            // 1. Update UI
+            dateButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // 2. Filter distribution items
+            updateFilter(targetDate);
+
+            // 3. Update URL without reloading
+            const newUrl = window.location.origin + '/movies/{{ $movie->id }}/' + targetDate;
+            window.history.pushState({ date: targetDate }, '', newUrl);
+        });
+    });
 });
 </script>
 @endsection
