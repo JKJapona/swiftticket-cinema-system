@@ -31,7 +31,7 @@
         </div>
 
         {{-- VIEW 2: SEAT SELECTION NAVBAR --}}
-        @elseif(Route::is('book.seats'))
+        @elseif(Route::is('book.seats') && isset($showtime))
             <div class="d-flex align-items-center w-100">
                 <a href="{{ url('/movies/' . $showtime->movie->id) }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
                     <i class="bi bi-chevron-left fs-5"></i>
