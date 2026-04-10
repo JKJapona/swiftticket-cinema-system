@@ -9,22 +9,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Administrator Access Verification
-    |--------------------------------------------------------------------------
-    */
-
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if ($this->isAdmin()) {
             return $next($request);
         }
 
         if (Auth::check()) {
-            abort(403, 'Unauthorized access.'); 
+            abort(403, 'Unauthorized access.');
         }
 
         return redirect()->route('login');
+    }
+
+    private function isAdmin(): bool
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
     }
 }

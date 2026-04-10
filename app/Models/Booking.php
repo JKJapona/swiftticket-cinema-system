@@ -3,25 +3,37 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Movie Ticket Booking Model
-    |--------------------------------------------------------------------------
-    |
-    | This model serves as the primary record for a movie reservation. 
-    | It stores transaction details, payment status, and links a 
-    | registered user to their specific showtime and selected seats.
-    |
-    */
+    protected $fillable = [
+        'user_id', 
+        'showtime_id', 
+        'reference_number', 
+        'payment_method', 
+        'total_price', 
+        'status'
+    ];
 
-    protected $fillable = ['user_id', 'showtime_id', 'reference_number', 'payment_method', 'total_price', 'status'];
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
-    public function user() { return $this->belongsTo(User::class); }
+    public function showtime(): BelongsTo
+    {
+        return $this->belongsTo(Showtime::class);
+    }
 
-    public function showtime() { return $this->belongsTo(Showtime::class); }
+    public function seats(): HasMany
+    {
+        return $this->hasMany(BookedSeat::class);
+    }
 
-    public function seats() { return $this->hasMany(BookedSeat::class); }
+    public function bookedSeats(): HasMany
+    {
+        return $this->hasMany(BookedSeat::class);
+    }
 }

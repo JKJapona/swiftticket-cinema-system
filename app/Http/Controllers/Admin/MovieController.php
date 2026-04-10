@@ -8,60 +8,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class MovieController extends Controller
 {
     public function index()
     {
         $movies = Movie::latest()->get();
+
         return view('admin.movies.index', compact('movies'));
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title'           => 'required|string|max:150',
-            'genre'           => 'nullable|string|max:50', 
-            'runtime_minutes' => 'nullable|integer|min:1',     
-            'rating'          => 'nullable|in:G,PG,R-13,R-16,R-18,TBA', 
-            'release_date'    => 'nullable|date',        
-            'cast_members'    => 'nullable|string',      
-            'synopsis'        => 'nullable|string',      
-            'trailer_url'     => 'nullable|url',
-            'poster_file'     => 'nullable|image|max:4096',
-            'cover_file'      => 'nullable|image|max:4096',
-            'poster_url'      => 'nullable|url',
-            'cover_url'       => 'nullable|url',
-        ]);
+        $validator = $this->validateMovie($request);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $data = $request->only([
-            'title', 'synopsis', 'cast_members', 'genre', 
-            'runtime_minutes', 'rating', 'trailer_url', 
-            'release_date'
-        ]);
-
-        if ($request->hasFile('poster_file')) {
-            $extension = $request->file('poster_file')->getClientOriginalExtension();
-            $filename = time() . '_' . Str::slug($request->title) . '_poster.' . $extension;
-            $data['poster_path'] = $request->file('poster_file')->storeAs('posters', $filename, 'public');
-        } else {
-            $data['poster_path'] = $request->poster_url;
-        }
-
-        if ($request->hasFile('cover_file')) {
-            $extension = $request->file('cover_file')->getClientOriginalExtension();
-            $filename = time() . '_' . Str::slug($request->title) . '_cover.' . $extension;
-            $data['cover_path'] = $request->file('cover_file')->storeAs('covers', $filename, 'public');
-        } else {
-            $data['cover_path'] = $request->cover_url;
-        }
+        $data = $this->extractMovieData($request);
+        $data['poster_path'] = $this->handleImage($request, 'poster', 'posters');
+        $data['cover_path'] = $this->handleImage($request, 'cover', 'covers');
 
         Movie::create($data);
 
@@ -70,20 +37,7 @@ class MovieController extends Controller
 
     public function update(Request $request, Movie $movie)
     {
-        $validator = Validator::make($request->all(), [
-            'title'           => 'required|string|max:150',
-            'genre'           => 'nullable|string|max:50', 
-            'runtime_minutes' => 'nullable|integer|min:1',     
-            'rating'          => 'nullable|in:G,PG,R-13,R-16,R-18,TBA', 
-            'release_date'    => 'nullable|date',        
-            'cast_members'    => 'nullable|string',      
-            'synopsis'        => 'nullable|string',      
-            'trailer_url'     => 'nullable|url',
-            'poster_file'     => 'nullable|image|max:4096',
-            'cover_file'      => 'nullable|image|max:4096',
-            'poster_url'      => 'nullable|url',
-            'cover_url'       => 'nullable|url',
-        ]);
+        $validator = $this->validateMovie($request);
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -92,33 +46,9 @@ class MovieController extends Controller
                 ->with('error_movie_id', $movie->id);
         }
 
-        $data = $request->only([
-            'title', 'synopsis', 'cast_members', 'genre', 
-            'runtime_minutes', 'rating', 'trailer_url', 
-            'release_date'
-        ]);
-
-        if ($request->hasFile('poster_file')) {
-            if ($movie->poster_path && !str_contains($movie->poster_path, 'http')) {
-                Storage::disk('public')->delete($movie->poster_path);
-            }
-            $extension = $request->file('poster_file')->getClientOriginalExtension();
-            $filename = time() . '_' . Str::slug($request->title) . '_poster.' . $extension;
-            $data['poster_path'] = $request->file('poster_file')->storeAs('posters', $filename, 'public');
-        } elseif ($request->filled('poster_url')) {
-            $data['poster_path'] = $request->poster_url;
-        }
-
-        if ($request->hasFile('cover_file')) {
-            if ($movie->cover_path && !str_contains($movie->cover_path, 'http')) {
-                Storage::disk('public')->delete($movie->cover_path);
-            }
-            $extension = $request->file('cover_file')->getClientOriginalExtension();
-            $filename = time() . '_' . Str::slug($request->title) . '_cover.' . $extension;
-            $data['cover_path'] = $request->file('cover_file')->storeAs('covers', $filename, 'public');
-        } elseif ($request->filled('cover_url')) {
-            $data['cover_path'] = $request->cover_url;
-        }
+        $data = $this->extractMovieData($request);
+        $data['poster_path'] = $this->handleImage($request, 'poster', 'posters', $movie->poster_path);
+        $data['cover_path'] = $this->handleImage($request, 'cover', 'covers', $movie->cover_path);
 
         $movie->update($data);
 
@@ -127,40 +57,81 @@ class MovieController extends Controller
 
     public function destroy(Movie $movie)
     {
-        // Delete Poster if it's a local file
-        if ($movie->poster_path && !str_contains($movie->poster_path, 'http')) {
-            Storage::disk('public')->delete($movie->poster_path);
-        }
-
-        // Delete Cover if it's a local file
-        if ($movie->cover_path && !str_contains($movie->cover_path, 'http')) {
-            Storage::disk('public')->delete($movie->cover_path);
-        }
+        $this->deletePhysicalFile($movie->poster_path);
+        $this->deletePhysicalFile($movie->cover_path);
 
         $movie->delete();
-        
+
         return redirect()->back()->with('success', 'Movie deleted.');
     }
 
     public function toggleArchive(Movie $movie)
-{
-    if ($movie->status === 'archived') {
-        // Check if there are showtimes for today or the future
-        $hasActiveShowtimes = $movie->showtimes()
-            ->where('show_date', '>=', now()->toDateString())
-            ->exists();
+    {
+        if ($movie->status === 'archived') {
+            $hasActiveShowtimes = $movie->showtimes()
+                ->where('show_date', '>=', now()->toDateString())
+                ->exists();
 
-        // If it has showtimes, return it to 'now_showing', otherwise 'coming_soon'
-        $movie->status = $hasActiveShowtimes ? 'now_showing' : 'coming_soon';
-        
-        $message = 'Movie unarchived and set to ' . str_replace('_', ' ', $movie->status) . '.';
-    } else {
-        $movie->status = 'archived';
-        $message = 'Movie moved to archives.';
+            $movie->status = $hasActiveShowtimes ? 'now_showing' : 'coming_soon';
+            $message = 'Movie unarchived and set to ' . str_replace('_', ' ', $movie->status) . '.';
+        } else {
+            $movie->status = 'archived';
+            $message = 'Movie moved to archives.';
+        }
+
+        $movie->save();
+
+        return back()->with('success', $message);
     }
 
-    $movie->save();
+    private function validateMovie(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'title'           => 'required|string|max:150',
+            'genre'           => 'nullable|string|max:50',
+            'runtime_minutes' => 'nullable|integer|min:30|max:600',
+            'rating'          => 'nullable|in:G,PG,R-13,R-16,R-18,TBA',
+            'release_date'    => 'nullable|date|after_or_equal:1895-12-28',
+            'cast_members'    => 'nullable|string|max:1000',
+            'synopsis'        => 'nullable|string|max:2000',
+            'trailer_url'     => 'nullable|url|max:255',
+            'poster_file'     => 'nullable|image|max:4096',
+            'cover_file'      => 'nullable|image|max:4096',
+            'poster_url'      => 'nullable|url|max:500',
+            'cover_url'       => 'nullable|url|max:500',
+        ]);
+    }
 
-    return back()->with('success', $message);
-}
+    private function extractMovieData(Request $request)
+    {
+        return $request->only([
+            'title', 'synopsis', 'cast_members', 'genre',
+            'runtime_minutes', 'rating', 'trailer_url',
+            'release_date'
+        ]);
+    }
+
+    private function handleImage(Request $request, $type, $folder, $existingPath = null)
+    {
+        $fileKey = $type . '_file';
+        $urlKey = $type . '_url';
+
+        if ($request->hasFile($fileKey)) {
+            $this->deletePhysicalFile($existingPath);
+
+            $extension = $request->file($fileKey)->getClientOriginalExtension();
+            $filename = time() . '_' . Str::slug($request->title) . "_{$type}." . $extension;
+
+            return $request->file($fileKey)->storeAs($folder, $filename, 'public');
+        }
+
+        return $request->filled($urlKey) ? $request->$urlKey : $existingPath;
+    }
+
+    private function deletePhysicalFile($path)
+    {
+        if ($path && !str_contains($path, 'http')) {
+            Storage::disk('public')->delete($path);
+        }
+    }
 }

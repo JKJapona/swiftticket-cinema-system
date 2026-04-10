@@ -52,7 +52,8 @@
                                 <div class="w-100 h-100" style="background: linear-gradient(to right, #004AAD 5%, transparent); position: absolute; z-index: 1;"></div>
                                 <img src="{{ $movie->cover_url }}" 
                                      class="w-100 h-100 object-fit-cover" 
-                                     alt="{{ $movie->title }} Backdrop">
+                                     alt="{{ $movie->title }} Backdrop"
+                                     loading="lazy">
                             </div>                         
 
                         </div>
@@ -98,7 +99,7 @@
         <div class="row g-4 mb-5 row-cols-2 row-cols-md-3 row-cols-lg-6 mx-0" id="movieGrid">
             @foreach($movies as $movie)
                 {{-- 
-                    We use $movie->display_status (from your Model) 
+                    We use $movie->display_status
                     This handles Archived, Coming Soon, and Now Showing automatically based on your DB logic.
                 --}}
                 <div class="col px-2 movie-item" 
@@ -108,7 +109,8 @@
                     <div class="movie-card border-0">
                         <div class="movie-poster-container position-relative">
                             <img src="{{ $movie->poster_url }}" 
-                                class="w-100 object-fit-cover rounded-3 shadow-sm" 
+                                class="w-100 object-fit-cover rounded-3 shadow-sm"
+                                loading="lazy"
                                 style="height: 280px !important;">
                                 
                             <div class="hover-overlay d-flex align-items-center justify-content-center p-3">

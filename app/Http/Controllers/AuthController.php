@@ -9,12 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Registration Logic
-    |--------------------------------------------------------------------------
-    */
-
     public function showRegister() 
     {
         return view('auth.register');
@@ -31,19 +25,13 @@ class AuthController extends Controller
         User::create([
             'full_name'     => $request->full_name,
             'email'         => $request->email,
-            'password_hash'      => Hash::make($request->password), 
+            'password_hash' => Hash::make($request->password), 
             'role'          => 'customer',
             'status'        => 'active',
         ]);
 
         return redirect()->route('login')->with('success', 'Registered successfully. Please login.');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication & Role-Based Redirection
-    |--------------------------------------------------------------------------
-    */
 
     public function showLogin() 
     {
@@ -60,24 +48,13 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Dynamic Redirection based on user role
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended(route('admin.dashboard'));
-            }
-
-            return redirect()->intended(route('home'));
+            return $this->authenticatedRedirection();
         }
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Session Termination
-    |--------------------------------------------------------------------------
-    */
 
     public function logout(Request $request) 
     {
@@ -87,5 +64,14 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         
         return redirect('/');
+    }
+
+    private function authenticatedRedirection()
+    {
+        if (Auth::user()->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('home'));
     }
 }

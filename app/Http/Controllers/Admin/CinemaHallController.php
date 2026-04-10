@@ -10,42 +10,25 @@ class CinemaHallController extends Controller
 {
     public function index()
     {
-        $halls = CinemaHall::latest()->get(); 
+        $halls = CinemaHall::latest()->get();
 
         return view('admin.cinema-halls.index', compact('halls'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'            => 'required|string|max:50',
-            'screen_type'     => 'required|in:Standard,IMAX,Premium,4DX',
-            'audio_system'    => 'nullable|string|max:50',
-            'number_of_rows'  => 'required|integer|min:1|max:26',
-            'seats_per_row'   => 'required|integer|min:1',
-            'status'          => 'required|in:Active,Maintenance,Inactive',
-        ]);
+        $validated = $this->validateHall($request, true);
 
-        CinemaHall::create($request->all());
+        CinemaHall::create($validated);
 
         return redirect()->back()->with('success', 'Cinema Hall created successfully!');
     }
 
     public function update(Request $request, CinemaHall $cinemaHall)
     {
-        $request->validate([
-            'name'         => 'required|string|max:50',
-            'screen_type'  => 'required|in:Standard,IMAX,Premium,4DX',
-            'audio_system' => 'nullable|string|max:50',
-            'status'       => 'required|in:Active,Maintenance,Inactive',
-        ]);
+        $validated = $this->validateHall($request, false);
 
-        $cinemaHall->update($request->only([
-            'name', 
-            'screen_type', 
-            'audio_system', 
-            'status'
-        ]));
+        $cinemaHall->update($validated);
 
         return redirect()->back()->with('success', 'Cinema Hall updated successfully!');
     }
@@ -53,7 +36,24 @@ class CinemaHallController extends Controller
     public function destroy(CinemaHall $cinemaHall)
     {
         $cinemaHall->delete();
-        
+
         return redirect()->back()->with('success', 'Cinema Hall deleted.');
+    }
+
+    private function validateHall(Request $request, bool $isStore)
+    {
+        $rules = [
+            'name'         => 'required|string|max:50',
+            'screen_type'  => 'required|in:Standard,IMAX,Premium,4DX',
+            'audio_system' => 'nullable|string|max:50',
+            'status'       => 'required|in:Active,Maintenance,Inactive',
+        ];
+
+        if ($isStore) {
+            $rules['number_of_rows'] = 'required|integer|min:1|max:26';
+            $rules['seats_per_row']  = 'required|integer|min:1|max:40';
+        }
+
+        return $request->validate($rules);
     }
 }

@@ -3,23 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookedSeat extends Model
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Booked Seat Model
-    |--------------------------------------------------------------------------
-    |
-    | This model represents the individual seats reserved within a booking.
-    | It links specific seat codes to a showtime and a parent booking 
-    | record, ensuring seat availability is tracked accurately.
-    |
-    */
-
     public $timestamps = false;
 
-    protected $fillable = ['booking_id', 'showtime_id', 'seat_code'];
+    protected $fillable = [
+        'booking_id', 
+        'showtime_id', 
+        'seat_code'
+    ];
 
-    public function booking() { return $this->belongsTo(Booking::class); }
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class);
+    }
+
+    public function showtime(): BelongsTo
+    {
+        return $this->belongsTo(Showtime::class);
+    }
 }

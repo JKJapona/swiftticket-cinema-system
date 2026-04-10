@@ -3,20 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CinemaHall extends Model
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Cinema Hall Structure Model
-    |--------------------------------------------------------------------------
-    |
-    | This model defines the physical layout of a theater room. It stores
-    | metadata regarding screen types and seat capacities, allowing
-    | for dynamic seat map generation during the booking process.
-    |
-    */
-
     protected $fillable = [
         'name', 
         'screen_type', 
@@ -26,10 +16,13 @@ class CinemaHall extends Model
         'status'
     ];
 
-    public function showtimes()
+    public function showtimes(): HasMany
     {
         return $this->hasMany(Showtime::class, 'hall_id');
     }
 
-    
+    public function getTotalSeatsAttribute(): int
+    {
+        return $this->number_of_rows * $this->seats_per_row;
+    }
 }

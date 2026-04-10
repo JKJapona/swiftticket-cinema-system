@@ -178,5 +178,27 @@
         box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if ($errors->any())
+            @if (session('error_movie_id'))
+                var editModalId = 'editHallModal{{ session('error_hall_id') }}';
+                var myModal = new bootstrap.Modal(document.getElementById(editModalId));
+            @else
+                var myModal = new bootstrap.Modal(document.getElementById('createHallModal'));
+            @endif
+            myModal.show();
+        @endif
+    });
+
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
 @include('admin.cinema-halls.create')
 @endsection

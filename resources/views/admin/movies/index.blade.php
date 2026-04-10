@@ -44,7 +44,8 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <img src="{{ $movie->poster_url }}" 
                                          alt="Poster" class="rounded shadow-sm" 
-                                         style="width: 48px; height: 68px; object-fit: cover; border: 1px solid #e2e8f0;">
+                                         style="width: 48px; height: 68px; object-fit: cover; border: 1px solid #e2e8f0;"
+                                         loading="lazy">
                                     <div>
                                         <div class="fw-700 text-slate-900">{{ $movie->title }}</div>
                                         <div class="caption text-lowercase" style="font-size: 10px;">
@@ -103,7 +104,6 @@
                             </div>
                         </td>
                         </tr>
-                        @include('admin.movies.edit')
                     @empty
                         <tr>
                             <td colspan="4" class="text-center py-5 text-secondary">
@@ -117,6 +117,10 @@
         </div>
     </div>
 </div>
+
+@foreach($movies as $movie)
+    @include('admin.movies.edit')
+@endforeach
 
 <style>
     :root {

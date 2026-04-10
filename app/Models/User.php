@@ -5,20 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    /*
-    |--------------------------------------------------------------------------
-    | User Authentication & Profile Model
-    |--------------------------------------------------------------------------
-    |
-    | This model represents the identity of every person using the system.
-    | It handles secure authentication using 'password_hash', manages
-    | user roles (Admin/Customer), and tracks all associated bookings.
-    |
-    */
-    
     use HasFactory, Notifiable;
 
     protected $fillable = [
@@ -35,13 +25,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
+    public function bookings(): HasMany
     {
-        return [
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'password_hash' => 'hashed',
-        ];
+        return $this->hasMany(Booking::class);
     }
 
     public function getAuthPassword()
@@ -49,8 +35,22 @@ class User extends Authenticatable
         return $this->password_hash;
     }
 
-    public function bookings()
+    protected function casts(): array
     {
-        return $this->hasMany(Booking::class);
+        return [
+            'created_at'    => 'datetime',
+            'updated_at'    => 'datetime',
+            'password_hash' => 'hashed',
+        ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 }

@@ -12,16 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Booking Lifecycle Logic
-    |--------------------------------------------------------------------------
-    */
-
     public function showPayment(Request $request)
     {
         $request->validate([
-            'showtime_id' => 'required|exists:showtimes,id',
+            'showtime_id'    => 'required|exists:showtimes,id',
             'selected_seats' => 'required|string',
         ]);
 
@@ -35,49 +29,32 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'showtime_id' => 'required|exists:showtimes,id',
+            'showtime_id'    => 'required|exists:showtimes,id',
             'selected_seats' => 'required|string',
             'payment_method' => 'required|string',
         ]);
 
         $showtime = Showtime::findOrFail($request->showtime_id);
         $seatsArray = explode(',', $request->selected_seats);
-        $seatCount = count($seatsArray);
 
         try {
             DB::beginTransaction();
 
-            $alreadyBooked = BookedSeat::where('showtime_id', $showtime->id)
-                ->whereIn('seat_code', $seatsArray)
-                ->exists();
-
-            if ($alreadyBooked) {
-                throw new \Exception('One or more seats are no longer available.');
-            }
-
-            $status = ($request->payment_method === 'Pay at Cinema') ? 'pending' : 'confirmed';
+            $this->verifySeatAvailability($showtime->id, $seatsArray);
 
             $booking = Booking::create([
-                'user_id' => Auth::id(), 
-                'showtime_id' => $showtime->id,
-                'reference_number' => strtoupper(Str::random(10)), 
-                'payment_method' => $request->payment_method,
-                'total_price' => count($seatsArray) * $showtime->price,
-                'status' => $status,
+                'user_id'          => Auth::id(),
+                'showtime_id'      => $showtime->id,
+                'reference_number' => strtoupper(Str::random(10)),
+                'payment_method'   => $request->payment_method,
+                'total_price'      => count($seatsArray) * $showtime->price,
+                'status'           => $request->payment_method === 'Pay at Cinema' ? 'pending' : 'confirmed',
             ]);
 
-            $showtime->increment('booked_seats', $seatCount);
-
-            foreach ($seatsArray as $seatCode) {
-                BookedSeat::create([
-                    'booking_id' => $booking->id,
-                    'showtime_id' => $showtime->id,
-                    'seat_code' => trim($seatCode),
-                ]);
-            }
+            $this->attachSeatsToBooking($booking, $showtime, $seatsArray);
 
             DB::commit();
-            
+
             return redirect()->route('checkout.success', $booking->reference_number);
 
         } catch (\Exception $e) {
@@ -85,12 +62,6 @@ class BookingController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Post-Purchase Confirmation
-    |--------------------------------------------------------------------------
-    */
 
     public function success($reference)
     {
@@ -103,25 +74,43 @@ class BookingController extends Controller
             ->toArray();
 
         return view('booking.success', [
-            'booking' => $booking,
-            'showtime' => $booking->showtime,
+            'booking'       => $booking,
+            'showtime'      => $booking->showtime,
             'selectedSeats' => $selectedSeats
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | User Booking History
-    |--------------------------------------------------------------------------
-    */
-
     public function myBookings()
     {
-        $bookings = Booking::where('user_id', auth()->id())
+        $bookings = Booking::where('user_id', Auth::id())
             ->with(['showtime.movie', 'showtime.hall', 'seats'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('booking.index', compact('bookings'));
+    }
+
+    private function verifySeatAvailability($showtimeId, array $seats)
+    {
+        $alreadyBooked = BookedSeat::where('showtime_id', $showtimeId)
+            ->whereIn('seat_code', $seats)
+            ->exists();
+
+        if ($alreadyBooked) {
+            throw new \Exception('One or more seats are no longer available.');
+        }
+    }
+
+    private function attachSeatsToBooking(Booking $booking, Showtime $showtime, array $seats)
+    {
+        $showtime->increment('booked_seats', count($seats));
+
+        foreach ($seats as $seatCode) {
+            BookedSeat::create([
+                'booking_id'  => $booking->id,
+                'showtime_id' => $showtime->id,
+                'seat_code'   => trim($seatCode),
+            ]);
+        }
     }
 }

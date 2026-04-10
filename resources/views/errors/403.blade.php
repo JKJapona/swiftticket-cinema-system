@@ -7,7 +7,7 @@
     <div class="text-center p-4 p-md-5">
         <div class="d-flex align-items-center justify-content-center mb-5">
             <img src="{{ asset('images/swiftticket_abreeza.svg') }}" alt="SwiftTicket Abreeza" 
-                style="height: 45px;">
+                style="height: 45px;" loading="eager" fetchpriority="high">
         </div>
 
         <div class="mb-4 d-flex flex-column align-items-center justify-content-center">
