@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+    /**
+     * Display a listing of the customers.
+     */
     public function index()
     {
         $customers = User::where('role', 'customer')
@@ -23,6 +26,9 @@ class CustomerController extends Controller
         return view('admin.customers.index', compact('customers', 'stats'));
     }
 
+    /**
+     * Display the specified customer.
+     */
     public function show(User $customer)
     {
         $customer->load('bookings.showtime.movie');
@@ -30,11 +36,41 @@ class CustomerController extends Controller
         return view('admin.customers.show', compact('customer'));
     }
 
+    /**
+     * API: Return customer details with relations for the modal.
+     */
+    public function apiShow(User $customer)
+    {
+        $customer->load('bookings.showtime.movie');
+        return response()->json($customer);
+    }
+
+    /**
+     * Toggle customer status between active and banned.
+     */
+    public function toggleStatus(User $customer)
+    {
+        $customer->status = ($customer->status === 'active') ? 'banned' : 'active';
+        $customer->save();
+
+        $message = $customer->status === 'banned' 
+            ? "{$customer->full_name} has been banned." 
+            : "{$customer->full_name} has been reinstated.";
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Internal Helper: Total count of customers.
+     */
     private function getTotalCustomersCount()
     {
         return User::where('role', 'customer')->count();
     }
 
+    /**
+     * Internal Helper: Customers with bookings in the current month.
+     */
     private function getActiveCustomersThisMonthCount()
     {
         return User::whereHas('bookings', function ($query) {

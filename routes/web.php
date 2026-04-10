@@ -69,10 +69,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Specific Booking Actions
     Route::patch('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
 
+    // Specific Customer Actions
+    Route::get('/customers/api/{customer}', [CustomerController::class, 'apiShow'])->name('customers.api');
+    Route::patch('/customers/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggleStatus');
+
     // Resource Controllers
     Route::resource('movies', AdminMovieController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('cinema-halls', CinemaHallController::class);
     Route::resource('bookings', AdminBookingController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('showtimes', ShowtimeController::class);
+
 });
