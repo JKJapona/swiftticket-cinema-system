@@ -9,7 +9,7 @@
             <h1 class="fw-800 text-slate-900 mb-1" style="font-size: 32px;">Movies</h1>
             <p class="text-secondary mb-0">Manage your cinema's movie inventory and featured carousel.</p>
         </div>
-        <button class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 transition-all shadow-sm" 
+        <button class="btn btn-primary bg-swift-blue border-0 fw-700 shadow-sm btn-swift-action"
                 data-bs-toggle="modal" data-bs-target="#createMovieModal">
             <i class="bi bi-plus-lg me-2"></i> Add New Movie
         </button>
@@ -17,10 +17,70 @@
 
     {{-- 2. STATS ROW --}}
     <div class="row g-3 mb-4">
+        {{-- Total Movies --}}
         <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm">
                 <span class="caption d-block mb-1">Total Movies</span>
-                <h3 class="stat-value mb-0">{{ $movies->count() }}</h3>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['total_count'] }}</h3>
+            </div>
+        </div>
+
+        {{-- Now Showing --}}
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-primary border-4">
+                <span class="caption d-block mb-1">Now Showing</span>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['now_showing_count'] }}</h3>
+            </div>
+        </div>
+
+        {{-- Coming Soon --}}
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-warning border-4">
+                <span class="caption d-block mb-1">Coming Soon</span>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['coming_soon_count'] }}</h3>
+            </div>
+        </div>
+
+        {{-- Active Showtimes --}}
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-success border-4">
+                <span class="caption d-block mb-1">Total Showtimes</span>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['active_showtimes'] }}</h3>
+            </div>
+        </div>
+    </div>
+
+    {{-- MOVIE QUICK FILTERS --}}
+    <div class="section-card p-3 mb-4 border-0 shadow-sm">
+        <div class="row align-items-center g-3">
+            {{-- Search Input --}}
+            <div class="col-md-7">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="caption text-slate-500 text-nowrap">Search:</span>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-slate-400 py-2">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="movieSearch" 
+                            class="form-control border-start-0 ps-0 shadow-none py-2 fw-600" 
+                            placeholder="Movie title, genre, or rating..."
+                            style="border-color: #e2e8f0;">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Status Filter --}}
+            <div class="col-md-5">
+                <div class="d-flex align-items-center justify-content-md-end gap-3">
+                    <span class="caption text-slate-500 text-nowrap">Status:</span>
+                    <select id="statusFilter" class="form-select form-select-sm shadow-none fw-600 w-auto" 
+                            style="border-color: #e2e8f0; min-width: 160px;">
+                        <option value="all">All Statuses</option>
+                        <option value="now showing">Now Showing</option>
+                        <option value="coming soon">Coming Soon</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -45,11 +105,12 @@
                                     <img src="{{ $movie->poster_url }}" 
                                          alt="Poster" class="rounded shadow-sm" 
                                          style="width: 48px; height: 68px; object-fit: cover; border: 1px solid #e2e8f0;"
-                                         loading="lazy">
+                                         loading="lazy"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/placeholder-poster.svg') }}';">
                                     <div>
                                         <div class="fw-700 text-slate-900">{{ $movie->title }}</div>
                                         <div class="caption text-lowercase" style="font-size: 10px;">
-                                            <span class="text-primary">{{ $movie->rating ?? 'NR' }}</span> 
+                                            <span class="text-primary text-uppercase">{{ $movie->rating ?? 'NR' }}</span>
                                             <span class="mx-1">•</span> 
                                             {{ $movie->runtime_minutes ?? '0' }} MINS
                                         </div>
@@ -62,22 +123,37 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span class="badge px-3 py-2 rounded-pill border {{ $movie->status_color_class }}" 
-                                      style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                    <i class="bi {{ $movie->status_icon }} me-1"></i> 
+                                <span class="badge border-0" 
+                                    style="padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center;
+                                        @if($movie->display_status === 'Now Showing') 
+                                            background-color: #dcfce7; color: #166534; 
+                                        @elseif($movie->display_status === 'Coming Soon') 
+                                            background-color: #fef3c7; color: #92400e;
+                                        @else {{-- Archived --}}
+                                            background-color: #f3f4f6; color: #374151;
+                                        @endif">
+                                    
+                                    <i class="bi {{ $movie->display_status === 'Now Showing' ? 'bi-play-circle-fill' : ($movie->display_status === 'Coming Soon' ? 'bi-calendar-event-fill' : 'bi-archive-fill') }} me-1" 
+                                    style="font-size: 11px;"></i> 
+                                    
                                     {{ $movie->display_status }}
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                            <div class="btn-group">
+                            <div class="d-flex align-items-center justify-content-end gap-2"> {{-- Added gap-2 and removed manual margins --}}
 
-                                {{-- Archive/Unarchive Button --}}
-                                <form action="{{ route('admin.movies.toggle-archive', $movie->id) }}" method="POST" class="d-inline movie-action-form">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" 
-                                            class="btn btn-sm btn-light border shadow-sm me-2 {{ $movie->status === 'archived' ? 'text-success' : 'text-warning' }}" 
-                                            title="{{ $movie->status === 'archived' ? 'Unarchive Movie' : 'Archive Movie' }}">
+                            {{-- Archive/Unarchive Button --}}
+                            <form id="archive-movie-{{ $movie->id }}" action="{{ route('admin.movies.toggle-archive', $movie->id) }}" method="POST" class="d-inline movie-action-form">
+                                    @csrf @method('PATCH')
+                                    <button type="button" 
+                                            class="btn btn-sm btn-light border shadow-sm" 
+                                            style="color: #334155; border-color: currentColor;"
+                                            onclick="swiftConfirm(
+                                                '{{ $movie->status === 'archived' ? 'Unarchive Movie?' : 'Archive Movie?' }}', 
+                                                '{{ $movie->status === 'archived' ? 'This movie will be visible to users again.' : 'This will hide the movie from the main listing.' }}', 
+                                                '{{ $movie->status === 'archived' ? 'primary' : 'secondary' }}', 
+                                                () => document.getElementById('archive-movie-{{ $movie->id }}').submit()
+                                            )">
                                         @if($movie->status === 'archived')
                                             <i class="bi bi-archive-fill"></i>
                                         @else
@@ -88,16 +164,23 @@
 
                                 {{-- Edit Button --}}
                                 <button type="button" 
-                                        class="btn btn-sm btn-light border text-slate-900 fw-600 me-2 shadow-sm" 
+                                        class="btn btn-sm btn-light border text-slate-900 fw-600 shadow-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#editMovieModal{{ $movie->id }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                                 
                                 {{-- Delete Button --}}
-                                <form action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST" class="d-inline movie-action-form" onsubmit="return confirm('Delete this movie permanently?');">
+                                <form id="delete-movie-{{ $movie->id }}" action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST" class="d-inline movie-action-form">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-light border text-danger shadow-sm">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-light border text-danger shadow-sm"
+                                            onclick="swiftConfirm(
+                                                'Delete Movie?', 
+                                                'Are you sure you want to permanently remove \'{{ addslashes($movie->title) }}\'? This action cannot be undone.', 
+                                                'danger', 
+                                                () => document.getElementById('delete-movie-{{ $movie->id }}').submit()
+                                            )">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -122,77 +205,44 @@
     @include('admin.movies.edit')
 @endforeach
 
-<style>
-    :root {
-        --swift-blue: #004AAD; 
-        --slate-50: #f8fafc;
-        --slate-100: #f1f5f9;
-        --slate-500: #64748B; 
-        --slate-900: #1E293B; 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('movieSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filterValue = statusFilter.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            if (row.cells.length < 4) return;
+
+            const titleEl = row.querySelector('.fw-700');
+            const genreEl = row.querySelector('.badge.bg-light');
+            const statusCell = row.cells[2];
+
+            if (!titleEl || !statusCell) return;
+
+            const title = titleEl.textContent.toLowerCase();
+            const genre = genreEl ? genreEl.textContent.toLowerCase() : '';
+            const status = statusCell.textContent.trim().toLowerCase();
+            
+            const matchesSearch = title.includes(searchTerm) || genre.includes(searchTerm);
+            const matchesStatus = filterValue === 'all' || status.includes(filterValue);
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     }
 
-    .stat-value {
-        font-size: 28px !important;
-        font-weight: 800 !important;
-        color: #0f172a !important;
-        line-height: 1.2 !important; 
-        display: block;
-        margin-top: 2px; 
-    }
-
-    .section-card { background: white; border-radius: 1.25rem; border: 1px solid #e2e8f0; }
-    .caption { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #64748b; }
-    .table thead th { border-bottom: 1px solid #f1f5f9; }
-    .table-hover tbody tr:hover { background-color: #f8fafc; }
-    
-    .bg-success-soft { background-color: #ecfdf5 !important; border-color: #10b981 !important; color: #059669 !important; }
-    .bg-warning-soft { background-color: #fffbeb !important; border-color: #f59e0b !important; color: #d97706 !important; }
-    .bg-secondary-soft { background-color: #f8fafc !important; border-color: #e2e8f0 !important; color: #475569 !important; }
-
-    .bg-swift-blue { background-color: var(--swift-blue) !important; }
-    .bg-slate-50 { background-color: var(--slate-50) !important; }
-    .bg-slate-100 { background-color: var(--slate-100) !important; }
-    .text-slate-900 { color: var(--slate-900); }
-    .fw-800 { font-weight: 800; }
-    .fw-700 { font-weight: 700; }
-    .fw-600 { font-weight: 600; }
-    .border-dashed { border-style: dashed !important; border-color: #CBD5E1 !important; }
-    .cursor-pointer { cursor: pointer; }
-
-    #createMovieModal .h2, [id^="editMovieModal"] .h2 { font-size: 20px !important; font-weight: 700; color: var(--slate-900); line-height: 1.2; }
-    #createMovieModal .h4, [id^="editMovieModal"] .h4 { font-size: 16px !important; font-weight: 600; color: var(--slate-900); }
-    #createMovieModal .label, [id^="editMovieModal"] .label { font-size: 11px !important; font-weight: 600; color: var(--slate-500); letter-spacing: 0.025em; }
-    #createMovieModal .caption, [id^="editMovieModal"] .caption { font-size: 10px !important; font-weight: 500; color: var(--slate-500); }
-
-    #createMovieModal .form-control:focus, 
-    #createMovieModal .form-select:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-        outline: none;
-    }
-
-    [id^="editMovieModal"] .form-control:focus, 
-    [id^="editMovieModal"] .form-select:focus {
-        border-color: #f59e0b !important; 
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
-        outline: none;
-    }
-
-    .media-dropzone { transition: all 0.2s ease-in-out; }
-    #createMovieModal .media-dropzone:hover { border-color: var(--swift-blue) !important; background-color: #f1f5f9 !important; }
-    [id^="editMovieModal"] .media-dropzone:hover { border-color: #f0ad4e !important; background-color: #fcf8e3 !important; }
-
-    [id^="editMovieModal"] .form-check-input:checked {
-        background-color: #ffc107 !important;
-        border-color: #ffc107 !important;
-    }
-
-    [id^="editMovieModal"] .form-check-input:focus {
-        border-color: #ffc107;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-    }
-</style>
+    searchInput.addEventListener('input', filterTable);
+    statusFilter.addEventListener('change', filterTable);
+});
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -213,7 +263,7 @@
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
         });
-    }, 5000);
+    }, 10000);
 </script>
 @include('admin.movies.create')
 @endsection

@@ -657,3 +657,294 @@ hr {
 .footer-subtitle { color: rgba(255, 255, 255, 0.75); font-size: 12px; }
 .footer-copyright { color: rgba(255, 255, 255, 0.6); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
 .footer-divider { height: 1px; width: 40px; background-color: rgba(255, 255, 255, 0.2); margin: 0 auto; }
+
+/* Professional Skeleton Shimmer */
+.skeleton-loader {
+    position: relative;
+    overflow: hidden;
+    background-color: #f1f5f9 !important; /* The base "grey" color */
+    z-index: 1;
+}
+
+/* This creates the moving light effect */
+.skeleton-loader::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer-effect 1.8s infinite;
+    z-index: 2;
+    pointer-events: none;
+}
+
+@keyframes shimmer-effect {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Ensure the image sits above the shimmer once loaded */
+.skeleton-loader img {
+    position: relative;
+    z-index: 3;
+}
+
+.toast-container-custom {
+    pointer-events: none; /* Allows clicking things 'under' the container area */
+}
+
+.toast-container-custom .alert {
+    pointer-events: auto; /* Re-enables clicking for the alert itself */
+    animation: slideInRight 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+<style>
+    /* 1. BASE STYLES & LAYOUT RESET */
+    body { 
+        background-color: #f3f4f6; 
+        font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+        overflow-y: scroll; /* Prevent scrollbar jump */
+    }
+
+    /* 2. HEADER & AVATAR STYLES */
+    .profile-header-gradient {
+        background-color: #1e293b; /* Fallback before gradient paints */
+        background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+        min-height: 180px; 
+        transform: translateZ(0); /* Hardware acceleration */
+        backface-visibility: hidden;
+    }
+
+    .avatar-circle {
+        width: 100px; height: 100px;
+        min-width: 100px; /* Lock dimensions */
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; 
+        color: white;
+    }
+
+    /* 3. SIDEBAR NAVIGATION */
+    .sidebar-card { top: 4rem; z-index: 10; }
+
+    .active-sidebar {
+        background-color: #eff6ff !important;
+        color: #2563eb !important;
+        border-right: 4px solid #2563eb !important;
+        border-radius: 0 !important;
+    }
+    
+    #profile-tabs .list-group-item {
+        border-radius: 0 !important;
+    }
+    
+    #profile-tabs .list-group-item:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* 4. FORM CUSTOMIZATION */
+    .label-caps {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.5px;
+    }
+
+    .custom-input-group .input-group-text {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 0 !important;
+        color: #64748b;
+    }
+
+    .custom-input-group .form-control {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0 !important;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .custom-input-group .form-control:focus {
+        background-color: #fff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* 5. BOOKING TICKETS & POSTERS */
+    .booking-ticket-card {
+        transition: transform 0.2s;
+        border: 1px solid rgba(0,0,0,0.05);
+        background: #fff;
+    }
+
+    .booking-ticket-card:hover { transform: translateY(-5px); }
+
+    .ratio-2-3 {
+        width: 100%;
+        position: relative;
+        padding-top: 150%; /* Reserved space for 2:3 Poster */
+        background-color: #e2e8f0; /* Skeleton color */
+    }
+
+    .ticket-poster {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .booking-ticket-card .col-md-3 {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .booking-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+        gap: 1.5rem; 
+    }
+
+    .grid-item .label {
+        display: block; font-size: 10px; font-weight: 800;
+        text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;
+    }
+
+    .grid-item .value { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+
+    /* 6. STATUS BADGES */
+    .status-badge { 
+        padding: 6px 14px; 
+        border-radius: 50px; 
+        font-size: 11px; 
+        font-weight: 800; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap; /* Forces one line only */
+    }
+
+    .status-badge i {
+        font-size: 12px;
+        line-height: 1;
+    }
+
+    .confirmed { background: #dcfce7; color: #166534; }
+    .pending { background: #fef3c7; color: #92400e; }
+    .cancelled { background: #fee2e2; color: #991b1b; }
+    .change_requested { background: #eff6ff; color: #1e40af; }
+
+    /* 7. UTILITIES & BUTTONS */
+    .fw-black { font-weight: 900; }
+    .text-slate-900 { color: #0f172a; }
+    .x-small { font-size: 0.65rem; }
+    .bg-light-primary { background-color: #eff6ff; }
+    .btn-sm-custom { font-size: 0.85rem; padding: 8px 20px; }
+
+    .btn-light-danger { background-color: #fef2f2; color: #dc2626; border: none; }
+    .btn-light-danger:hover { background-color: #fee2e2; }
+
+    .btn-light-danger:active {
+        background-color: #fecdd3 !important; /* A darker shade of red than the hover state */
+        color: #991b1b !important;            /* Darker text to maintain contrast */
+        transform: scale(0.96);               /* Optional: subtle "press" effect */
+        transition: transform 0.1s ease;
+    }
+
+    /* Also ensure focus doesn't turn it white/blue */
+    .btn-light-danger:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+        background-color: #fef2f2;
+    }
+
+    /* 8. RESPONSIVE OVERRIDES */
+    @media (max-width: 768px) {
+        .ticket-poster { border-radius: 1rem 1rem 0 0; }
+        .ratio-2-3 { padding-top: 66%; /* Landscape-ish for mobile */ }
+        .booking-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .cust-seat-item {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    .cust-seat-item.available { background: #E2E8F0; border-color: #CBD5E1; }
+    .cust-seat-item.available:hover { transform: scale(1.15); border-color: #64748B; }
+    .cust-seat-item.taken { background: #77879e; cursor: not-allowed; opacity: 0.6; }
+    .cust-seat-item.current { background: #1E293B; }
+    .cust-seat-item.selected { 
+        background: #FFC107 !important; 
+        border: 2px solid #ff6600 !important;
+        animation: pulse 1.5s infinite; 
+    }
+
+    .bg-amber-50 { background-color: #fffbeb; }
+.text-amber-600 { color: #d97706; }
+.text-amber-800 { color: #92400e; }
+.border-amber-100 { border-color: #fef3c7; }
+
+.border-dashed {
+    border-style: dashed !important;
+    border-width: 2px !important;
+    border-color: #cbd5e1 !important;
+    transition: all 0.2s ease;
+}
+
+.upload-container:hover {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.fw-600 { font-weight: 600; }
+
+.btn-white {
+    background: #ffffff;
+    color: #475569;
+}
+.btn-white:hover {
+    background: #f8fafc;
+    border-color: #3b82f6 !important;
+    transform: translateY(-1px);
+}
+
+.text-amber-800 { color: #92400e; }
+
+#panel-gcash .reminder-box {
+    padding: 12px;
+    border-radius: 8px;
+}
+
+#panel-gcash .reminder-box ul {
+    list-style-type: disc;
+}
+
+
+

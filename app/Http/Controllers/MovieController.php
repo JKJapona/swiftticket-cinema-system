@@ -2,6 +2,17 @@
 
 namespace App\Http\Controllers;
 
+/*
+|--------------------------------------------------------------------------
+| Movie & Screening Controller
+|--------------------------------------------------------------------------
+|
+| This controller manages the public-facing movie catalog, detailed
+| movie information, showtime scheduling for the upcoming week,
+| and the interactive seat selection map.
+|
+*/
+
 use App\Models\Movie;
 use App\Models\Showtime;
 use Carbon\Carbon;
@@ -9,50 +20,94 @@ use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Catalog & Homepage
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
         $movies = Movie::orderBy('release_date', 'desc')->get();
 
-        return view('home', compact('movies'));
+        $featuredmovies = Movie::where('is_featured', true)->get();
+
+        if ($featuredmovies->isEmpty()) {
+            $featuredmovies = Movie::where('status', '!=', 'archived')
+                ->latest('release_date')
+                ->take(3)
+                ->get();
+        }
+
+         return view('customer.home', compact('featuredmovies', 'movies'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Movie Details & Showtimes
+    |--------------------------------------------------------------------------
+    */
 
     public function show($id, $date = null)
     {
         $movie = Movie::findOrFail($id);
-        $selectedDate = $date ?? now()->toDateString();
+        $selectedDate = $date ? Carbon::parse($date)->toDateString() : now()->toDateString(); 
         
-        $showtimes = $this->getUpcomingShowtimes($movie->id);
+        // Fetch showtimes for the next 7 days
+        $showtimes = Showtime::with('hall')
+            ->where('movie_id', $movie->id)
+            ->whereBetween('show_date', [now()->toDateString(), now()->addDays(7)->toDateString()])
+            ->orderBy('show_time', 'asc')
+            ->get();
+
+        // Get all dates that have showtimes for the "Next Screening" logic
+        $allAvailableDates = Showtime::where('movie_id', $movie->id)
+            ->whereDate('show_date', '>=', now()->toDateString())
+            ->orderBy('show_date', 'asc')
+            ->pluck('show_date')
+            ->map(function($date) {
+                return \Carbon\Carbon::parse($date)->toDateString();
+            })
+            ->unique()
+            ->values()
+            ->toArray();
+
         $dates = $this->getAvailableBookingDates();
 
-        return view('movies.show', compact(
+        return view('customer.movies.show', compact(
             'movie', 
             'showtimes', 
             'dates', 
-            'selectedDate'
+            'selectedDate', 
+            'allAvailableDates'
         ));
     }
 
-    public function showSeatMap($showtimeId)
+    /*
+    |--------------------------------------------------------------------------
+    | Booking & Seat Selection
+    |--------------------------------------------------------------------------
+    */
+
+    public function showSeatMap($showtime_id) 
     {
-        $showtime = Showtime::with(['movie', 'hall', 'bookedSeats'])
-            ->findOrFail($showtimeId);
+        $showtime = Showtime::with(['movie', 'hall', 'bookedSeats'])->findOrFail($showtime_id);
+        $occupiedSeats = $showtime->bookedSeats->pluck('seat_code')->toArray();
 
-        $occupiedSeats = $showtime->bookedSeats
-            ->pluck('seat_code')
-            ->toArray();
-
-        return view('booking.seats', [
-            'showtime'   => $showtime,
-            'takenSeats' => $occupiedSeats
-        ]);
+        return view('customer.booking.seats', ['showtime' => $showtime, 'takenSeats' => $occupiedSeats]);
     }
 
-    private function getUpcomingShowtimes($movieId)
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Helper Logic
+    |--------------------------------------------------------------------------
+    */
+
+    private function getUpcomingShowtimes($movieId, $startDate)
     {
         return Showtime::with('hall')
             ->where('movie_id', $movieId)
-            ->where('show_date', '>=', now()->toDateString())
-            ->orderBy('show_date', 'asc')
+            ->where('show_date', $startDate)
             ->orderBy('show_time', 'asc')
             ->get();
     }

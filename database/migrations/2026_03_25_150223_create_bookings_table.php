@@ -29,8 +29,10 @@ return new class extends Migration
             $table->foreignId('showtime_id')->constrained()->onDelete('cascade');
             $table->string('reference_number', 10)->unique();
             $table->enum('payment_method', ['Pay at Cinema', 'Credit/Debit Card', 'GCash']);
+            $table->string('payment_receipt')->nullable();
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->text('requested_seats')->nullable();
+            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'change_requested'])->default('pending');
             $table->timestamps();
         });
     }

@@ -85,6 +85,7 @@
         const seatsInput = document.getElementById('seats-input');
         const submitBtn = document.getElementById('submit-btn');
         const seatsList = document.getElementById('selected-seats-list');
+        const checkoutForm = document.querySelector('form[action*="checkout/payment"]');
         
         const availableSeats = document.querySelectorAll('.seat.available');
         const pricePerSeat = Number(@json($showtime->price ?? 0));
@@ -123,6 +124,19 @@
                 submitBtn.disabled = (currentCount === 0);
             });
         });
+
+        if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function() {
+            // Prevent multiple clicks
+            submitBtn.disabled = true;
+            
+            // Add spinner and change text
+            submitBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing...
+            `;
+        });
+    }
     });
 </script>
 @endsection

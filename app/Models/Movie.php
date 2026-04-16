@@ -20,6 +20,7 @@ class Movie extends Model
         'trailer_url',
         'release_date',
         'status',
+        'is_featured',
     ];
 
     protected $casts = [
@@ -57,26 +58,6 @@ class Movie extends Model
         }
 
         return 'Now Showing';
-    }
-
-    public function getStatusColorClassAttribute(): string
-    {
-        return match ($this->display_status) {
-            'Archived'    => 'bg-secondary-soft text-secondary',
-            'Coming Soon' => 'bg-warning-soft text-warning-emphasis',
-            'Now Showing' => 'bg-success-soft text-success',
-            default       => 'bg-light text-dark',
-        };
-    }
-
-    public function getStatusIconAttribute(): string
-    {
-        return match ($this->display_status) {
-            'Archived'    => 'bi-archive-fill',
-            'Coming Soon' => 'bi-calendar-event',
-            'Now Showing' => 'bi-play-fill',
-            default       => 'bi-question-circle',
-        };
     }
 
     private function resolveImageUrl(?string $path, string $type): string

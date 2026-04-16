@@ -11,26 +11,82 @@
         </div>
     </div>
 
-    {{-- 2. STATS ROW --}}
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
+        {{-- Total Revenue --}}
+        <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm">
                 <span class="caption d-block mb-1">Total Revenue</span>
-                <h3 class="stat-value mb-0">₱{{ number_format($stats['total_revenue'], 2) }}</h3>
+                <h3 class="stat-value mb-0 text-end">₱{{ number_format($stats['total_revenue'], 2) }}</h3>
             </div>
         </div>
-        <div class="col-md-4">
+
+        {{-- Change Requests --}}
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-info border-4">
+                <span class="caption d-block mb-1">Change Requests</span>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['change_requests_count'] ?? 0 }}</h3>
+            </div>
+        </div>
+
+        {{-- Pending Payments --}}
+        <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm border-start border-warning border-4">
                 <span class="caption d-block mb-1">Pending Payments</span>
-                <h3 class="stat-value mb-0">{{ $stats['pending_count'] }}</h3>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['pending_count'] }}</h3>
             </div>
         </div>
-        <div class="col-md-4">
+
+        {{-- Confirmed Bookings --}}
+        <div class="col-md-3">
             <div class="section-card p-4 border-0 shadow-sm border-start border-success border-4">
                 <span class="caption d-block mb-1">Confirmed Bookings</span>
-                <h3 class="stat-value mb-0">{{ $stats['confirmed_count'] }}</h3>
+                <h3 class="stat-value mb-0 text-end">{{ $stats['confirmed_count'] }}</h3>
             </div>
         </div>
+    </div>
+
+    {{-- BOOKING FILTERS --}}
+    <div class="section-card p-3 mb-4 border-0 shadow-sm">
+        <form action="{{ route('admin.bookings.index') }}" method="GET">
+            <div class="row align-items-center g-3">
+                {{-- Search Input --}}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="caption text-slate-500 text-nowrap">Search:</span>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0 text-slate-400 py-2">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="search" 
+                                class="form-control border-start-0 ps-0 shadow-none py-2 fw-600" 
+                                placeholder="Ref # or Customer Name..."
+                                value="{{ request('search') }}"
+                                style="border-color: #e2e8f0;">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Status & Actions --}}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center justify-content-md-end gap-3">
+                        <span class="caption text-slate-500 text-nowrap">Status:</span>
+                        <select name="status" class="form-select form-select-sm shadow-none fw-600 w-auto" 
+                                style="border-color: #e2e8f0; min-width: 150px;">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                            <option value="change_requested" {{ request('status') == 'change_requested' ? 'selected' : '' }}>Change Requests</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
+                        
+                        <div class="vr mx-1 text-slate-300"></div>
+                        
+                        <button type="submit" class="btn btn-sm btn-primary px-3 fw-700 btn-small">Filter</button>
+                        <a href="{{ route('admin.bookings.index') }}" class="btn btn-sm btn-light border px-3 fw-700">Reset</a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
     {{-- 3. TABLE SECTION --}}
@@ -56,97 +112,131 @@
                                 <div class="caption" style="font-size: 10px;">{{ $booking->created_at->format('M d, H:i') }}</div>
                             </td>
                             <td>
-                                <div class="fw-700 text-slate-900">{{ $booking->user->full_name }}</div>
-                                <div class="caption text-lowercase" style="font-size: 10px;">{{ $booking->payment_method }}</div>
+                                <div class="fw-700 text-slate-900 small">{{ $booking->user->full_name }}</div>
+                                <div class="caption text-capitalize" style="font-size: 10px;">
+                                    <i class="bi bi-wallet2 me-1"></i>{{ $booking->payment_method }}
+                                </div>
                             </td>
                             <td>
-                                <div class="fw-600 text-slate-900">{{ $booking->showtime->movie->title }}</div>
+                                <div class="fw-600 text-slate-900 small">{{ $booking->showtime->movie->title }}</div>
                                 <div class="caption" style="font-size: 10px;">{{ $booking->showtime->hall->name }}</div>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                                    @foreach($booking->bookedSeats as $seat)
-                                        <span class="badge bg-light text-secondary border fw-500" style="font-size: 9px;">
-                                            {{ $seat->seat_code }}
-                                        </span>
-                                    @endforeach
+                                    @if($booking->status === 'cancelled')
+                                        <span class="text-muted small" style="font-size: 10px; font-style: italic;">Seats Released</span>
+                                    @else
+                                        @foreach($booking->bookedSeats as $seat)
+                                            <span class="badge bg-light text-secondary border fw-500" style="font-size: 9px;">
+                                                {{ $seat->seat_code }}
+                                            </span>
+                                        @endforeach
+                                    @endif
                                 </div>
                             </td>
                             <td>
                                 <span class="fw-800 text-slate-900">₱{{ number_format($booking->total_price, 2) }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge px-3 py-2 rounded-pill border {{ $booking->status === 'confirmed' ? 'bg-success-soft' : ($booking->status === 'pending' ? 'bg-warning-soft' : 'bg-secondary-soft') }}" 
-                                      style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                    <i class="bi {{ $booking->status === 'confirmed' ? 'bi-check-circle-fill' : ($booking->status === 'pending' ? 'bi-clock-fill' : 'bi-x-circle-fill') }} me-1"></i> 
-                                    {{ $booking->status }}
+                                <span class="badge border-0 
+                                    {{ $booking->status === 'confirmed' ? 'text-success' : 
+                                    ($booking->status === 'pending' ? '' : 
+                                    ($booking->status === 'change_requested' ? '' : 'text-danger')) }}" 
+                                    style="padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center;
+                                        @if($booking->status === 'confirmed') 
+                                            background-color: #dcfce7; color: #166534; 
+                                        @elseif($booking->status === 'pending') 
+                                            background-color: #fef3c7; color: #92400e;
+                                        @elseif($booking->status === 'change_requested') 
+                                            background-color: #e0e7ff; color: #3730a3;
+                                        @else 
+                                            background-color: #fee2e2; color: #991b1b;
+                                        @endif">
+                                    
+                                    <i class="bi {{ $booking->status === 'confirmed' ? 'bi-check-circle-fill' : 
+                                        ($booking->status === 'pending' ? 'bi-clock-fill' : 
+                                        ($booking->status === 'change_requested' ? 'bi-arrow-repeat' : 'bi-x-circle-fill')) }} me-1" 
+                                    style="font-size: 11px;"></i> 
+                                    
+                                    {{ str_replace('_', ' ', $booking->status) }}
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    @if($booking->status === 'pending')
-                                        <form action="{{ route('admin.bookings.confirm', $booking->id) }}" method="POST" class="d-inline">
+                                {{-- Main Grid --}}
+                                <div style="display: grid; 
+                                            grid-template-columns: repeat(2, 32px); 
+                                            grid-template-rows: repeat(2, 32px); 
+                                            gap: 4px; 
+                                            justify-content: end;">
+                                    
+                                    {{-- 1. View Details --}}
+                                    <button class="btn btn-sm btn-light border text-primary rounded-2 shadow-sm" 
+                                            data-bs-toggle="modal" data-bs-target="#viewModal{{ $booking->id }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+
+                                    {{-- 2. Seat Map --}}
+                                    @if($booking->status !== 'cancelled')
+                                        <button class="btn btn-sm btn-light border rounded-2 shadow-sm" 
+                                                style="color: #6366f1;"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#adminSeatOverride{{ $booking->id }}" 
+                                                title="Manage Seats">
+                                            <i class="bi bi-grid-3x3-gap"></i>
+                                        </button>
+                                    @endif
+
+                                    {{-- 3. Payment Verification OR Confirm --}}
+                                    @if($booking->payment_method === 'GCash')
+                                        <button type="button" class="btn btn-sm btn-light border rounded-2 shadow-sm" 
+                                                style="color: #0d9488;"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#receiptModal{{ $booking->id }}"
+                                                title="Verify & Confirm">
+                                            <i class="bi bi-receipt-cutoff"></i>
+                                        </button>
+                                    @elseif($booking->status === 'pending')
+                                        <form id="confirm-booking-{{ $booking->id }}" action="{{ route('admin.bookings.confirm', $booking->id) }}" method="POST" class="m-0 p-0">
                                             @csrf @method('PATCH')
-                                            <button type="submit" class="btn btn-sm btn-light border text-success shadow-sm me-2" title="Confirm Payment">
-                                                <i class="bi bi-check-lg"></i>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-light border text-success rounded-2 shadow-sm" 
+                                                    onclick="swiftConfirm('Confirm Booking?', 'Are you sure you want to confirm this booking?', 'success', () => document.getElementById('confirm-booking-{{ $booking->id }}').submit())">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        {{-- Empty div to maintain grid alignment if 3rd spot is empty --}}
+                                        <div></div>
+                                    @endif
+
+                                    {{-- 4. Cancel Action --}}
+                                    @if($booking->status !== 'cancelled')
+                                        <form id="cancel-booking-{{ $booking->id }}" action="{{ route('admin.bookings.cancel', $booking->id) }}" method="POST" class="m-0 p-0">
+                                            @csrf @method('PATCH')
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-light border text-danger rounded-2 shadow-sm"
+                                                    onclick="swiftConfirm('Cancel Booking?', 'This will void the ticket and release the seats.', 'danger', () => document.getElementById('cancel-booking-{{ $booking->id }}').submit())">
+                                                <i class="bi bi-x-circle"></i>
                                             </button>
                                         </form>
                                     @endif
-                                    
-                                    <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this booking?');">
-                                        @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-light border text-danger shadow-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
+
+                                @include('admin.bookings.receipt-modal')
+                                @include('admin.bookings.details')
+                                @include('admin.bookings.select-seat')
+                                <input type="hidden" id="required-count-{{ $booking->id }}" value="{{ $booking->bookedSeats->count() }}">
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-5 text-secondary">
-                                <i class="bi bi-ticket-perforated d-block mb-2 text-slate-300" style="font-size: 3rem;"></i>
-                                <span class="fw-700 text-slate-400">No bookings recorded yet.</span>
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="text-center py-5">No bookings found.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+        
     </div>
 </div>
 
-<style>
-    :root {
-        --swift-blue: #004AAD; 
-        --slate-50: #f8fafc;
-        --slate-100: #f1f5f9;
-        --slate-500: #64748B; 
-        --slate-900: #1E293B; 
-    }
 
-    .stat-value {
-        font-size: 28px !important;
-        font-weight: 800 !important;
-        color: #0f172a !important;
-        line-height: 1.2 !important; 
-        display: block;
-        margin-top: 2px; 
-    }
-
-    .section-card { background: white; border-radius: 1.25rem; border: 1px solid #e2e8f0; }
-    .caption { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #64748b; }
-    .table thead th { border-bottom: 1px solid #f1f5f9; }
-    .table-hover tbody tr:hover { background-color: #f8fafc; }
-    
-    /* Status Colors matching Movie status logic */
-    .bg-success-soft { background-color: #ecfdf5 !important; border-color: #10b981 !important; color: #059669 !important; }
-    .bg-warning-soft { background-color: #fffbeb !important; border-color: #f59e0b !important; color: #d97706 !important; }
-    .bg-secondary-soft { background-color: #f8fafc !important; border-color: #e2e8f0 !important; color: #475569 !important; }
-
-    .fw-800 { font-weight: 800; }
-    .fw-700 { font-weight: 700; }
-    .fw-600 { font-weight: 600; }
-    .fw-500 { font-weight: 500; }
-</style>
 @endsection

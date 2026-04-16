@@ -5,7 +5,6 @@
     <title>SwiftTicket_Compact_Report_{{ now()->format('Y-m-d') }}</title>
     
     <style>
-        /* --- 1. DESIGN SYSTEM TOKENS --- */
         :root {
             --swift-blue: #004AAD;
             --text-primary: #1E293B;
@@ -15,7 +14,6 @@
             --slate-200: #E2E8F0;
         }
 
-        /* --- 2. BASE RESET --- */
         body { 
             font-family: 'Helvetica', 'Arial', sans-serif; 
             background: #FFFFFF; 
@@ -25,7 +23,6 @@
             print-color-adjust: exact;
         }
 
-        /* --- 3. COMPACT TYPOGRAPHY --- */
         .h1 { font-size: 24px; font-weight: 700; margin: 0; }
         .h4 { font-size: 16px; font-weight: 600; margin: 0; }
         
@@ -37,7 +34,6 @@
 
         .price-medium { font-size: 20px; font-weight: 700; color: var(--swift-blue); margin: 2px 0 0 0; }
 
-        /* --- 4. UTILITIES --- */
         .primary-text { color: var(--text-primary); }
         .secondary-text { color: var(--text-secondary); }
         .success-text { color: var(--success-green) !important; }
@@ -45,7 +41,6 @@
         .text-center { text-align: center; }
         .overflow-hidden { overflow: hidden; }
 
-        /* --- 5. COMPACT COMPONENTS --- */
         .logo-container { text-align: center; margin-bottom: 15px; }
         .logo-container img { height: 32px; }
 
@@ -84,7 +79,6 @@
             padding-top: 15px; 
         }
 
-        /* --- 6. PRINT OVERRIDES --- */
         @media print {
             body { padding: 0; }
             @page { margin: 1cm; }
@@ -158,7 +152,6 @@
             setTimeout(function() {
                 window.print();
                 
-                // Redirect back to dashboard after print dialog is handled
                 window.location.href = "{{ route('admin.dashboard') }}"; 
             }, 500);
         }

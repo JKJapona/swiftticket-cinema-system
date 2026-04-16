@@ -2,6 +2,17 @@
 
 namespace App\Http\Controllers;
 
+/*
+|--------------------------------------------------------------------------
+| Booking & Transaction Controller
+|--------------------------------------------------------------------------
+|
+| This controller manages the complete movie ticket purchase lifecycle, 
+| including seat availability verification, payment processing, 
+| and seat change requests.
+|
+*/
+
 use App\Models\Booking;
 use App\Models\BookedSeat;
 use App\Models\Showtime;
@@ -12,6 +23,12 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Checkout & Payment Process
+    |--------------------------------------------------------------------------
+    */
+
     public function showPayment(Request $request)
     {
         $request->validate([
@@ -23,7 +40,7 @@ class BookingController extends Controller
         $selectedSeats = explode(',', $request->selected_seats);
         $totalAmount = count($selectedSeats) * $showtime->price;
 
-        return view('booking.payment', compact('showtime', 'selectedSeats', 'totalAmount'));
+        return view('customer.booking.payment', compact('showtime', 'selectedSeats', 'totalAmount'));
     }
 
     public function store(Request $request)
@@ -32,6 +49,7 @@ class BookingController extends Controller
             'showtime_id'    => 'required|exists:showtimes,id',
             'selected_seats' => 'required|string',
             'payment_method' => 'required|string',
+            'payment_receipt' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
         $showtime = Showtime::findOrFail($request->showtime_id);
@@ -42,13 +60,22 @@ class BookingController extends Controller
 
             $this->verifySeatAvailability($showtime->id, $seatsArray);
 
+            $receiptPath = null;
+            if ($request->hasFile('payment_receipt')) {
+                // Stores in storage/app/public/receipts
+                $receiptPath = $request->file('payment_receipt')->store('receipts', 'public');
+            }
+
+            $status = 'pending';
+
             $booking = Booking::create([
                 'user_id'          => Auth::id(),
                 'showtime_id'      => $showtime->id,
                 'reference_number' => strtoupper(Str::random(10)),
                 'payment_method'   => $request->payment_method,
+                'payment_receipt'  => $receiptPath,
                 'total_price'      => count($seatsArray) * $showtime->price,
-                'status'           => $request->payment_method === 'Pay at Cinema' ? 'pending' : 'confirmed',
+                'status'           => $status,
             ]);
 
             $this->attachSeatsToBooking($booking, $showtime, $seatsArray);
@@ -63,6 +90,12 @@ class BookingController extends Controller
         }
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Post-Transaction Views
+    |--------------------------------------------------------------------------
+    */
+
     public function success($reference)
     {
         $booking = Booking::with(['showtime.movie', 'showtime.hall'])
@@ -73,7 +106,7 @@ class BookingController extends Controller
             ->pluck('seat_code')
             ->toArray();
 
-        return view('booking.success', [
+        return view('customer.booking.success', [
             'booking'       => $booking,
             'showtime'      => $booking->showtime,
             'selectedSeats' => $selectedSeats
@@ -89,6 +122,37 @@ class BookingController extends Controller
 
         return view('booking.index', compact('bookings'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modifications & Requests
+    |--------------------------------------------------------------------------
+    */
+
+    public function requestSeatChange(Request $request, Booking $booking)
+    {
+        // Security: Ensure only the owner can request a change
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'new_seats' => 'required|string', 
+        ]);
+
+        $booking->update([
+            'status' => 'change_requested',
+            'requested_seats' => $request->new_seats 
+        ]);
+
+        return back()->with('success', 'Your seat change request for ' . $request->new_seats . ' has been sent for approval!');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Helper Logic
+    |--------------------------------------------------------------------------
+    */
 
     private function verifySeatAvailability($showtimeId, array $seats)
     {

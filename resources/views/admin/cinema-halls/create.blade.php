@@ -66,7 +66,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label text-slate-500 text-uppercase fw-700 mb-1">Seats Per Row</label>
-                                        <input type="number" name="seats_per_row" id="hall_seats" class="form-control form-control-sm" min="1" required oninput="calculateTotal()">
+                                        <input type="number" name="seats_per_row" id="hall_seats" class="form-control form-control-sm" min="1" max="40" required oninput="calculateTotal()">
+                                        <p class="caption text-slate-500 mt-1 mb-0" style="font-size: 9px !important;">Max 40 seats per row</p>
                                     </div>
                                 </div>
                                 <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
@@ -100,9 +101,14 @@
 
 <script>
     function calculateTotal() {
-        const rows = document.getElementById('hall_rows').value || 0;
-        const seats = document.getElementById('hall_seats').value || 0;
+        const rowsInput = document.getElementById('hall_rows');
+        const seatsInput = document.getElementById('hall_seats');
+        const display = document.getElementById('total_capacity_display');
+
+        let rows = parseInt(rowsInput.value) || 0;
+        let seats = parseInt(seatsInput.value) || 0;
+
         const total = rows * seats;
-        document.getElementById('total_capacity_display').innerText = total + ' Seats';
+        display.innerText = total + ' Seats';
     }
 </script>

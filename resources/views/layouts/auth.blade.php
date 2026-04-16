@@ -17,5 +17,31 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = [
+                { id: 'loginForm', btn: 'loginBtn', spinner: 'loginSpinner', text: 'loginText', msg: 'Signing in...' },
+                { id: 'registerForm', btn: 'registerBtn', spinner: 'registerSpinner', text: 'registerText', msg: 'Creating account...' }
+            ];
+
+            forms.forEach(formSetup => {
+                const formEl = document.getElementById(formSetup.id);
+                if (formEl) {
+                    formEl.addEventListener('submit', function() {
+                        const btn = document.getElementById(formSetup.btn);
+                        const spinner = document.getElementById(formSetup.spinner);
+                        const text = document.getElementById(formSetup.text);
+
+                        btn.disabled = true;
+                        btn.style.opacity = '0.8';
+
+                        spinner.classList.remove('d-none');
+                        text.textContent = formSetup.msg;
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

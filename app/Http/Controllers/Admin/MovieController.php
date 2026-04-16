@@ -2,6 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+/*
+|--------------------------------------------------------------------------
+| Admin Movie Management Controller
+|--------------------------------------------------------------------------
+|
+| This controller handles the CRUD operations for the movie catalog.
+| It manages media uploads (posters and covers), movie status toggling,
+| and provides aggregate statistics for the movie management dashboard.
+|
+*/
+
 use App\Http\Controllers\Controller;
 use App\Models\Movie;
 use Illuminate\Http\Request;
@@ -11,19 +22,41 @@ use Illuminate\Support\Str;
 
 class MovieController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | View Actions
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $movies = Movie::latest()->get();
+        $movies = Movie::all();
 
-        return view('admin.movies.index', compact('movies'));
+        $stats = [
+            'total_count'        => Movie::count(),
+            'now_showing_count'  => Movie::where('status', 'now_showing')->count(),
+            'coming_soon_count'  => Movie::where('status', 'coming_soon')->count(),
+            'active_showtimes'   => \App\Models\Showtime::where('show_date', '>=', now()->toDateString())->count(),
+        ];
+
+        return view('admin.movies.index', compact('movies', 'stats'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Persistence Actions
+    |--------------------------------------------------------------------------
+    */
 
     public function store(Request $request)
     {
         $validator = $this->validateMovie($request);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Failed to publish movie. Please check the form for errors.');
         }
 
         $data = $this->extractMovieData($request);
@@ -32,7 +65,7 @@ class MovieController extends Controller
 
         Movie::create($data);
 
-        return redirect()->back()->with('success', 'Movie published successfully.');
+        return redirect()->back()->with('success', "Movie '{$request->title}' has been successfully published.");
     }
 
     public function update(Request $request, Movie $movie)
@@ -43,7 +76,8 @@ class MovieController extends Controller
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
-                ->with('error_movie_id', $movie->id);
+                ->with('error_movie_id', $movie->id)
+                ->with('error', "Update failed for '{$movie->title}'. Please verify the provided details.");
         }
 
         $data = $this->extractMovieData($request);
@@ -52,17 +86,18 @@ class MovieController extends Controller
 
         $movie->update($data);
 
-        return redirect()->back()->with('success', 'Movie updated successfully.');
+        return redirect()->back()->with('success', "Information for '{$movie->title}' has been updated successfully.");
     }
 
     public function destroy(Movie $movie)
     {
+        $title = $movie->title;
         $this->deletePhysicalFile($movie->poster_path);
         $this->deletePhysicalFile($movie->cover_path);
 
         $movie->delete();
 
-        return redirect()->back()->with('success', 'Movie deleted.');
+        return redirect()->back()->with('success', "Movie '{$title}' and its associated media have been deleted.");
     }
 
     public function toggleArchive(Movie $movie)
@@ -73,16 +108,23 @@ class MovieController extends Controller
                 ->exists();
 
             $movie->status = $hasActiveShowtimes ? 'now_showing' : 'coming_soon';
-            $message = 'Movie unarchived and set to ' . str_replace('_', ' ', $movie->status) . '.';
+            $statusLabel = str_replace('_', ' ', $movie->status);
+            $message = "'{$movie->title}' unarchived and status set to {$statusLabel}.";
         } else {
             $movie->status = 'archived';
-            $message = 'Movie moved to archives.';
+            $message = "'{$movie->title}' has been moved to the archives.";
         }
 
         $movie->save();
 
         return back()->with('success', $message);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Helper Logic
+    |--------------------------------------------------------------------------
+    */
 
     private function validateMovie(Request $request)
     {
@@ -99,16 +141,21 @@ class MovieController extends Controller
             'cover_file'      => 'nullable|image|max:4096',
             'poster_url'      => 'nullable|url|max:500',
             'cover_url'       => 'nullable|url|max:500',
+            'is_featured'     => 'nullable|boolean',
         ]);
     }
 
     private function extractMovieData(Request $request)
     {
-        return $request->only([
+        $data = $request->only([
             'title', 'synopsis', 'cast_members', 'genre',
             'runtime_minutes', 'rating', 'trailer_url',
             'release_date'
         ]);
+
+        $data['is_featured'] = $request->has('is_featured');
+
+        return $data;
     }
 
     private function handleImage(Request $request, $type, $folder, $existingPath = null)

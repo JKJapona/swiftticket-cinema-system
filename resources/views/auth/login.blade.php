@@ -33,11 +33,11 @@
     @if ($errors->any())
         <div class="alert alert-danger border-0 small rounded-3 mb-3 d-flex align-items-center gap-2 py-2" role="alert">
             <i class="bi bi-exclamation-circle-fill"></i>
-            <div>Invalid email or password. Please try again.</div>
+            <div class="fw-600">{{ $errors->first('email') ?: $errors->first('password') }}</div>
         </div>
     @endif
 
-    <form action="{{ route('login') }}" method="POST">
+    <form id="loginForm" action="{{ route('login') }}" method="POST">
         @csrf
         
         {{-- Email Address --}}
@@ -46,9 +46,6 @@
             <input type="email" name="email" value="{{ old('email') }}" 
                    class="form-control border-secondary-subtle bg-light @error('email') is-invalid @enderror" 
                    required autofocus>
-            @error('email')
-                <div class="invalid-feedback small fw-500">{{ $message }}</div>
-            @enderror
         </div>
         
         {{-- Password --}}
@@ -70,8 +67,9 @@
             <a href="#" class="text-primary text-decoration-none fw-medium small">Forgot password?</a>
         </div>
 
-        <button type="submit" class="btn w-100 py-2.5 fw-semibold text-dark rounded-3 border-0 shadow-sm" style="font-size: 18px; background-color: #FFD700;">
-            Log In
+        <button type="submit" id="loginBtn" class="btn w-100 py-2.5 fw-semibold text-dark rounded-3 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2" style="font-size: 18px; background-color: #FFD700;">
+            <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            <span id="loginText">Log In</span>
         </button>
     </form>
 
@@ -79,16 +77,22 @@
         <p class="mb-1 text-muted small">Don't have an account? <a href="{{ route('register') }}" class="fw-bold text-primary text-decoration-none">Sign up</a></p>
         <div class="mt-3">
             <p class="text-muted opacity-50 mb-1" style="font-size: 10px;">Protected by reCAPTCHA</p>
-            {{-- Admin Login Button Removed --}}
         </div>
     </div>
 </div>
 
 <div class="text-center mt-4 d-flex justify-content-center gap-3 opacity-50">
-    <a href="#" class="text-secondary text-decoration-none small" style="font-size: 12px;">Privacy Policy</a>
+    {{-- Link to privacy-policy route --}}
+    <a href="{{ route('privacy-policy') }}" class="text-secondary text-decoration-none small" style="font-size: 12px;">Privacy Policy</a>
+    
     <span class="text-secondary opacity-25">•</span>
-    <a href="#" class="text-secondary text-decoration-none small" style="font-size: 12px;">Terms & Conditions</a>
+    
+    {{-- Link to terms-and-conditions route --}}
+    <a href="{{ route('terms-and-conditions') }}" class="text-secondary text-decoration-none small" style="font-size: 12px;">Terms & Conditions</a>
+    
     <span class="text-secondary opacity-25">•</span>
-    <a href="#" class="text-secondary text-decoration-none small" style="font-size: 12px;">Contact Us</a>
+    
+    {{-- Link to contact-us route --}}
+    <a href="{{ route('contact-us') }}" class="text-secondary text-decoration-none small" style="font-size: 12px;">Contact Us</a>
 </div>
 @endsection

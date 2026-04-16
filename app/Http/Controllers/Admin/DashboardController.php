@@ -2,13 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
+/*
+|--------------------------------------------------------------------------
+| Admin Dashboard & Analytics Controller
+|--------------------------------------------------------------------------
+|
+| This controller generates the administrative overview, including high-level
+| business stats, system health monitoring (CPU/DB), and sales reporting.
+| It utilizes caching for hardware-intensive server load calculations.
+|
+*/
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Booking;
 
 class DashboardController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | View Actions
+    |--------------------------------------------------------------------------
+    */
+
     public function index() 
     {
         $startTime = microtime(true);
@@ -22,7 +40,7 @@ class DashboardController extends Controller
 
         $recent_bookings = Booking::with(['user', 'showtime.movie'])
             ->latest()
-            ->take(5)
+            ->take(7)
             ->get();
 
         $endTime = microtime(true);
@@ -58,6 +76,12 @@ class DashboardController extends Controller
         return view('admin.sales_pdf', compact('totalRevenue', 'movieSales'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | System Monitoring Logic
+    |--------------------------------------------------------------------------
+    */
+
     private function checkDatabaseStatus() 
     {
         try {
@@ -70,12 +94,37 @@ class DashboardController extends Controller
 
     private function calculateServerLoad() 
     {
-        $memoryUsage = memory_get_usage(true);
-        $memoryLimit = ini_get('memory_limit');
-        $limitInBytes = $this->convertToBytes($memoryLimit);
-        
-        return round(($memoryUsage / $limitInBytes) * 100, 1);
+        return Cache::remember('server_cpu_load', 60, function () {
+            
+            if (stristr(PHP_OS, 'WIN')) {
+                $command = "powershell -NoProfile -Command \"(Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average\"";
+                $output = @shell_exec($command);
+                
+                if ($output !== null) {
+                    return (float)trim($output);
+                }
+                
+                $wmic = @shell_exec("wmic cpu get loadpercentage /value");
+                if ($wmic && preg_match('/LoadPercentage=(\d+)/i', $wmic, $matches)) {
+                    return (float)$matches[1];
+                }
+                
+            } else {
+                if (function_exists('sys_getloadavg')) {
+                    $load = sys_getloadavg();
+                    return (float)($load[0] * 10);
+                }
+            }
+
+            return 0;
+        });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Financial Data Logic
+    |--------------------------------------------------------------------------
+    */
 
     private function getTotalConfirmedRevenue() 
     {

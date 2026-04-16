@@ -76,6 +76,22 @@
                                 </div>
 
                                 <div class="col-12">
+                                    <div class="px-3 py-2 rounded-3 border bg-slate-50 d-flex align-items-center justify-content-between shadow-sm">
+                                        <div>
+                                            <label class="label text-slate-900 mb-0 text-uppercase fw-700" style="font-size: 11px;" for="isFeatured">
+                                                Feature on Homepage
+                                            </label>
+                                            <span class="text-slate-400 ms-2" style="font-size: 10px;">(Hero Carousel)</span>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch m-0 d-flex align-items-center">
+                                            <input class="form-check-input" type="checkbox" name="is_featured" id="isFeatured" value="1" 
+                                                {{ $movie->is_featured ? 'checked' : '' }}>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
                                     <label class="label text-slate-500 text-uppercase fw-700 mb-1">Synopsis</label>
                                     <textarea name="synopsis" class="form-control form-control-sm" rows="2" style="font-size: 13px;">{{ $movie->synopsis }}</textarea>
                                 </div>

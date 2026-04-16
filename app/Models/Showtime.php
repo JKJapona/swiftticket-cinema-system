@@ -18,6 +18,12 @@ class Showtime extends Model
         'booked_seats'
     ];
 
+// In Showtime.php
+protected $casts = [
+    'show_date' => 'date:Y-m-d', // This ensures it serializes as a string correctly
+    'show_time' => 'datetime:H:i',
+];
+
     public function movie(): BelongsTo
     {
         return $this->belongsTo(Movie::class);

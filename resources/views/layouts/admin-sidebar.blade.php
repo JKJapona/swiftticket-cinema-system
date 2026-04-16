@@ -73,8 +73,8 @@
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item rounded-2" href="#">
-                        <i class="bi bi-person me-2"></i> Profile
+                    <a class="dropdown-item rounded-2" href="{{ route('profile') }}">
+                        <i class="bi bi-person me-2"></i>Profile
                     </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>

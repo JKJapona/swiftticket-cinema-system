@@ -13,8 +13,10 @@ class Booking extends Model
         'showtime_id', 
         'reference_number', 
         'payment_method', 
+        'payment_receipt',
         'total_price', 
-        'status'
+        'status',
+        'requested_seats'
     ];
 
     public function user(): BelongsTo
@@ -34,6 +36,6 @@ class Booking extends Model
 
     public function bookedSeats(): HasMany
     {
-        return $this->hasMany(BookedSeat::class);
+        return $this->hasMany(BookedSeat::class, 'booking_id');
     }
 }

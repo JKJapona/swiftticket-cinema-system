@@ -16,11 +16,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
-            <form action="{{ route('admin.cinema-halls.update', $hall->id) }}" method="POST" id="editHallForm{{ $hall->id }}">
+            <form action="{{ route('admin.cinema-halls.update', $hall->id) }}" method="POST" id="editHallForm {{ $hall->id }}">
                 @csrf
                 @method('PUT')
                 
                 <div class="modal-body p-3 bg-white">
+                    {{-- Validation Error Display --}}
+                    @if ($errors->any() && session('error_hall_id') == $hall->id)
+                        <div class="alert alert-danger border-0 py-2 mb-3 rounded-3 shadow-sm">
+                            <ul class="mb-0 small fw-600 list-unstyled">
+                                @foreach ($errors->all() as $error)
+                                    <li><i class="bi bi-exclamation-circle-fill me-2"></i> {{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="row g-3">
                         {{-- Hall Identity --}}
                         <div class="col-12">

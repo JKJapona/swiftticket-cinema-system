@@ -35,49 +35,69 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    
-    // Account & Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
 
-    // Booking & Seat Selection
     Route::get('/book/{showtime_id}', [MovieController::class, 'showSeatMap'])->name('book.seats');
     Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
     
-    // Checkout Flow
-    Route::post('/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
-    Route::get('/checkout/payment', fn() => redirect()->route('home')); // Fallback for GET access
+    Route::match(['get', 'post'], '/checkout/payment', [BookingController::class, 'showPayment'])->name('checkout.payment');
+    Route::get('/checkout/payment', fn() => redirect()->route('home')); 
     Route::get('/checkout/success/{reference}', [BookingController::class, 'success'])->name('checkout.success');
+
+    Route::post('/bookings/{booking}/request-change', [BookingController::class, 'requestSeatChange'])
+        ->name('bookings.request-change');
+        
+    Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile');
+    Route::get('/profile/edit', [AuthController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
 });
 
 /*
 |--------------------------------------------------------------------------
-| 3. Admin Panel Routes (Auth + Admin Middleware)
+| 3. Admin Panel Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
     
-    // Dashboard & Reports
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/sales-report', [DashboardController::class, 'salesReport'])->name('reports.sales');
     Route::get('/sales-report/download', [DashboardController::class, 'downloadPDF'])->name('reports.download');
 
-    // Specific Movie Actions
+    Route::get('bookings/export', [AdminBookingController::class, 'export'])->name('bookings.export');
     Route::patch('movies/{movie}/toggle-archive', [AdminMovieController::class, 'toggleArchive'])->name('movies.toggle-archive');
     Route::get('showtimes/movie/{movie}', [ShowtimeController::class, 'showByMovie'])->name('showtimes.movie');
-
-    // Specific Booking Actions
-    Route::patch('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
-
-    // Specific Customer Actions
+    Route::patch('/bookings/{booking}/confirm', [AdminBookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::patch('bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
     Route::get('/customers/api/{customer}', [CustomerController::class, 'apiShow'])->name('customers.api');
     Route::patch('/customers/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggleStatus');
 
-    // Resource Controllers
-    Route::resource('movies', AdminMovieController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('cinema-halls', CinemaHallController::class);
-    Route::resource('bookings', AdminBookingController::class);
-    Route::resource('customers', CustomerController::class);
-    Route::resource('showtimes', ShowtimeController::class);
+    Route::post('/bookings/{id}/approve-change', [AdminBookingController::class, 'approveChange'])
+        ->name('bookings.approve-change');
 
-});
+    Route::resource('movies', AdminMovieController::class)->except(['show', 'create', 'edit']);
+    Route::resource('cinema-halls', CinemaHallController::class)->except(['show']);
+    Route::resource('bookings', AdminBookingController::class)->except(['show']);
+    Route::resource('customers', CustomerController::class)->except(['show']);
+    Route::resource('showtimes', ShowtimeController::class)->except(['show']);
+
+    Route::get('/{any}', function () {
+        abort(404);
+    })->where('any', '.*');
+
+})->whereNumber(['movie', 'booking', 'customer', 'cinema_hall', 'showtime']);
+
+/*
+|--------------------------------------------------------------------------
+| 4. Static Pages & Simulation
+|--------------------------------------------------------------------------
+*/
+Route::view('/privacy-policy', 'auth.privacy-policy')->name('privacy-policy');
+Route::view('/terms-conditions', 'auth.terms-conditions')->name('terms-and-conditions');
+Route::view('/contact-us', 'auth.contact-us')->name('contact-us');
+
+Route::get('/payment/gcash-simulation', function() {
+    return view('customer.booking.gcash-simulation'); 
+})->name('payment.gcash');

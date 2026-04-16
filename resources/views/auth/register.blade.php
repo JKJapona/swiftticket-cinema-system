@@ -9,7 +9,7 @@
     <h1 class="fw-bold text-center mb-1 text-slate-900" style="font-size: 32px;">Create Account</h1>
     <p class="text-muted text-center mb-3 small">Sign up to get started with SwiftTicket</p>
 
-    <form action="{{ route('register') }}" method="POST">
+    <form id="registerForm" action="{{ route('register') }}" method="POST">
         @csrf
         
         {{-- Full Name --}}
@@ -53,9 +53,10 @@
                    required>
         </div>
 
-        <button type="submit" class="btn w-100 py-2.5 fw-semibold text-dark rounded-3 border-0 shadow-sm" style="font-size: 18px; background-color: #FFD700;">
-            Create Account
-        </button>
+        <button type="submit" id="registerBtn" class="btn w-100 py-2.5 fw-semibold text-dark rounded-3 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2" style="font-size: 18px; background-color: #FFD700;">
+        <span id="registerSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        <span id="registerText">Create Account</span>
+    </button>
     </form>
 
     <div class="text-center mt-3 pt-3 border-top">

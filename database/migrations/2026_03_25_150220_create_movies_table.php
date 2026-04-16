@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('trailer_url', 255)->nullable();
             $table->date('release_date')->nullable();
             $table->enum('status', ['now_showing', 'coming_soon', 'archived'])->default('coming_soon');
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
     }
