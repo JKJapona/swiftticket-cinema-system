@@ -43,9 +43,11 @@ class InterfaceStressTestSeeder extends Seeder
                 'genre' => $genres[array_rand($genres)],
                 'runtime_minutes' => rand(90, 181),
                 'rating' => $ratings[array_rand($ratings)],
-                'poster_path' => "https://via.placeholder.com/300x450?text=Movie+$i",
+                'poster_path' => "https://picsum.photos/seed/movie" . $i . "/300/450",
+                'cover_path' => "https://picsum.photos/seed/cover" . $i . "/1200/450",
                 'release_date' => Carbon::now()->subMonths(rand(1, 12))->toDateString(),
                 'status' => 'now_showing',
+                'is_featured' => true,
                 'created_at' => $now,
             ];
         }
@@ -86,13 +88,15 @@ class InterfaceStressTestSeeder extends Seeder
         // 5. Generate 100 Bookings + Seats (Sequential IDs)
         $customerIds = DB::table('users')->where('role', 'customer')->pluck('id')->toArray();
         $showtimeIds = DB::table('showtimes')->pluck('id')->toArray();
-        $methods = ['Pay at Cinema', 'Credit/Debit Card', 'GCash'];
+        $methods = ['Pay at Cinema', 'GCash'];
+        $bookingStatuses = ['confirmed', 'pending', 'cancelled', 'change_requested'];
         
         // Seat Tracker to avoid Duplicate Entry errors
         $seatTracker = [];
 
         for ($i = 0; $i < 100; $i++) {
             $stId = $showtimeIds[array_rand($showtimeIds)];
+            $status = $bookingStatuses[array_rand($bookingStatuses)];
             
             // Initialize tracker for this showtime if empty
             if (!isset($seatTracker[$stId])) { $seatTracker[$stId] = 1; }
@@ -103,7 +107,8 @@ class InterfaceStressTestSeeder extends Seeder
                 'reference_number' => strtoupper(Str::random(10)),
                 'payment_method' => $methods[array_rand($methods)],
                 'total_price' => 700.00,
-                'status' => 'confirmed',
+                'status' => $status,
+                'cancellation_reason' => ($status === 'cancelled') ? "Automated stress test cancellation reason for booking $i." : null,
                 'created_at' => $now,
             ]);
 

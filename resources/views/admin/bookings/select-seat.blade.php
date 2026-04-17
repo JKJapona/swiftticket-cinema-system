@@ -123,7 +123,7 @@
 
                 <div class="modal-footer bg-slate-50 border-0 p-2 px-4 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-link text-slate-500 text-decoration-none fw-700 btn-sm" data-bs-dismiss="modal">
-                        Discard
+                        Close
                     </button>
                     
                     <button type="submit" id="admin-submit-{{ $booking->id }}" class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 rounded-2 shadow-sm btn-sm" disabled>

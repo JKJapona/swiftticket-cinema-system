@@ -112,9 +112,13 @@
 
         document.addEventListener('submit', function (e) {
             const form = e.target;
-            const submitBtn = form.querySelector('[type="submit"]') || document.activeElement;
+            let submitBtn = e.submitter;
 
-            if (submitBtn && submitBtn.type === 'submit') {
+            if (!submitBtn) {
+                submitBtn = form.querySelector('[type="submit"]') || document.activeElement;
+            }
+
+            if (submitBtn && (submitBtn.type === 'submit' || submitBtn.hasAttribute('form'))) {
                 submitBtn.disabled = true;
                 const originalText = submitBtn.innerText.trim();
 
@@ -126,7 +130,6 @@
             }
             
             if (progressBar) {
-                // Apply animation logic to the progress bar on submit
                 progressBar.style.display = 'block';
                 progressBar.style.width = '0%';
                 void progressBar.offsetWidth;

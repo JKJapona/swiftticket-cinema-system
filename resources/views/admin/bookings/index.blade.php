@@ -162,23 +162,18 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                                {{-- Main Grid --}}
-                                <div style="display: grid; 
-                                            grid-template-columns: repeat(2, 32px); 
-                                            grid-template-rows: repeat(2, 32px); 
-                                            gap: 4px; 
-                                            justify-content: end;">
+                                <div class="d-flex align-items-center justify-content-end gap-1">
                                     
-                                    {{-- 1. View Details --}}
                                     <button class="btn btn-sm btn-light border text-primary rounded-2 shadow-sm" 
-                                            data-bs-toggle="modal" data-bs-target="#viewModal{{ $booking->id }}">
+                                            style="width: 32px; height: 32px;"
+                                            data-bs-toggle="modal" data-bs-target="#viewModal{{ $booking->id }}"
+                                            title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </button>
 
-                                    {{-- 2. Seat Map --}}
                                     @if($booking->status !== 'cancelled')
                                         <button class="btn btn-sm btn-light border rounded-2 shadow-sm" 
-                                                style="color: #6366f1;"
+                                                style="color: #6366f1; width: 32px; height: 32px;"
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#adminSeatOverride{{ $booking->id }}" 
                                                 title="Manage Seats">
@@ -186,40 +181,17 @@
                                         </button>
                                     @endif
 
-                                    {{-- 3. Payment Verification OR Confirm --}}
-                                    @if($booking->payment_method === 'GCash')
-                                        <button type="button" class="btn btn-sm btn-light border rounded-2 shadow-sm" 
-                                                style="color: #0d9488;"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#receiptModal{{ $booking->id }}"
-                                                title="Verify & Confirm">
-                                            <i class="bi bi-receipt-cutoff"></i>
-                                        </button>
-                                    @elseif($booking->status === 'pending')
-                                        <form id="confirm-booking-{{ $booking->id }}" action="{{ route('admin.bookings.confirm', $booking->id) }}" method="POST" class="m-0 p-0">
-                                            @csrf @method('PATCH')
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-light border text-success rounded-2 shadow-sm" 
-                                                    onclick="swiftConfirm('Confirm Booking?', 'Are you sure you want to confirm this booking?', 'success', () => document.getElementById('confirm-booking-{{ $booking->id }}').submit())">
-                                                <i class="bi bi-check-circle"></i>
-                                            </button>
-                                        </form>
-                                    @else
-                                        {{-- Empty div to maintain grid alignment if 3rd spot is empty --}}
-                                        <div></div>
-                                    @endif
-
-                                    {{-- 4. Cancel Action --}}
-                                    @if($booking->status !== 'cancelled')
-                                        <form id="cancel-booking-{{ $booking->id }}" action="{{ route('admin.bookings.cancel', $booking->id) }}" method="POST" class="m-0 p-0">
-                                            @csrf @method('PATCH')
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-light border text-danger rounded-2 shadow-sm"
-                                                    onclick="swiftConfirm('Cancel Booking?', 'This will void the ticket and release the seats.', 'danger', () => document.getElementById('cancel-booking-{{ $booking->id }}').submit())">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </form>
-                                    @endif
+                                    @php
+                                        $isActionable = ($booking->status === 'pending' || $booking->status === 'change_requested');
+                                    @endphp
+                                    
+                                    <button type="button" class="btn btn-sm btn-light border rounded-2 shadow-sm" 
+                                            style="width: 32px; height: 32px; color: {{ $isActionable ? '#0d9488' : '#94a3b8' }};"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#receiptModal{{ $booking->id }}"
+                                            title="{{ $isActionable ? 'Verify & Action' : 'View Verification' }}">
+                                        <i class="bi {{ $isActionable ? ($booking->payment_method === 'Pay at Cinema' ? 'bi-cash-stack' : 'bi-receipt-cutoff') : 'bi-shield-check' }}"></i>
+                                    </button>
                                 </div>
 
                                 @include('admin.bookings.receipt-modal')

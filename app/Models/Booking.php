@@ -16,7 +16,8 @@ class Booking extends Model
         'payment_receipt',
         'total_price', 
         'status',
-        'requested_seats'
+        'requested_seats',
+        'cancellation_reason'
     ];
 
     public function user(): BelongsTo

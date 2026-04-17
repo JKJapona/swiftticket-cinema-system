@@ -136,6 +136,10 @@ class BookingController extends Controller
             abort(403);
         }
 
+        if ($booking->status === 'confirmed') {
+            return back()->with('error', 'This booking is already confirmed and can no longer be modified.');
+        }
+
         $request->validate([
             'new_seats' => 'required|string', 
         ]);

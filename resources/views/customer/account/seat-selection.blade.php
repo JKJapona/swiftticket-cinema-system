@@ -1,6 +1,6 @@
 <div class="modal fade" id="customerChangeSeat{{ $booking->id }}" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     {{-- Dynamic Size: modal-md for view-only, modal-lg for seat selection --}}
-    <div class="modal-dialog {{ $booking->status === 'change_requested' ? 'modal-md' : 'modal-lg' }} modal-dialog-centered">
+    <div class="modal-dialog {{ in_array($booking->status, ['change_requested', 'confirmed']) ? 'modal-md' : 'modal-lg' }} modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-0 overflow-hidden">
             
             {{-- Unified Header --}}
@@ -11,7 +11,13 @@
                     </div>
                     <div>
                         <h2 class="h2 text-slate-900 mb-0" style="font-size: 16px !important;">
-                            {{ $booking->status === 'change_requested' ? 'Request Status' : 'Change Your Seats' }}
+                           @if($booking->status === 'change_requested')
+                                Request Status
+                            @elseif($booking->status === 'confirmed')
+                                Booking Details
+                            @else
+                                Change Your Seats
+                            @endif
                         </h2>
                         <p class="text-slate-500 mb-0 fw-600" style="font-size: 11px;">Booking: #{{ $booking->reference_number }}</p>
                     </div>
@@ -20,7 +26,6 @@
             </div>
 
             @if($booking->status === 'change_requested')
-                {{-- COMPACT READ-ONLY VIEW (Horizontal Comparison) --}}
                 <div class="modal-body p-0 bg-white">
                     {{-- Slim Amber Header --}}
                     <div class="py-2 text-center border-bottom" style="background-color: #fffbeb; border-color: #fde68a !important;">
@@ -80,16 +85,59 @@
                 </div>
 
                 <div class="modal-footer bg-slate-50 border-0 p-2 px-4 d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-link text-slate-500 text-decoration-none fw-700 btn-sm" data-bs-dismiss="modal">
-                        Close Window
-                    </button>
                     <button type="button" class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 rounded-2 shadow-sm btn-sm" data-bs-dismiss="modal">
-                        Done
+                        Got it
+                    </button>
+                </div>
+            
+            @elseif($booking->status === 'confirmed')
+                <div class="modal-body p-0 bg-white">
+                    {{-- Slim Emerald Header --}}
+                    <div class="py-2 text-center border-bottom" style="background-color: #ecfdf5; border-color: #a7f3d0 !important;">
+                        <span class="fw-black text-uppercase" style="font-size: 10px; letter-spacing: 1px; color: #059669;">
+                            <i class="bi bi-check-circle-fill me-1"></i> Booking Confirmed & Verified
+                        </span>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="text-center mb-4">
+                            <div class="display-6 fw-bold text-slate-900 mb-1">
+                                {{ $booking->bookedSeats->pluck('seat_code')->implode(', ') }}
+                            </div>
+                            <p class="text-uppercase text-muted fw-bold" style="font-size: 10px; letter-spacing: 1px;">Final Seat Assignment</p>
+                        </div>
+
+                        {{-- Confirmation Details Box --}}
+                        <div class="rounded-3 border overflow-hidden">
+                            <div class="row g-0">
+                                <div class="col-6 bg-light p-3 border-end">
+                                    <label class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 9px;">Payment Method</label>
+                                    <span class="fw-bold text-slate-800">{{ $booking->payment_method }}</span>
+                                </div>
+                                <div class="col-6 bg-light p-3">
+                                    <label class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 9px;">Transaction Status</label>
+                                    <span class="badge bg-success rounded-pill px-2 py-1" style="font-size: 10px;">Fully Verified</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Success Info Box --}}
+                        <div class="mt-4 p-3 rounded-3 text-center" style="background-color: #f8fafc; border: 1px dashed #cbd5e1;">
+                            <h6 class="fw-bold mb-1 text-slate-800 small">Ready for Showtime!</h6>
+                            <p class="text-muted mb-0 lh-sm" style="font-size: 12px;">
+                                Your seats are locked in. Please present your digital ticket or reference number <strong>#{{ $booking->reference_number }}</strong> at the cinema counter.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-slate-50 border-0 p-2 px-4 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 rounded-2 shadow-sm btn-sm" data-bs-dismiss="modal">
+                        Got it
                     </button>
                 </div>
 
             @else
-                {{-- INTERACTIVE SELECTION VIEW (Large Layout) --}}
                 <form action="{{ route('bookings.request-change', $booking->id) }}" method="POST">
                     @csrf
                     <div class="modal-body p-4 bg-white">

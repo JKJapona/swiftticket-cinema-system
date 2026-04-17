@@ -66,10 +66,7 @@
 
             <div class="modal-footer bg-slate-50 border-0 p-2 px-4 d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-link text-slate-500 text-decoration-none fw-700 btn-sm" data-bs-dismiss="modal">
-                    Close Window
-                </button>
-                <button type="button" class="btn btn-primary bg-swift-blue border-0 px-4 py-2 fw-700 rounded-2 shadow-sm btn-sm" data-bs-dismiss="modal">
-                    Done
+                    Close
                 </button>
             </div>
         </div>

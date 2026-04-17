@@ -68,7 +68,7 @@
             </div>
 
             @forelse($bookings as $booking)
-                <div class="card border border-primary border-opacity-25 shadow-sm rounded-2 mb-4 booking-ticket-card overflow-hidden">
+                <div class="card border border-primary border-opacity-25 shadow-sm rounded-2 mb-4 booking-ticket-card overflow-hidden" style="height: 310px;">
                     <div class="row g-0">
                         {{-- Poster Column --}}
                         <div class="col-md-3">
@@ -138,6 +138,20 @@
                                     </span>
                                 </div>
                             </div>
+
+                            @if($booking->status === 'cancelled')
+                                <div class="mb-3 p-3 rounded-3 border-start border-4 shadow-sm" style="background-color: #fef2f2; border-color: #ef4444 !important;">
+                                    <div class="d-flex gap-2">
+                                        <i class="bi bi-exclamation-octagon-fill text-danger"></i>
+                                        <div>
+                                            <h6 class="fw-bold text-danger small mb-1">Cancellation Reason</h6>
+                                            <p class="text-slate-600 mb-0 lh-sm" style="font-size: 12px;">
+                                                {{ $booking->cancellation_reason ?? 'The admin has cancelled this booking. Please contact support for more details.' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div class="d-flex align-items-center gap-2">

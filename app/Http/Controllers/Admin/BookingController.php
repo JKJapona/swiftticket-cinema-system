@@ -78,19 +78,25 @@ class BookingController extends Controller
         return redirect()->back()->with('success', "Booking #{$booking->reference_number} has been updated.");
     }
 
-    public function confirm(Booking $booking) 
+    public function confirm(Request $request, Booking $booking) 
     {
-        $booking->update(['status' => 'confirmed']);
+        $booking->update([
+            'status' => 'confirmed', 
+            'cancellation_reason' => null
+            ]);
 
         return back()->with('success', "Booking #{$booking->reference_number} is now confirmed. Tickets are ready for pickup/entry.");
     }
 
-    public function cancel(Booking $booking)
+    public function cancel(Request $request, Booking $booking)
     {
         try {
             DB::beginTransaction();
 
-            $booking->update(['status' => 'cancelled']);
+            $booking->update([
+                'status' => 'cancelled',
+                'cancellation_reason' => $request->cancellation_reason
+                ]);
             DB::table('booked_seats')->where('booking_id', $booking->id)->delete();
 
             DB::commit();
@@ -121,8 +127,10 @@ class BookingController extends Controller
                     ]);
                 }
 
-                if ($booking->payment_method === 'Pay at Cinema') {
+                if ($booking->status === 'change_requested') {
                     $booking->update(['status' => 'pending']);
+                } else {
+                    $booking->update(['status' => $booking->status]);
                 }
             });
 

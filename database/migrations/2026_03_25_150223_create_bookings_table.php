@@ -28,11 +28,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('showtime_id')->constrained()->onDelete('cascade');
             $table->string('reference_number', 10)->unique();
-            $table->enum('payment_method', ['Pay at Cinema', 'Credit/Debit Card', 'GCash']);
+            $table->enum('payment_method', ['Pay at Cinema', 'GCash']);
             $table->string('payment_receipt')->nullable();
             $table->decimal('total_price', 10, 2);
             $table->text('requested_seats')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'change_requested'])->default('pending');
+            $table->text('cancellation_reason')->nullable();
             $table->timestamps();
         });
     }
