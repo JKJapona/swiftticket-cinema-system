@@ -94,7 +94,7 @@ class DashboardController extends Controller
 
     private function calculateServerLoad() 
     {
-        return Cache::remember('server_cpu_load', 60, function () {
+        return Cache::remember('server_cpu_load', 300, function () {
             
             if (stristr(PHP_OS, 'WIN')) {
                 $command = "powershell -NoProfile -Command \"(Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average\"";

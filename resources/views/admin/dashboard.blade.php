@@ -35,7 +35,6 @@
     </div>
 
     <div class="row g-4">
-        {{-- 3. COMPACT RECENT BOOKINGS TABLE --}}
         <div class="col-lg-8">
             <div class="section-card shadow-sm border-0 overflow-hidden h-100">
                 <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
@@ -54,7 +53,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recent_bookings as $booking)
+                        @forelse($recent_bookings as $booking)
                             <tr>
                                 <td class="ps-4 py-2">
                                     <div class="d-flex align-items-center gap-2">
@@ -89,8 +88,15 @@
                                     </span>
                                 </td>
                             </tr>
-                            @endforeach
-                        </tbody>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-secondary">
+                                    <i class="bi bi-clipboard-x d-block mb-2 text-slate-300" style="font-size: 2.5rem;"></i>
+                                    <span class="fw-700 text-slate-400" style="font-size: 12px;">No recent transactions today.</span>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                     </table>
                 </div>
                 <div class="p-2 text-center border-top bg-slate-50">

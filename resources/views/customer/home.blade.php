@@ -51,7 +51,7 @@
 
                                     @elseif($displayStatus === 'Coming Soon')
                                         {{-- Disabled / Notifying Button --}}
-                                        <button class="btn btn-info px-4 py-2 rounded-3 fw-bold shadow-sm text-white" disabled style="background-color: #0dcaf0; border: none;">
+                                        <button class="btn bg-swift-blue px-4 py-2 rounded-3 fw-bold shadow-sm text-white" disabled style="background-color: #0dcaf0; border: none;">
                                             <i class="bi bi-calendar-event me-2"></i>Coming Soon
                                         </button>
                                         <p class="caption text-white-50 mt-2 small">Tickets available on release</p>
@@ -234,8 +234,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!existingMsg) {
                 const msg = document.createElement('div');
                 msg.id = 'empty-msg';
-                msg.className = 'col-12 text-center py-5 text-muted';
-                msg.innerHTML = '<i class="bi bi-search mb-2 d-block fs-1"></i> No movies found in this category.';
+                
+                msg.className = 'col-12 w-100 d-flex flex-column align-items-center justify-content-center opacity-fade-in';
+                msg.style.minHeight = '326px'; 
+
+                msg.innerHTML = `
+                    <div class="text-center">
+                        <div class="mb-3 position-relative d-inline-block">
+                            {{-- Using a fun, thematic icon for empty categories --}}
+                            <i class="bi bi-ticket-perforated text-slate-200" style="font-size: 5rem;"></i>
+                            <i class="bi bi-funnel-fill text-primary position-absolute bottom-0 end-0" style="font-size: 1.5rem; background: white; border-radius: 50%; padding: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"></i>
+                        </div>
+                        <h5 class="fw-800 text-slate-700 mb-1">No Movies in this Category</h5>
+                        <p class="text-slate-400 mx-auto" style="font-size: 13px; max-width: 320px;">
+                            It looks like there are no <strong>${currentGenre}</strong> films currently <strong>${currentStatus}</strong>.
+                        </p>
+                    </div>
+                `;
                 grid.appendChild(msg);
             }
         } else if (existingMsg) {

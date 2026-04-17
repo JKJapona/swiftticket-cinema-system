@@ -187,11 +187,11 @@
                         </div>
                         
                         <h5 class="fw-black text-slate-900 mb-2">No Bookings Found</h5>
-                        <p class="text-muted mb-4 mx-auto" style="max-width: 300px;">
+                        <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
                             It looks like you haven't reserved any seats yet. Ready to watch something amazing?
                         </p>
                         
-                        <a href="{{ route('home') }}" class="btn btn-primary rounded-2 px-4 fw-bold shadow-sm">
+                        <a href="{{ route('home') }}" class="btn btn-primary bg-swift-blue rounded-2 px-4 fw-bold shadow-sm">
                             <i class="bi bi-plus-lg me-2"></i>Browse Movies
                         </a>
                     </div>

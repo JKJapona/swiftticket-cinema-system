@@ -81,7 +81,7 @@
                         
                         <div class="vr mx-1 text-slate-300"></div>
                         
-                        <button type="submit" class="btn btn-sm btn-primary px-3 fw-700 btn-small">Filter</button>
+                        <button type="submit" class="btn btn-sm btn-primary bg-swift-blue px-3 fw-700 btn-small">Filter</button>
                         <a href="{{ route('admin.bookings.index') }}" class="btn btn-sm btn-light border px-3 fw-700">Reset</a>
                     </div>
                 </div>
@@ -201,7 +201,12 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center py-5">No bookings found.</td></tr>
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-secondary">
+                                <i class="bi bi-ticket-detailed d-block mb-2 text-slate-300" style="font-size: 3rem;"></i>
+                                <span class="fw-700 text-slate-400">No bookings found in the records.</span>
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary px-4 fw-bold">Save Changes</button>
+                                <button type="submit" class="btn btn-primary bg-swift-blue px-4 fw-bold">Save Changes</button>
                             </div>
                         </div>
                     </form>

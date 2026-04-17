@@ -16,9 +16,9 @@ class InterfaceStressTestSeeder extends Seeder
         $password = Hash::make('password'); // Hash only ONCE for all users
         $now = now();
 
-        // 1. Generate 100 Users (Bulk)
+        // 1. Generate 1000 Users (Bulk)
         $users = [];
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 1000; $i++) {
             $users[] = [
                 'full_name' => "User Stress Test $i",
                 'email' => "user$i@test.com",
@@ -31,11 +31,11 @@ class InterfaceStressTestSeeder extends Seeder
         }
         DB::table('users')->insert($users);
 
-        // 2. Generate 100 Movies (Bulk)
+        // 2. Generate 1000 Movies (Bulk)
         $genres = ['Action', 'Comedy', 'Horror', 'Sci-Fi', 'Drama', 'Animation'];
         $ratings = ['G', 'PG', 'R-13', 'R-16', 'R-18'];
         $movies = [];
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 1000; $i++) {
             $movies[] = [
                 'title' => "Stress Test Movie $i",
                 'synopsis' => "Dummy synopsis for movie $i.",
@@ -53,10 +53,10 @@ class InterfaceStressTestSeeder extends Seeder
         }
         DB::table('movies')->insert($movies);
 
-        // 3. Generate 100 Cinema Halls (Bulk)
+        // 3. Generate 1000 Cinema Halls (Bulk)
         $hallTypes = ['Standard', 'IMAX', 'Premium', '4DX'];
         $halls = [];
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 1000; $i++) {
             $halls[] = [
                 'name' => "Hall $i",
                 'screen_type' => $hallTypes[array_rand($hallTypes)],
@@ -68,24 +68,24 @@ class InterfaceStressTestSeeder extends Seeder
         }
         DB::table('cinema_halls')->insert($halls);
 
-        // 4. Create 100 Showtimes (Bulk)
+        // 4. Create 1000 Showtimes (Bulk)
         $movieIds = DB::table('movies')->pluck('id')->toArray();
         $hallIds = DB::table('cinema_halls')->pluck('id')->toArray();
         $showtimes = [];
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 1000; $i++) {
             $showtimes[] = [
                 'movie_id' => $movieIds[array_rand($movieIds)],
                 'hall_id' => $hallIds[array_rand($hallIds)],
                 'show_date' => Carbon::today()->addDays(rand(0, 7))->toDateString(),
                 'show_time' => rand(10, 22) . ':00:00',
-                'price' => 350.00,
+                'price' => 1000.00,
                 'total_capacity' => 100,
                 'booked_seats' => 0,
             ];
         }
         DB::table('showtimes')->insert($showtimes);
 
-        // 5. Generate 100 Bookings + Seats (Sequential IDs)
+        // 5. Generate 1000 Bookings + Seats (Sequential IDs)
         $customerIds = DB::table('users')->where('role', 'customer')->pluck('id')->toArray();
         $showtimeIds = DB::table('showtimes')->pluck('id')->toArray();
         $methods = ['Pay at Cinema', 'GCash'];
@@ -94,7 +94,7 @@ class InterfaceStressTestSeeder extends Seeder
         // Seat Tracker to avoid Duplicate Entry errors
         $seatTracker = [];
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $stId = $showtimeIds[array_rand($showtimeIds)];
             $status = $bookingStatuses[array_rand($bookingStatuses)];
             
@@ -106,7 +106,7 @@ class InterfaceStressTestSeeder extends Seeder
                 'showtime_id' => $stId,
                 'reference_number' => strtoupper(Str::random(10)),
                 'payment_method' => $methods[array_rand($methods)],
-                'total_price' => 700.00,
+                'total_price' => 1000.00,
                 'status' => $status,
                 'cancellation_reason' => ($status === 'cancelled') ? "Automated stress test cancellation reason for booking $i." : null,
                 'created_at' => $now,
@@ -122,7 +122,7 @@ class InterfaceStressTestSeeder extends Seeder
             ]);
 
             // Update showtime capacity
-            DB::table('showtimes')->where('id', $stId)->increment('booked_seats', 2);
+            DB::table('showtimes')->where('id', $stId)->increment('booked_seats', 5);
         }
     }
 }

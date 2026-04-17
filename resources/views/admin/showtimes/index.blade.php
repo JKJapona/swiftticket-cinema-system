@@ -117,129 +117,148 @@
                 </div>
             @endif
 
-            @foreach($halls as $hall)
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width: 105px;">
-                        <span class="fw-800 text-slate-700 text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
-                        <div class="caption text-slate-400" style="font-size: 9px;">{{ $hall->screen_type }}</div>
-                    </div>
+            @forelse($halls as $hall)
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div style="width: 105px;">
+                <span class="fw-800 text-slate-700 text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
+                <div class="caption text-slate-400" style="font-size: 9px;">{{ $hall->screen_type }}</div>
+            </div>
 
-                    <div class="flex-grow-1 position-relative">
-                        <div class="progress rounded-pill shadow-inner" style="height: 24px; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible;">
-                            @foreach($hall->showtimes as $st)
-                                @php
-                                    $runtime = $st->movie->runtime_minutes ?? 120;
-                                    $start = \Carbon\Carbon::parse($st->show_time);
-                                    $startHour = $start->hour < 10 ? $start->hour + 24 : $start->hour;
-                                    $minutesFromStartScale = ($startHour - 10) * 60 + $start->minute;
-                                    $leftPos = ($minutesFromStartScale / $totalMinutesInScale) * 100;
-                                    $width = ($runtime / $totalMinutesInScale) * 100;
-                                @endphp
-
-                                @if($leftPos >= 0 && $leftPos < 100)
-                                    <div class="position-absolute timeline-block" 
-                                        style="left: {{ $leftPos }}%; width: {{ $width }}%; height: 24px; top: -1px; background: linear-gradient(to right, #004AAD, #3b82f6); border: 1.5px solid white; border-radius: 6px; z-index: 2;"
-                                        data-bs-toggle="tooltip" 
-                                        data-bs-html="true"
-                                        title="<div class='p-1'><div class='text-white' style='font-size: 13px;'>{{ addslashes($st->movie->title) }}</div><div style='color: #94a3b8; font-size: 11px;'>{{ \Carbon\Carbon::parse($st->show_time)->format('h:i A') }} • {{ $st->movie->runtime_minutes }} mins</div></div>">
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- MANAGEMENT GRID --}}
-    <div class="section-card shadow-sm border-0 p-4 bg-white rounded-4">
-        @foreach($halls as $hall)
-            <div class="hall-row mb-5">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-slate-100 rounded-2 px-3 py-2 border d-flex align-items-center gap-2 shadow-sm">
-                        <i class="bi bi-door-open-fill text-primary"></i>
-                        <span class="fw-800 text-slate-900 text-uppercase" style="font-size: 13px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
-                        <span class="badge bg-light text-slate-600 border ms-1 fw-700" style="font-size: 10px;">{{ $hall->screen_type }}</span>
-                    </div>
-                    <div class="ms-3 flex-grow-1 border-bottom border-dashed" style="opacity: 0.3;"></div>
-                </div>
-
-                <div class="d-flex gap-3 overflow-auto pb-3 py-3 custom-scrollbar">
-                    @forelse($hall->showtimes as $slot)
-                        @php 
-                            $perc = $slot->total_capacity > 0 ? ($slot->booked_seats / $slot->total_capacity) * 100 : 0; 
+            <div class="flex-grow-1 position-relative">
+                <div class="progress rounded-pill shadow-inner" style="height: 24px; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible;">
+                    @forelse($hall->showtimes as $st)
+                        @php
+                            $runtime = $st->movie->runtime_minutes ?? 120;
+                            $start = \Carbon\Carbon::parse($st->show_time);
+                            $startHour = $start->hour < 10 ? $start->hour + 24 : $start->hour;
+                            $minutesFromStartScale = ($startHour - 10) * 60 + $start->minute;
+                            $leftPos = ($minutesFromStartScale / $totalMinutesInScale) * 100;
+                            $width = ($runtime / $totalMinutesInScale) * 100;
                         @endphp
 
-                        <div class="showtime-card p-3 rounded-3 border-start border-2 shadow-sm bg-slate-50" style="min-width: 300px; border-color: var(--swift-blue) !important;">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <img src="{{ $slot->movie->poster_url }}" alt="Poster" class="movie-poster" width="48" height="68" onerror="this.src='{{ asset('images/placeholder-poster.svg') }}'">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <div class="fw-800 text-slate-900 text-truncate" style="font-size: 15px;" title="{{ $slot->movie->title }}">
-                                        {{ $slot->movie->title }}
-                                    </div>
-                                    <div class="bg-white d-inline-block px-2 py-1 rounded border shadow-sm mt-1">
-                                        <span class="fw-800 text-primary" style="font-size: 12px;">
-                                            <i class="bi bi-clock-fill me-1"></i>{{ \Carbon\Carbon::parse($slot->show_time)->format('h:i A') }}
-                                        </span>
-                                    </div>
-                                </div>
+                        @if($leftPos >= 0 && $leftPos < 100)
+                            <div class="position-absolute timeline-block" 
+                                 style="left: {{ $leftPos }}%; width: {{ $width }}%; height: 24px; top: -1px; background: linear-gradient(to right, #004AAD, #3b82f6); border: 1.5px solid white; border-radius: 6px; z-index: 2;"
+                                 data-bs-toggle="tooltip" 
+                                 data-bs-html="true"
+                                 title="<div class='p-1'><div class='text-white' style='font-size: 13px;'>{{ addslashes($st->movie->title) }}</div><div style='color: #94a3b8; font-size: 11px;'>{{ \Carbon\Carbon::parse($st->show_time)->format('h:i A') }} • {{ $st->movie->runtime_minutes }} mins</div></div>">
                             </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-                                <span class="text-slate-500 fw-700" style="font-size: 10px; text-transform: uppercase;">Price Per Seat</span>
-                                <span class="fw-800 text-slate-900" style="font-size: 15px;">₱{{ number_format($slot->price, 0) }}</span>
-                            </div>
-
-                            <div class="progress mb-2" style="height: 8px; border-radius: 10px; background-color: #e2e8f0;">
-                                <div class="progress-bar bg-swift-blue shadow-sm" style="width: {{ $perc }}%; border-radius: 10px;"></div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="d-flex flex-column">
-                                    <span class="text-slate-400 mb-0" style="font-size: 9px; font-weight: 700; text-transform: uppercase;">Occupancy</span>
-                                    <span class="fw-800 text-slate-700" style="font-size: 13px;">
-                                        <i class="bi bi-people-fill me-1 text-primary"></i>{{ $slot->booked_seats }} / {{ $slot->total_capacity }}
-                                    </span>
-                                </div>
-
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-action shadow-sm border" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editShowtimeModal{{ $slot->id }}"
-                                            style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #64748b;">
-                                        <i class="bi bi-pencil-square" style="font-size: 18px;"></i>
-                                    </button>
-
-                                    <form id="delete-showtime-{{ $slot->id }}" action="{{ route('admin.showtimes.destroy', $slot->id) }}" method="POST" class="d-inline">
-                                        @csrf @method('DELETE')
-                                        <button type="button" 
-                                                class="btn btn-action-delete shadow-sm border" 
-                                                style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #ef4444;"
-                                                onclick="swiftConfirm(
-                                                    'Remove Screening?', 
-                                                    'Are you sure you want to delete this showtime? This will affect ticket availability for this slot.', 
-                                                    'danger', 
-                                                    () => document.getElementById('delete-showtime-{{ $slot->id }}').submit()
-                                                )">
-                                            <i class="bi bi-trash" style="font-size: 18px;"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        @endif
                     @empty
-                        <div class="d-flex align-items-center justify-content-center border-dashed border-2 rounded-4 w-100 py-5" style="background: #f8fafc; min-height: 120px;">
-                            <div class="text-center">
-                                <i class="bi bi-calendar-x text-slate-300 d-block mb-2" style="font-size: 2rem;"></i>
-                                <span class="fw-700 text-slate-400" style="font-size: 12px; text-transform: uppercase;">No Screenings Scheduled</span>
-                            </div>
+                        <div class="w-100 d-flex align-items-center justify-content-center" style="height: 24px;">
+                            <span class="text-slate-300 fw-600" style="font-size: 8px; letter-spacing: 1px; text-transform: uppercase;">No screenings scheduled</span>
                         </div>
                     @endforelse
                 </div>
             </div>
-        @endforeach
+        </div>
+    @empty
+        <div class="text-center py-5 border rounded-3 bg-light">
+            <i class="bi bi-building-exclamation text-slate-300 d-block mb-2" style="font-size: 2.5rem;"></i>
+            <span class="fw-700 text-slate-400">No cinema halls registered.</span>
+        </div>
+    @endforelse
+</div>
     </div>
+
+    {{-- MANAGEMENT GRID --}}
+    <div class="section-card shadow-sm border-0 p-4 bg-white rounded-4">
+    {{-- Use @forelse here so the @empty block actually works --}}
+    @forelse($halls as $hall)
+        <div class="hall-row mb-5">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-slate-100 rounded-2 px-3 py-2 border d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-door-open-fill text-primary"></i>
+                    <span class="fw-800 text-slate-900 text-uppercase" style="font-size: 13px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
+                    <span class="badge bg-light text-slate-600 border ms-1 fw-700" style="font-size: 10px;">{{ $hall->screen_type }}</span>
+                </div>
+                <div class="ms-3 flex-grow-1 border-bottom border-dashed" style="opacity: 0.3;"></div>
+            </div>
+
+            <div class="d-flex gap-3 overflow-auto pb-3 py-3 custom-scrollbar">
+                @forelse($hall->showtimes as $slot)
+                    @php 
+                        $perc = $slot->total_capacity > 0 ? ($slot->booked_seats / $slot->total_capacity) * 100 : 0; 
+                    @endphp
+
+                    <div class="showtime-card p-3 rounded-3 border-start border-2 shadow-sm bg-slate-50" style="min-width: 300px; border-color: var(--swift-blue) !important;">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="{{ $slot->movie->poster_url }}" alt="Poster" class="movie-poster rounded shadow-sm" width="48" height="68" onerror="this.src='{{ asset('images/placeholder-poster.svg') }}'">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="fw-800 text-slate-900 text-truncate" style="font-size: 15px;" title="{{ $slot->movie->title }}">
+                                    {{ $slot->movie->title }}
+                                </div>
+                                <div class="bg-white d-inline-block px-2 py-1 rounded border shadow-sm mt-1">
+                                    <span class="fw-800 text-primary" style="font-size: 12px;">
+                                        <i class="bi bi-clock-fill me-1"></i>{{ \Carbon\Carbon::parse($slot->show_time)->format('h:i A') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                            <span class="text-slate-500 fw-700" style="font-size: 10px; text-transform: uppercase;">Price Per Seat</span>
+                            <span class="fw-800 text-slate-900" style="font-size: 15px;">₱{{ number_format($slot->price, 0) }}</span>
+                        </div>
+
+                        <div class="progress mb-2" style="height: 8px; border-radius: 10px; background-color: #e2e8f0;">
+                            <div class="progress-bar bg-swift-blue shadow-sm" style="width: {{ $perc }}%; border-radius: 10px;"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="d-flex flex-column">
+                                <span class="text-slate-400 mb-0" style="font-size: 9px; font-weight: 700; text-transform: uppercase;">Occupancy</span>
+                                <span class="fw-800 text-slate-700" style="font-size: 13px;">
+                                    <i class="bi bi-people-fill me-1 text-primary"></i>{{ $slot->booked_seats }} / {{ $slot->total_capacity }}
+                                </span>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-action shadow-sm border" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editShowtimeModal{{ $slot->id }}"
+                                        style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #64748b;">
+                                    <i class="bi bi-pencil-square" style="font-size: 18px;"></i>
+                                </button>
+
+                                <form id="delete-showtime-{{ $slot->id }}" action="{{ route('admin.showtimes.destroy', $slot->id) }}" method="POST" class="d-inline">
+                                    @csrf @method('DELETE')
+                                    <button type="button" 
+                                            class="btn btn-action-delete shadow-sm border" 
+                                            style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #ef4444;"
+                                            onclick="swiftConfirm(
+                                                'Remove Screening?', 
+                                                'Are you sure you want to delete this showtime? This will affect ticket availability for this slot.', 
+                                                'danger', 
+                                                () => document.getElementById('delete-showtime-{{ $slot->id }}').submit()
+                                            )">
+                                        <i class="bi bi-trash" style="font-size: 18px;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="d-flex align-items-center justify-content-center border-dashed border-2 rounded-4 w-100 py-5" style="background: #f8fafc; min-height: 120px;">
+                        <div class="text-center">
+                            <i class="bi bi-calendar-x text-slate-300 d-block mb-2" style="font-size: 2rem;"></i>
+                            <span class="fw-700 text-slate-400" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">No Screenings Scheduled</span>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    @empty
+        <div class="text-center py-5">
+            <i class="bi bi-building-exclamation text-slate-300 d-block mb-3" style="font-size: 4rem;"></i>
+            <h5 class="fw-800 text-slate-700">No Cinema Halls Found</h5>
+            <p class="text-slate-400 small">You need to add cinema halls before you can schedule showtimes.</p>
+            <a href="{{ route('admin.cinema-halls.index') }}" class="btn btn-primary bg-swift-blue btn-sm px-4 fw-bold rounded-2 shadow-sm">
+                Add Your First Hall
+            </a>
+        </div>
+    @endforelse
+</div>
 </div>
 
 {{-- MODALS --}}
