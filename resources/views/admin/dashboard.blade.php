@@ -139,7 +139,7 @@
                     <div class="mb-4">
                         <div class="d-flex justify-content-between mb-1 align-items-end">
                             <span class="caption" style="font-size: 10px;">
-                                CPU Usage <span class="text-slate-900 fw-800 ms-1">{{ $serverLoad }}%</span>
+                                CPU Usage <span class="text-slate-900 fw-800 ms-1">{{ number_format($serverLoad, 1) }}%</span>
                             </span>
                             <span class="caption {{ $serverLoad > 80 ? 'text-danger' : 'text-success' }}" style="font-size: 10px;">
                                 {{ $status }}
@@ -147,7 +147,7 @@
                         </div>
                         <div class="progress" style="height: 6px; background: #f1f5f9; border-radius: 10px;">
                             <div class="progress-bar {{ $serverLoad > 80 ? 'bg-danger' : 'bg-success' }}" 
-                                 style="width: {{ $serverLoad }}%; border-radius: 10px; transition: width 0.4s ease;">
+                                style="width: {{ min($serverLoad, 100) }}%; border-radius: 10px; transition: width 0.4s ease;">
                             </div>
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                     <div class="p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="caption text-secondary" style="font-size: 9px;">Database Latency</span>
-                            <span class="fw-700 text-slate-900" style="font-size: 12px;">{{ $responseTime }} ms</span>
+                            <span class="fw-700 text-slate-900" style="font-size: 12px;">{{ number_format($responseTime, 0) }} ms</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="caption text-secondary" style="font-size: 9px;">Memory Usage</span>
@@ -186,6 +186,6 @@
             console.warn('AJAX Refresh Failed:', err);
         }
     }
-    setInterval(refreshStatusCard, 5000);
+    setInterval(refreshStatusCard, 60000);
 </script>
 @endsection

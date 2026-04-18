@@ -66,7 +66,7 @@
                             </div>
 
                             {{-- Backdrop Container --}}
-                            <div class="position-absolute end-0 top-0 h-100 w-100 d-none d-lg-block" 
+                            <div class="position-absolute end-0 top-0 h-100 w-100" 
                                 id="backdropContainer" 
                                 style="z-index: 1; background-color: rgb(0, 12, 51);"> {{-- Theme color as base --}}
                                 

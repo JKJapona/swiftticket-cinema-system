@@ -3,7 +3,7 @@
     {{-- 1. Logo Section --}}
     <div class="sidebar-header p-3 mb-2">
         <div class="logo-container d-flex align-items-center" style="height: 40px;">
-            <img src="{{ asset('images/SwiftTicket_Abreeza.svg') }}" 
+            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" 
                  alt="SwiftTicket Logo" 
                  style="max-width: 210px; width: auto; height: 100%; object-fit: contain;"
                  loading="eager"
