@@ -946,5 +946,38 @@ hr {
     list-style-type: disc;
 }
 
+    .btn-info {
+    background-color: #0ea5e9 !important;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #64748b !important;
+    border: none;
+    opacity: 0.8;
+}
+
+.btn-warning {
+    transition: transform 0.2s;
+}
+.btn-warning:hover {
+    transform: scale(1.05);
+}
+
+#backdropContainer {
+    pointer-events: none !important;
+}
+
+.carousel-indicators {
+    z-index: 20 !important;
+    pointer-events: auto !important;
+}
+
+.carousel-indicators button {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    background-clip: content-box !important;
+}
+
 
 

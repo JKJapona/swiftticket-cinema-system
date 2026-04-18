@@ -9,7 +9,7 @@
         @if($movies->count() > 0)
         <div id="heroCarousel" class="carousel slide mb-4 shadow-lg rounded-3 overflow-hidden" data-bs-ride="carousel">
             
-            <div class="carousel-indicators" style="z-index: 5;">
+            <div class="carousel-indicators" style="z-index: 20;">
                 @foreach($featuredmovies as $index => $movie)
                     <button type="button" 
                             data-bs-target="#heroCarousel" 
@@ -51,9 +51,9 @@
 
                                     @elseif($displayStatus === 'Coming Soon')
                                         {{-- Disabled / Notifying Button --}}
-                                        <button class="btn bg-swift-blue px-4 py-2 rounded-3 fw-bold shadow-sm text-white" disabled style="background-color: #0dcaf0; border: none;">
+                                        <a href="{{ route('movies.show', $movie->id) }}" class="btn bg-swift-blue px-4 py-2 rounded-3 fw-bold shadow-sm text-white" style="background-color: #0dcaf0; border: none;">
                                             <i class="bi bi-calendar-event me-2"></i>Coming Soon
-                                        </button>
+                                        </a>
                                         <p class="caption text-white-50 mt-2 small">Tickets available on release</p>
 
                                     @elseif($displayStatus === 'Archived')
@@ -281,24 +281,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<style>
-    .btn-info {
-    background-color: #0ea5e9 !important;
-    border: none;
-}
 
-.btn-secondary {
-    background-color: #64748b !important;
-    border: none;
-    opacity: 0.8;
-}
-
-.btn-warning {
-    transition: transform 0.2s;
-}
-.btn-warning:hover {
-    transform: scale(1.05);
-}
-</style>
 
 @endsection

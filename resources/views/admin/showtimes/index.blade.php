@@ -118,52 +118,51 @@
             @endif
 
             @forelse($halls as $hall)
-        <div class="d-flex align-items-center gap-3 mb-3">
-            <div style="width: 105px;">
-                <span class="fw-800 text-slate-700 text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
-                <div class="caption text-slate-400" style="font-size: 9px;">{{ $hall->screen_type }}</div>
-            </div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div style="width: 105px;">
+                        <span class="fw-800 text-slate-700 text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">{{ $hall->name }}</span>
+                        <div class="caption text-slate-400" style="font-size: 9px;">{{ $hall->screen_type }}</div>
+                    </div>
 
-            <div class="flex-grow-1 position-relative">
-                <div class="progress rounded-pill shadow-inner" style="height: 24px; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible;">
-                    @forelse($hall->showtimes as $st)
-                        @php
-                            $runtime = $st->movie->runtime_minutes ?? 120;
-                            $start = \Carbon\Carbon::parse($st->show_time);
-                            $startHour = $start->hour < 10 ? $start->hour + 24 : $start->hour;
-                            $minutesFromStartScale = ($startHour - 10) * 60 + $start->minute;
-                            $leftPos = ($minutesFromStartScale / $totalMinutesInScale) * 100;
-                            $width = ($runtime / $totalMinutesInScale) * 100;
-                        @endphp
+                    <div class="flex-grow-1 position-relative">
+                        <div class="progress rounded-pill shadow-inner" style="height: 24px; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible;">
+                            @forelse($hall->showtimes as $st)
+                                @php
+                                    $runtime = $st->movie->runtime_minutes ?? 120;
+                                    $start = \Carbon\Carbon::parse($st->show_time);
+                                    $startHour = $start->hour < 10 ? $start->hour + 24 : $start->hour;
+                                    $minutesFromStartScale = ($startHour - 10) * 60 + $start->minute;
+                                    $leftPos = ($minutesFromStartScale / $totalMinutesInScale) * 100;
+                                    $width = ($runtime / $totalMinutesInScale) * 100;
+                                @endphp
 
-                        @if($leftPos >= 0 && $leftPos < 100)
-                            <div class="position-absolute timeline-block" 
-                                 style="left: {{ $leftPos }}%; width: {{ $width }}%; height: 24px; top: -1px; background: linear-gradient(to right, #004AAD, #3b82f6); border: 1.5px solid white; border-radius: 6px; z-index: 2;"
-                                 data-bs-toggle="tooltip" 
-                                 data-bs-html="true"
-                                 title="<div class='p-1'><div class='text-white' style='font-size: 13px;'>{{ addslashes($st->movie->title) }}</div><div style='color: #94a3b8; font-size: 11px;'>{{ \Carbon\Carbon::parse($st->show_time)->format('h:i A') }} • {{ $st->movie->runtime_minutes }} mins</div></div>">
-                            </div>
-                        @endif
-                    @empty
-                        <div class="w-100 d-flex align-items-center justify-content-center" style="height: 24px;">
-                            <span class="text-slate-300 fw-600" style="font-size: 8px; letter-spacing: 1px; text-transform: uppercase;">No screenings scheduled</span>
+                                @if($leftPos >= 0 && $leftPos < 100)
+                                    <div class="position-absolute timeline-block" 
+                                        style="left: {{ $leftPos }}%; width: {{ $width }}%; height: 24px; top: -1px; background: linear-gradient(to right, #004AAD, #3b82f6); border: 1.5px solid white; border-radius: 6px; z-index: 2;"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-html="true"
+                                        title="<div class='p-1'><div class='text-white' style='font-size: 13px;'>{{ addslashes($st->movie->title) }}</div><div style='color: #94a3b8; font-size: 11px;'>{{ \Carbon\Carbon::parse($st->show_time)->format('h:i A') }} • {{ $st->movie->runtime_minutes }} mins</div></div>">
+                                    </div>
+                                @endif
+                            @empty
+                                <div class="w-100 d-flex align-items-center justify-content-center" style="height: 24px;">
+                                    <span class="text-slate-300 fw-600" style="font-size: 8px; letter-spacing: 1px; text-transform: uppercase;">No screenings scheduled</span>
+                                </div>
+                            @endforelse
                         </div>
-                    @endforelse
+                    </div>
                 </div>
-            </div>
+            @empty
+                <div class="text-center py-5 border rounded-3 bg-light">
+                    <i class="bi bi-building-exclamation text-slate-300 d-block mb-2" style="font-size: 2.5rem;"></i>
+                    <span class="fw-700 text-slate-400">No cinema halls registered.</span>
+                </div>
+            @endforelse
         </div>
-    @empty
-        <div class="text-center py-5 border rounded-3 bg-light">
-            <i class="bi bi-building-exclamation text-slate-300 d-block mb-2" style="font-size: 2.5rem;"></i>
-            <span class="fw-700 text-slate-400">No cinema halls registered.</span>
-        </div>
-    @endforelse
-</div>
     </div>
 
     {{-- MANAGEMENT GRID --}}
     <div class="section-card shadow-sm border-0 p-4 bg-white rounded-4">
-    {{-- Use @forelse here so the @empty block actually works --}}
     @forelse($halls as $hall)
         <div class="hall-row mb-5">
             <div class="d-flex align-items-center mb-3">

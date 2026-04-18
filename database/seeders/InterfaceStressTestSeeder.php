@@ -94,7 +94,7 @@ class InterfaceStressTestSeeder extends Seeder
         // Seat Tracker to avoid Duplicate Entry errors
         $seatTracker = [];
 
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $stId = $showtimeIds[array_rand($showtimeIds)];
             $status = $bookingStatuses[array_rand($bookingStatuses)];
             
