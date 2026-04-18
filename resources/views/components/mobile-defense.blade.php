@@ -4,13 +4,14 @@
             const defenseOverlay = document.getElementById('mobile-defense');
 
             function checkResolution() {
-                if (window.innerWidth < 992) {
-                    // Mobile/Tablet: Show overlay and lock scroll
+                const isSmallScreen = window.innerWidth < 768; 
+                const isMobileIdentity = navigator.userAgent.includes('Mobi');
+
+                if (isSmallScreen && isMobileIdentity) {
                     defenseOverlay.style.setProperty('display', 'flex', 'important');
                     document.documentElement.classList.add('no-scroll');
                     document.body.classList.add('no-scroll');
                 } else {
-                    // Desktop: Hide overlay and unlock scroll
                     defenseOverlay.style.setProperty('display', 'none', 'important');
                     document.documentElement.classList.remove('no-scroll');
                     document.body.classList.remove('no-scroll');
@@ -21,7 +22,7 @@
         })();
     </script>
     
-    <div class="defense-card">     
+    <div class="defense-card">      
         <i class="bi {{ $icon ?? 'bi-display-fill' }} text-warning" style="font-size: 3.5rem;"></i>
 
         <h2 class="mt-3 fw-bold">{{ $title ?? 'Desktop Site Required' }}</h2>
@@ -41,11 +42,11 @@
         display: none !important;
     }
 
-    @media (max-width: 991.98px) {
+    @media (max-width: 767.98px) {
         #mobile-defense {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #000c33 0%, #001a66 100%);
+            background: linear-gradient(135deg, #000c33 0%, #002696 100%);
             z-index: 99999;
             align-items: center;
             justify-content: center;

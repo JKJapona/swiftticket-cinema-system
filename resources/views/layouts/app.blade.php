@@ -12,9 +12,10 @@
     <meta property="og:url" content="https://swiftticket-cinema-system.onrender.com/">
     <meta property="og:title" content="SwiftTicket | Abreeza Cinema">
     <meta property="og:description" content="Experience seamless movie ticketing at Abreeza. Simple, fast, and secure.">
-    <meta property="og:image" content="{{ asset('images/og-banner.png') }}">
+    <meta property="og:image" content="{{ asset('images/og-banner.jpg') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="SwiftTicket Abreeza banner featuring a lightning bolt logo and a CTA to book seats now.">
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.ico') }}">
     
