@@ -1,39 +1,82 @@
 <p align="center">
-  <img src="public/images/SwiftTicket_Abreeza_Pill.svg" alt="SwiftTicket Abreeza Logo" width="1000">
+  <img src="public/images/swiftticket_abreeza_pill.svg" alt="SwiftTicket Abreeza Logo" width="1000">
 </p>
 
-# SwiftTicket 🎟️
+# SwiftTicket: Abreeza Cinema Reservation System
 
-**SwiftTicket** is a modern, web-based cinema reservation and management system designed specifically for **Abreeza Cinemas**. Built with Laravel 12, it provides a seamless experience for moviegoers to book seats and for administrators to manage theater operations in real-time.
+[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php)](https://www.php.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/JKJapona/swiftticket-cinema-system/graphs/commit-activity)
+
+**SwiftTicket** is a production-ready cinema management and ticketing platform. Engineered with **Laravel 12**, it delivers an end-to-end solution for modern theaters. Balancing a frictionless customer booking flow with a robust administrative engine for real-time operations.
 
 ---
 
-## 🌟 Overview
+## 🚀 Live Deployment
+**Production URL:** [https://swiftticket-cinema-system.onrender.com/](https://swiftticket-cinema-system.onrender.com/)  
+> **Note:** Hosted on Render's Free Tier. If the site is idle, please allow **30–60 seconds** for the instance to spin up.
 
-The goal of SwiftTicket is to bridge the gap between cinema management and the customer experience. By focusing on **UI/UX accessibility** and **efficient database normalization**, the system ensures that booking a movie is as fast and intuitive as possible.
+---
 
-### Key Features
+## 📊 Repository Metrics
+<p align="left">
+<img src="https://github-readme-stats.vercel.app/api?username=JKJapona&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub Stats" height="150">
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JKJapona&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" height="150">
+</p>
 
-* **Real-time Seat Selection:** Interactive seat maps with live availability tracking.
-* **Comprehensive Admin Dashboard:** Manage movies, cinema halls, and showtimes from a single interface.
-* **Dynamic Ticketing:** Instant digital ticket generation with unique booking references (e.g., `OD8KKF0N`).
-* **Financial Tracking:** Integrated payment method selection including GCash and Pay at Cinema.
-* **Multi-Tier Hall Management:** Support for various screen types including Standard, IMAX, and 4DX.
+---
+
+## 🌟 Core Functionalities
+
+### 👤 Customer Experience
+* **Interactive Seat Mapping:** SVG-based, real-time seat selection interface ensuring zero concurrency conflicts.
+* **Smart Scheduling:** Automated filtering for "Now Showing" vs. "Coming Soon" based on system timestamps.
+* **Digital Ticketing:** Automated generation of unique alphanumeric booking references (e.g., `OD8KKF0N`).
+* **Flexible Checkout:** Secure selection between GCash, Credit Card, or "Pay at Cinema" workflows.
+
+### 🛡️ Administrative Engine
+* **Operational Control:** CRUD management for Movie libraries, Cinema Halls (Standard, IMAX, 4DX), and Showtimes.
+* **Security & Governance:** Robust Role-Based Access Control (RBAC) with account suspension capabilities.
+* **Data Integrity:** Fully normalized MySQL schema with Foreign Key constraints to ensure relational consistency and booking accuracy.
+
+---
+
+## 🛠️ Technical Architecture
+
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | Laravel 12 (PHP 8.2+) |
+| **Database** | MySQL via Clever Cloud (Relational Schema) |
+| **Frontend** | Blade Templates, Vanilla JS, Bootstrap 5, Bootstrap Icons |
+| **Security** | Session-based authentication / CSRF Protection |
+| **Deployment** | Render PaaS / GitHub Actions (CI/CD) |
+
+---
+
+## 🔐 Sandbox Access (For Testing)
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **System Admin** | `admin@swiftticket.com` | `password` |
+| **Alt Admin** | `admin.alt@swiftticket.com` | `password` |
+| **Standard User** | `test@customer.com` | `password` |
+| **Suspended User** | `banned@customer.com` | `password` |
 
 ---
 
 ## 🎨 Design Philosophy
-
-SwiftTicket follows a **"Usability First"** approach:
-* **Light Mode Optimization:** Designed for high readability and teacher-approved accessibility standards.
-* **Structured Hierarchy:** Clear visual cues for "Now Showing" vs. "Coming Soon" movies.
-* **Geometry-Based Branding:** A clean, professional logo and UI elements built in Figma.
+SwiftTicket adopts a **"Usability First"** aesthetic. The UI is optimized for high-contrast readability, adhering to professional accessibility standards. The layout utilizes a structured hierarchy to guide users through the 3-step booking process: **Select Movie → Pick Seats → Confirm Payment.**
 
 ---
 
-## 🛠️ Tech Stack
+## 👨‍💻 Development Team
+Developed for the **College of Computing Education**.
 
-* **Frontend:** HTML5, CSS3, JavaScript (Blade Templates)
-* **Backend:** Laravel 12
-* **Database:** MySQL (Relational Schema)
-* **Tools:** Figma (UI/UX Design), Git/GitHub (Version Control)
+* **Lead System Architect:** [Jheric Kent Japona](https://github.com/JKJapona)
+* **Lead Supervisor:** Prof. Glenn Angelo Oliva
+
+---
+<p align="center">
+  Built with ❤️ by Jheric Kent Japona | 2026
+</p>
