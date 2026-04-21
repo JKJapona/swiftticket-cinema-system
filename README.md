@@ -33,7 +33,7 @@
 * **Interactive Seat Mapping:** JS-based, real-time seat selection interface ensuring zero concurrency conflicts.
 * **Smart Scheduling:** Automated filtering for "Now Showing" vs. "Coming Soon" based on system timestamps.
 * **Digital Ticketing:** Automated generation of unique alphanumeric booking references (e.g., `OD8KKF0N`).
-* **Flexible Checkout:** Secure selection between GCash, Credit Card, or "Pay at Cinema" workflows.
+* **Flexible Checkout:** Secure selection between GCash, or "Pay at Cinema" workflows.
 
 ### 🛡️ Administrative Engine
 * **Operational Control:** CRUD management for Movie libraries, Cinema Halls (Standard, IMAX, 4DX), and Showtimes.
