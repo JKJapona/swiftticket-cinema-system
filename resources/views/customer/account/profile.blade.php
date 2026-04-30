@@ -41,7 +41,7 @@
         <div class="col-lg-9">
             {{-- HEADER CARD --}}
             <div class="card border-0 shadow-sm rounded-3 mb-4 profile-header-gradient overflow-hidden">
-                <div class="card-body p-4 p-md-5 d-md-flex align-items-center text-center text-md-start gap-4 position-relative">
+                <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-4 position-relative">
                     <div class="profile-avatar-wrapper mx-auto mx-md-0">
                         <div class="avatar-circle">
                             <span class="fs-1 fw-black">{{ substr(Auth::user()->full_name, 0, 1) }}</span>
@@ -268,6 +268,7 @@
     }
 }
 </style>
+
 
 
 

@@ -27,7 +27,6 @@
 </head>
 <body>
     <div id="top-progress-bar"></div>
-    @include('components.mobile-defense')
 
     <header class="app-header">
         @include('layouts.app-topbar')

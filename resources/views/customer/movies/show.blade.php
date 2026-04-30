@@ -279,4 +279,74 @@
     .scrollbar-hidden::-webkit-scrollbar { display: none; }
     .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
+
+<style>
+/* --- MOBILE RESPONSIVENESS (Screens smaller than 992px) --- */
+@media (max-width: 991.98px) {
+    /* 1. Remove sticky position so the poster sits on top of the details */
+    .position-sticky {
+        position: static !important;
+        margin-bottom: 1.5rem;
+    }
+
+    /* 2. Scale down the poster size slightly so it doesn't take up the whole screen */
+    .col-md-4 .skeleton-loader {
+        max-width: 280px;
+        margin: 0 auto; /* Center the poster */
+    }
+
+    /* 3. Center the Watch Trailer button */
+    .btn-outline-primary.w-100 {
+        max-width: 280px;
+        margin: 10px auto 0;
+    }
+
+    /* 4. Increase font size of the title for readability */
+    h1.h2 {
+        font-size: 1.5rem !important;
+        text-align: center;
+    }
+
+    /* 5. Center the badges/meta info */
+    .d-flex.flex-wrap.align-items-center.gap-2 {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    /* 6. Make showtime cards 2-columns on mobile instead of stacking vertically */
+    #showtimes-list .col-sm-6 {
+        width: 50% !important;
+    }
+}
+
+/* Extra small devices (phones, 576px and down) */
+@media (max-width: 575.98px) {
+    /* Make Date Picker cards slightly smaller to fit more on screen */
+    .date-picker-btn {
+        min-width: 60px !important;
+        padding: 8px !important;
+    }
+
+    .date-number {
+        font-size: 1.1rem !important;
+    }
+
+    /* Stack showtimes in a single column on very small phones */
+    #showtimes-list .col-sm-6 {
+        width: 100% !important;
+    }
+
+    /* Center text for Synopsis and Cast */
+    .col-12 h5, .col-12 p {
+        text-align: center;
+    }
+}
+
+/* Fix for the horizontal date picker scrolling */
+#date-picker-container {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    display: flex;
+    flex-wrap: nowrap;
+}
+</style>
 @endsection

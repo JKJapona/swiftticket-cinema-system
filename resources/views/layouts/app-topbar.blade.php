@@ -27,12 +27,11 @@
                 
                 <div class="vr mx-3 text-dark opacity-10 d-none d-md-block"></div>
                 
-                <div class="d-flex align-items-center">
-                    <h1 class="h6 fw-bold mb-0 me-2">{{ $showtime->movie->title }}</h1>
-                    <span class="text-secondary opacity-50 me-2">|</span>
-                    <p class="mb-0 text-secondary fw-medium" style="font-size: 13px;">
-                        {{ \Carbon\Carbon::parse($showtime->show_date)->format('M d') }} • 
-                        {{ \Carbon\Carbon::parse($showtime->show_time)->format('h:i A') }} • 
+                <div class="movie-info-block d-flex align-items-center flex-grow-1 overflow-hidden">
+                    <h1 class="h6 fw-bold mb-0 text-truncate me-2">{{ $showtime->movie->title }}</h1>
+                    <span class="text-secondary opacity-50 me-2 d-none d-sm-inline">|</span>
+                    <p class="mb-0 text-secondary fw-medium text-nowrap d-none d-md-block" style="font-size: 13px;">
+                        {{ \Carbon\Carbon::parse($showtime->show_date)->format('M d') }} • 
                         {{ $showtime->hall->name }}
                     </p>
                 </div>
@@ -53,28 +52,30 @@
 
         {{-- VIEW 3: CHECKOUT / PAYMENT NAVBAR --}}
         @elseif(Request::is('checkout/payment'))
-            <div class="d-flex align-items-center w-100">
-                <a href="{{ url()->previous() }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
-                    <i class="bi bi-chevron-left fs-5"></i>
-                    <span>Back</span>
-                </a>
-
-                <div class="vr mx-3 text-dark opacity-10"></div>
-                
-                <a href="{{ url('/') }}">
-                    <img src="{{ asset('images/swiftticket_abreeza.svg') }}" style="height: 32px;" alt="SwiftTicket" loading="eager" fetchpriority="high">
-                </a>
-
-                <div class="d-flex align-items-center gap-2 bg-light px-3 py-2 rounded-pill border ms-auto">
-                    <i class="bi bi-clock-history text-primary"></i>
-                    <span class="caption mb-0 d-none d-sm-inline">Time Left:</span>
-                    <span id="timer-display" class="fw-bold text-dark" style="min-width: 45px; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity 0.2s ease;">--:--</span>
+            <div class="d-flex align-items-center w-100 payment-navbar-container">
+                <div class="nav-left">
+                    <a href="{{ url()->previous() }}" class="nav-link-custom fw-bold d-flex align-items-center gap-1">
+                        <i class="bi bi-chevron-left"></i>
+                        <span>Back</span>
+                    </a>
                 </div>
+
+                <div class="nav-center flex-grow-1 text-center d-none d-md-block">
+                    <a href="{{ url('/') }}">
+                        <img src="{{ asset('images/swiftticket_abreeza.svg') }}" class="nav-logo-mobile" style="height: 32px;" alt="SwiftTicket">
+                    </a>
+                </div>
+
+                    <div class="d-flex align-items-center gap-2 bg-light px-3 py-2 rounded-pill border ms-auto me-3">
+                        <i class="bi bi-clock-history text-primary"></i>
+                        <span class="caption mb-0 d-none d-sm-inline">Time Left:</span>
+                        <span id="timer-display" class="fw-bold text-dark" style="min-width: 45px; font-variant-numeric: tabular-nums;">15:00</span>
+                    </div>
             </div>
 
         {{-- VIEW 4: GENERAL NAVBAR --}}
         @else
-            <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center justify-content-between w-100" style="position: relative; min-height: 32px;">
                 <div class="d-flex align-items-center">
                     
                     @if(Request::is('movies/*'))
@@ -93,10 +94,11 @@
                     @endif
                     
                      {{-- LEFT SIDE: LOGO --}}
+                     <div class="nav-center">
                     <a href="{{ url('/') }}">
                         <img src="{{ asset('images/swiftticket_abreeza.svg') }}" style="height: 32px;" alt="SwiftTicket" loading="eager" fetchpriority="high">
                     </a>
-                    <span class="text-uppercase fw-bold text-muted ms-2 d-none d-sm-inline" style="font-size: 10px; letter-spacing: 2px;">Davao City</span>
+                    </div>
                 </div>
 
                 {{-- RIGHT SIDE: PROFILE --}}
