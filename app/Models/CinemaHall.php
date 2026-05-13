@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CinemaHall extends Model
 {
+    protected $table = 'cinema_hall_analytics_view';
+    
     protected $fillable = [
         'name', 
         'screen_type', 

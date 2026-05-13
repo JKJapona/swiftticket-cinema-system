@@ -63,6 +63,7 @@ Route::middleware(['auth', 'admin'])
     ->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/live-stats', [DashboardController::class, 'getLiveStats'])->name('api.stats');
     Route::get('/sales-report', [DashboardController::class, 'salesReport'])->name('reports.sales');
     Route::get('/sales-report/download', [DashboardController::class, 'downloadPDF'])->name('reports.download');
 

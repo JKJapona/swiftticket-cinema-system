@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class MovieController extends Controller
 {
@@ -33,10 +34,10 @@ class MovieController extends Controller
         $movies = Movie::all();
 
         $stats = [
-            'total_count'        => Movie::count(),
-            'now_showing_count'  => Movie::where('status', 'now_showing')->count(),
-            'coming_soon_count'  => Movie::where('status', 'coming_soon')->count(),
-            'active_showtimes'   => \App\Models\Showtime::where('show_date', '>=', now()->toDateString())->count(),
+            'total_count'        => $movies->count(),
+            'now_showing_count'  => $movies->where('status', 'now_showing')->count(),
+            'coming_soon_count'  => $movies->where('status', 'coming_soon')->count(),
+            'active_showtimes'   => $movies->sum('active_showtimes_count'), // Optimized!
         ];
 
         return view('admin.movies.index', compact('movies', 'stats'));

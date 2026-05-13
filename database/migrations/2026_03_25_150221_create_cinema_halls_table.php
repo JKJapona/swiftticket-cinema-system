@@ -30,7 +30,6 @@ return new class extends Migration
             $table->string('audio_system', 50)->default('Dolby Atmos');
             $table->integer('number_of_rows');
             $table->integer('seats_per_row');
-            // Virtual column for total seats
             $table->integer('total_seats')->virtualAs('number_of_rows * seats_per_row');
             $table->enum('status', ['Active', 'Maintenance', 'Inactive'])->default('Active');
             $table->timestamps();

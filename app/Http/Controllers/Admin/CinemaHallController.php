@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CinemaHall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class CinemaHallController extends Controller
 {
@@ -28,11 +29,11 @@ class CinemaHallController extends Controller
 
     public function index()
     {
-        $halls = CinemaHall::all();
+        $halls = CinemaHall::all(); 
 
         $stats = [
             'total_halls'       => $halls->count(),
-            'total_seats'       => $halls->sum('total_seats'),
+            'total_seats'       => $halls->sum('calculated_total_seats'),
             'active_halls'      => $halls->where('status', 'Active')->count(),
             'maintenance_halls' => $halls->where('status', 'Maintenance')->count(),
         ];

@@ -7,7 +7,7 @@
                                     {{-- LEFT SIDE: MOVIE & DETAILS --}}
                                     <div class="col-md-8 p-4 p-lg-5 bg-white">
                                         <div class="d-flex align-items-center gap-2 mb-4">
-                                            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" height="24">
+                                            <img src="{{ asset('images/swiftticket_abreeza.svg') }}" style="max-height: 24px;">
                                             <span class="text-muted ms-auto small font-monospace">{{ $booking->reference_number }}</span>
                                         </div>
 

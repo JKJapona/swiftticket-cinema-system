@@ -5,12 +5,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. LOADING BAR LOGIC
     function startLoadingBar() {
         if (!progressBar) return;
-        progressBar.style.display = 'block';
-        progressBar.style.opacity = '1';
+        
+        progressBar.style.transition = 'none'; 
         progressBar.style.width = '0%';
+        progressBar.style.opacity = '1';
+        progressBar.style.display = 'block';
+
         void progressBar.offsetWidth; 
+
         progressBar.style.transition = 'width 2s cubic-bezier(0.1, 0.05, 0, 1)';
         progressBar.style.width = '90%';
+    }
+
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            hideLoadingBar();
+        }
+    });
+
+    function hideLoadingBar() {
+        if (!progressBar) return;
+        progressBar.style.transition = 'opacity 1s ease';
+        progressBar.style.opacity = '0';
+        
+        setTimeout(() => {
+            progressBar.style.display = 'none';
+            progressBar.style.width = '0%';
+        }, 300);
     }
 
     // Handle Link Clicks
@@ -40,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             const originalText = submitBtn.innerText.trim();
 
-            if (submitBtn.classList.contains('btn-sm') || submitBtn.classList.contains('btn-small')) {
+            if (submitBtn.classList.contains('btn-small')) {
                 submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${originalText}`;
             } else {
                 submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...`;

@@ -16,6 +16,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -27,13 +28,13 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::where('role', 'customer')->withCount('bookings');
+        $query = DB::table('customer_analytics_view');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('full_name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%");
+                ->orWhere('email', 'like', "%$search%");
             });
         }
 
@@ -44,15 +45,10 @@ class CustomerController extends Controller
         $customers = $query->orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total_customers'   => User::where('role', 'customer')->count(),
-            'active_this_month' => User::where('role', 'customer')
-                ->whereHas('bookings', function($q) {
-                    $q->where('created_at', '>=', now()->subDays(30));
-                })->count(),
-            'new_signups'       => User::where('role', 'customer')
-                ->where('created_at', '>=', now()->subWeek())
-                ->count(),
-            'banned_count'      => User::where('status', 'banned')->count(),
+            'total_customers'   => $customers->count(),
+            'active_this_month' => $customers->where('active_this_month_flag', 1)->count(),
+            'new_signups'       => $customers->where('is_new_signup', 1)->count(),
+            'banned_count'      => $customers->where('status', 'banned')->count(),
         ];
 
         return view('admin.customers.index', compact('customers', 'stats'));
@@ -88,23 +84,5 @@ class CustomerController extends Controller
         }
 
         return redirect()->back()->with('success', "Account for '{$customer->full_name}' has been successfully reinstated.");
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Internal Helper Logic
-    |--------------------------------------------------------------------------
-    */
-
-    private function getTotalCustomersCount()
-    {
-        return User::where('role', 'customer')->count();
-    }
-
-    private function getActiveCustomersThisMonthCount()
-    {
-        return User::whereHas('bookings', function ($query) {
-            $query->whereMonth('created_at', now()->month);
-        })->count();
     }
 }

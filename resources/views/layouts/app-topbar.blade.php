@@ -57,10 +57,11 @@
                     <a href="{{ url()->previous() }}" class="nav-link-custom fw-bold d-flex align-items-center gap-1">
                         <i class="bi bi-chevron-left"></i>
                         <span>Back</span>
+                        <div class="vr mx-3 text-dark opacity-10"></div>
                     </a>
                 </div>
 
-                <div class="nav-center flex-grow-1 text-center d-none d-md-block">
+                <div class="nav-center flex-grow-1 text-left d-none d-md-block">
                     <a href="{{ url('/') }}">
                         <img src="{{ asset('images/swiftticket_abreeza.svg') }}" class="nav-logo-mobile" style="height: 32px;" alt="SwiftTicket">
                     </a>
@@ -81,16 +82,18 @@
                     @if(Request::is('movies/*'))
                         <a href="{{ url('/') }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
                             <i class="bi bi-chevron-left fs-5"></i>
-                            <span>Back</span>
+                            <span class=" d-none d-md-block">Back</span>
+                            <div class="vr mx-3 text-dark opacity-10"></div>
                         </a>
-                        <div class="vr mx-3 text-dark opacity-10 d-none d-md-block"></div>
+                        
 
                     @elseif(request()->routeIs('profile', 'profile.edit'))
                         <a href="{{ route('home') }}" class="nav-link-custom fw-bold d-flex align-items-center gap-2">
                             <i class="bi bi-chevron-left fs-5"></i>
-                            <span>Back</span>
+                            <span class=" d-none d-md-block">Back</span>
+                            <div class="vr mx-3 text-dark opacity-10"></div>
                         </a>
-                        <div class="vr mx-3 text-dark opacity-10 d-none d-md-block"></div>
+                        
                     @endif
                     
                      {{-- LEFT SIDE: LOGO --}}

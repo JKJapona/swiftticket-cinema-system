@@ -32,36 +32,24 @@ class ShowtimeController extends Controller
     {
         $selectedDate = $request->get('date', now()->format('Y-m-d'));
         
-        $totalShowtimes = Showtime::count();
-        $totalBookings = Showtime::sum('booked_seats');
-
         $todayShowtimes = Showtime::whereDate('show_date', $selectedDate)->get();
         
         $stats = [
-            'total_showtimes'      => $totalShowtimes,
-            'total_bookings'       => $totalBookings,
+            'total_showtimes'      => Showtime::count(),
+            'total_bookings'       => Showtime::sum('booked_seats'),
             'today_shows_count'    => $todayShowtimes->count(),
             'unique_movies_count'  => $todayShowtimes->unique('movie_id')->count(),
             'total_daily_capacity' => $todayShowtimes->sum('total_capacity'),
-            'high_occupancy_count' => $todayShowtimes->filter(function ($show) {
-                return $show->total_capacity > 0 && ($show->booked_seats / $show->total_capacity) >= 0.8;
-            })->count(),
+            'high_occupancy_count' => $todayShowtimes->where('occupancy_rate', '>=', 0.8)->count(),
         ];
 
         $halls = CinemaHall::with(['showtimes' => function($query) use ($selectedDate) {
-            $query->whereDate('show_date', $selectedDate)
-                  ->with('movie')
-                  ->orderBy('show_time');
+            $query->whereDate('show_date', $selectedDate)->orderBy('show_time');
         }])->where('status', 'Active')->get();
 
         $allMovies = Movie::where('status', '!=', 'archived')->get();
 
-        return view('admin.showtimes.index', compact(
-            'halls', 
-            'allMovies', 
-            'selectedDate', 
-            'stats'
-        ));
+        return view('admin.showtimes.index', compact('halls', 'allMovies', 'selectedDate', 'stats'));
     }
 
     public function showByMovie(Request $request, $movieId)

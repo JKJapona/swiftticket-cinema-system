@@ -14,25 +14,18 @@
     </div>
 
     {{-- 2. STATS CARDS ROW --}}
-    <div class="row g-3 mb-4">
-        @php
-            $cards = [
-                ['label' => 'Total Revenue', 'value' => '₱' . number_format($stats['total_revenue'], 2), 'class' => 'border-primary border-4 border-start'],
-                ['label' => 'Total Bookings', 'value' => number_format($stats['total_bookings']), 'class' => ''],
-                ['label' => 'Customers', 'value' => number_format($stats['total_customers']), 'class' => ''],
-                ['label' => 'Movies Now Showing', 'value' => $stats['active_movies'], 'class' => '']
-            ];
-        @endphp
-
-        @foreach($cards as $card)
-        <div class="col-md-3">
-            <div class="section-card p-4 border-0 shadow-sm {{ $card['class'] }}">
-                <span class="caption d-block mb-1">{{ $card['label'] }}</span>
-                <h3 class="stat-value mb-0 text-end">{{ $card['value'] }}</h3>
+        <div class="row g-3 mb-4">
+            @foreach(['Revenue', 'Bookings', 'Customers', 'Movies'] as $label)
+            <div class="col-md-3">
+                <div class="section-card p-4 border-0 shadow-sm">
+                    <span class="caption d-block mb-1">{{ $label }}</span>
+                    <h3 class="stat-value mb-0 text-end ajax-load" id="stat-{{ strtolower($label) }}">
+                        <div class="spinner-border spinner-border-sm text-light-emphasis" role="status"></div>
+                    </h3>
+                </div>
             </div>
+            @endforeach
         </div>
-        @endforeach
-    </div>
 
     <div class="row g-4">
         <div class="col-lg-8">
@@ -107,7 +100,7 @@
             </div>
         </div>
 
-        {{-- 4. SIDEBAR (QUICK ACTIONS & STATUS) --}}
+        {{-- 4. SIDEBAR --}}
         <div class="col-lg-4">
             {{-- Quick Actions --}}
             <div class="section-card shadow-sm border-0 mb-4 p-4">
@@ -129,41 +122,36 @@
             </div>
 
             {{-- System Status Card --}}
-            <div id="status-card-ajax-wrapper">
-                <div class="section-card shadow-sm border-0 p-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="{{ $dbStatus ? 'bg-success' : 'bg-danger' }} rounded-circle me-2 pulse-light" style="width: 8px; height: 8px;"></div>
-                        <h5 class="fw-700 text-slate-900 mb-0" style="font-size: 16px;">System Status</h5>
+            <div class="section-card shadow-sm border-0 p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div id="db-indicator" class="bg-secondary rounded-circle me-2" style="width: 8px; height: 8px;"></div>
+                    <h5 class="fw-700 text-slate-900 mb-0" style="font-size: 16px;">System Status</h5>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1 align-items-end">
+                        <span class="caption" style="font-size: 10px;">
+                            CPU Usage <span id="cpu-text" class="text-slate-900 fw-800 ms-1">--%</span>
+                        </span>
+                        <span id="system-label" class="caption text-secondary" style="font-size: 10px;">Loading...</span>
                     </div>
-                    
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1 align-items-end">
-                            <span class="caption" style="font-size: 10px;">
-                                CPU Usage <span class="text-slate-900 fw-800 ms-1">{{ number_format($serverLoad, 1) }}%</span>
-                            </span>
-                            <span class="caption {{ $serverLoad > 80 ? 'text-danger' : 'text-success' }}" style="font-size: 10px;">
-                                {{ $status }}
-                            </span>
-                        </div>
-                        <div class="progress" style="height: 6px; background: #f1f5f9; border-radius: 10px;">
-                            <div class="progress-bar {{ $serverLoad > 80 ? 'bg-danger' : 'bg-success' }}" 
-                                style="width: {{ min($serverLoad, 100) }}%; border-radius: 10px; transition: width 0.4s ease;">
-                            </div>
-                        </div>
+                    <div class="progress" style="height: 6px; background: #f1f5f9; border-radius: 10px;">
+                        <div id="cpu-bar" class="progress-bar bg-success" style="width: 0%; transition: width 0.8s ease;"></div>
                     </div>
+                </div>
 
-                    <div class="p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="caption text-secondary" style="font-size: 9px;">Database Latency</span>
-                            <span class="fw-700 text-slate-900" style="font-size: 12px;">{{ number_format($responseTime, 0) }} ms</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="caption text-secondary" style="font-size: 9px;">Memory Usage</span>
-                            <span class="fw-700 text-slate-900" style="font-size: 12px;">{{ round(memory_get_usage(true) / 1024 / 1024, 1) }} MB</span>
-                        </div>
+                <div class="p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="caption text-secondary" style="font-size: 9px;">Database Latency</span>
+                        <span id="db-latency" class="fw-700 text-slate-900" style="font-size: 12px;">-- ms</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="caption text-secondary" style="font-size: 9px;">Memory Usage</span>
+                        <span id="mem-usage" class="fw-700 text-slate-900" style="font-size: 12px;">-- MB</span>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -187,5 +175,45 @@
         }
     }
     setInterval(refreshStatusCard, 60000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        async function loadStats() {
+            try {
+                const response = await fetch("{{ route('admin.api.stats') }}");
+                const data = await response.json();
+
+                // Update Stats
+                document.getElementById('stat-revenue').innerText = data.revenue;
+                document.getElementById('stat-bookings').innerText = data.bookings_count;
+                document.getElementById('stat-customers').innerText = data.customers_count;
+                document.getElementById('stat-movies').innerText = data.movies_count;
+
+                // Update System Card
+                const cpuBar = document.getElementById('cpu-bar');
+                const indicator = document.getElementById('db-indicator');
+                
+                document.getElementById('cpu-text').innerText = data.server_load + '%';
+                document.getElementById('system-label').innerText = data.server_status;
+                document.getElementById('db-latency').innerText = data.db_latency;
+                document.getElementById('mem-usage').innerText = data.memory;
+
+                // Update Bar Color & Width
+                cpuBar.style.width = data.server_load + '%';
+                if(data.server_load > 80) {
+                    cpuBar.classList.replace('bg-success', 'bg-danger');
+                    document.getElementById('system-label').classList.replace('text-success', 'text-danger');
+                }
+
+                // Update DB Indicator
+                indicator.className = data.db_online ? 'bg-success rounded-circle me-2 pulse-light' : 'bg-danger rounded-circle me-2';
+
+            } catch (error) {
+                console.error('Analytics load failed:', error);
+            }
+        }
+
+        loadStats(); // Run once on load
+        setInterval(loadStats, 60000); // Refresh every minute without reloading page
+    });
 </script>
 @endsection

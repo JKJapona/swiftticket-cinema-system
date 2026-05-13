@@ -71,7 +71,6 @@
             btn.disabled = true;
             btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${originalText}`;
             
-            // Trigger progress bar animation for the modal confirmation as well
             const progressBar = document.getElementById('top-progress-bar');
             if (progressBar) {
                 progressBar.style.display = 'block';

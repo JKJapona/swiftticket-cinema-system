@@ -1,0 +1,415 @@
+@media (max-width: 991.98px) {
+    .container-fluid {
+        padding: 0 15px !important;
+    }
+
+    .hero-compact {
+        height: 350px !important;
+    }
+
+    .display-large {
+        font-size: 2rem !important;
+    }
+
+    .d-flex.justify-content-between.align-items-center.border-bottom {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    #genreSelect {
+        width: 100% !important;
+    }
+
+    .movie-poster-container {
+        height: 220px !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-compact {
+        height: 300px !important;
+    }
+    
+    .hero-compact .ps-5 {
+        padding-left: 1rem !important;
+    }
+
+    .display-large {
+        font-size: 1.5rem !important;
+    }
+
+    .hero-compact p.body-large {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .d-flex.align-items-center.w-100 {
+        flex-wrap: wrap;
+        row-gap: 10px;
+        padding-bottom: 5px;
+    }
+
+    .d-flex.align-items-center:has(h1) {
+        order: 3;
+        width: 100%;
+        padding-top: 5px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .nav-link-custom { order: 1; }
+    
+    .ms-auto.me-3 { 
+        order: 2;
+        margin-right: 0 !important;
+        padding: 5px 12px !important;
+    }
+
+    .d-flex.align-items-center.gap-2[style*="min-width: 100px"] {
+        order: 4;
+        width: 100%;
+        justify-content: space-between !important;
+        margin-top: 5px;
+    }
+
+    h1.h6 {
+        font-size: 14px !important;
+    }
+    
+    p.mb-0.text-secondary {
+        font-size: 11px !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .container.py-3 {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .seat-grid-wrapper {
+        padding: 20px 10px;
+        display: inline-block; 
+        min-width: 100%;
+    }
+    
+    .text-center.overflow-auto {
+        -webkit-overflow-scrolling: touch; 
+        border-radius: 12px;
+        background: #f8fafc;
+        margin-bottom: 20px;
+    }
+
+    .checkout-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: auto !important; 
+        padding: 15px 0 !important;
+        background: #fff;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        z-index: 1050;
+    }
+
+    .checkout-bar .container {
+        flex-direction: column !important;
+        gap: 12px;
+    }
+
+    .checkout-bar .container > div:first-child {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: unset !important;
+    }
+
+    .checkout-bar .flex-grow-1.px-4 {
+        padding: 0 !important;
+        max-height: 40px !important;
+        width: 100%;
+    }
+
+    #selected-seats-list {
+        justify-content: flex-start !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap !important; 
+        padding-bottom: 5px;
+    }
+
+    .checkout-bar .text-end {
+        width: 100%;
+        min-width: unset !important;
+    }
+
+    #submit-btn {
+        width: 100%;
+        padding: 14px !important;
+        font-size: 16px;
+        border-radius: 12px !important;
+    }
+
+    .gap-4.mt-4 {
+        gap: 15px !important;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 380px) {
+    .price-medium {
+        font-size: 1.2rem;
+    }
+    .caption {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .payment-navbar-container {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .nav-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 60px;
+    }
+
+    @media (max-width: 767px) {
+        .nav-left, .nav-right {
+            position: relative;
+            z-index: 2;
+        }
+
+    }
+}
+
+
+@media (max-width: 767.98px) {
+    .success-container .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .ticket-main-card .row.g-0 {
+        flex-direction: column;
+    }
+
+    .details-body {
+        padding: 20px !important;
+        border-bottom: 2px dashed #e2e8f0;
+    }
+
+    .details-body .d-flex.justify-content-between {
+        flex-direction: column-reverse;
+        gap: 15px;
+        align-items: center !important;
+        text-align: center;
+    }
+
+    .details-body .d-flex.gap-4 {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px !important;
+    }
+
+    .details-body .skeleton-loader {
+        margin: 0 auto;
+        width: 100px !important;
+        height: 150px !important;
+    }
+
+    .details-body .row.g-3 .col-6 {
+        text-align: center;
+    }
+
+    .info-label {
+        font-size: 10px !important;
+    }
+
+    .info-data, .price-display {
+        font-size: 14px !important;
+    }
+
+    .digital-ticket-vibe {
+        padding: 30px 20px !important;
+        background-color: #fcfcfc;
+    }
+
+    .qr-box {
+        width: 140px !important;
+        height: 140px !important;
+    }
+
+    .success-container .d-flex.justify-content-center.gap-3 {
+        flex-direction: column;
+        gap: 10px !important;
+    }
+
+    .success-container .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px !important;
+    }
+
+    .alert.gap-4 {
+        gap: 15px !important;
+        padding: 20px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .movie-title-success {
+        font-size: 1.25rem !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .digital-ticket-vibe {
+        padding: 40px 20px !important;
+        background-color: #ffffff;
+    }
+
+    .qr-box {
+        width: 180px !important;
+        height: 180px !important;
+        margin-top: 10px;
+        margin-bottom: 20px !important;
+        padding: 10px;
+        background: white;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+    }
+
+    .digital-ticket-vibe .fw-bold.text-dark {
+        letter-spacing: 1px;
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+
+    .details-body {
+        margin-bottom: 0;
+        padding-bottom: 30px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .nav-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+    }
+}
+
+@media (min-width: 768px) {
+    .nav-center {
+        position: static;
+        transform: none;
+        flex-grow: 1;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .booking-ticket-card {
+        height: auto !important;
+        min-height: unset !important;
+    }
+
+    .booking-ticket-card .row.g-0 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ticket-poster {
+        width: 100% !important;
+        height: 200px !important; 
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .booking-ticket-card .col-md-9 .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .booking-ticket-card .flex-shrink-0 {
+        text-align: left !important;
+        min-width: unset !important;
+    }
+
+    .booking-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .booking-ticket-card .border-top.d-flex {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+    }
+
+    .btn-sm-custom {
+        width: 100% !important;
+        padding: 10px !important;
+    }
+
+    .profile-header-gradient .card-body {
+        padding: 2rem 1.5rem !important;
+    }
+
+    .profile-header-gradient h2 {
+        font-size: 1.5rem !important;
+    }
+
+    .d-flex.align-items-end.justify-content-between.mb-4 {
+        align-items: center !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-grid {
+        grid-template-columns: 1fr !important; 
+    }
+}
+
+.ticket-poster {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; 
+    display: block;
+}
+
+.ratio-2-3 {
+    height: 100% !important;
+    display: block;
+}
+
+@media (max-width: 767.98px) {
+    .ticket-poster {
+        height: 250px !important;
+        width: 100% !important;
+    }
+    
+    .booking-ticket-card .col-md-3 {
+        padding: 0 !important;
+    }
+}

@@ -1,7 +1,6 @@
 <div class="modal fade" id="customerChangeSeat{{ $booking->id }}" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-    {{-- Dynamic Size: modal-md for view-only, modal-lg for seat selection --}}
     <div class="modal-dialog {{ in_array($booking->status, ['change_requested', 'confirmed']) ? 'modal-md' : 'modal-lg' }} modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-0 overflow-hidden">
+        <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
             
             {{-- Unified Header --}}
             <div class="modal-header bg-slate-50 border-0 px-4 py-2">
@@ -37,7 +36,6 @@
                     <div class="p-3">
                         {{-- Horizontal Comparison Row --}}
                         <div class="row g-0 align-items-center rounded-3 border overflow-hidden">
-                            {{-- Original Side --}}
                             <div class="col-5 bg-light p-3 text-center border-end">
                                 <p class="text-uppercase text-muted fw-bold mb-2" style="font-size: 9px; letter-spacing: 0.5px;">Current</p>
                                 <div class="d-flex flex-wrap justify-content-center gap-1">
@@ -92,7 +90,6 @@
             
             @elseif($booking->status === 'confirmed')
                 <div class="modal-body p-0 bg-white">
-                    {{-- Slim Emerald Header --}}
                     <div class="py-2 text-center border-bottom" style="background-color: #ecfdf5; border-color: #a7f3d0 !important;">
                         <span class="fw-black text-uppercase" style="font-size: 10px; letter-spacing: 1px; color: #059669;">
                             <i class="bi bi-check-circle-fill me-1"></i> Booking Confirmed & Verified
@@ -145,12 +142,13 @@
                             {{-- Left Column: Info & Selection --}}
                             <div class="col-lg-4">
                                 <div class="d-flex flex-column h-100 gap-3">
-                                    <div class="p-3 bg-slate-50 rounded-3 border-start border-4 shadow-sm" style="border-color: #64748B !important;">
+
+                                    <div class="p-3 bg-slate-50 rounded-3 border-0 border-start border-4 shadow-sm" style="border-left-color: #64748B !important;">
                                         <label class="label text-slate-500 text-uppercase fw-700 mb-1 d-block" style="font-size: 10px; letter-spacing: 0.5px;">Current Selection</label>
                                         <div class="fw-800 text-slate-900 fs-6">{{ $booking->bookedSeats->pluck('seat_code')->implode(', ') }}</div>
                                     </div>
 
-                                    <div class="p-3 rounded-3 border-start border-4 shadow-sm" style="background-color: #f0f9ff; border-color: #0369a1 !important;">
+                                    <div class="p-3 rounded-3 border-0 border-start border-4 shadow-sm" style="background-color: #f0f9ff; border-left-color: #0369a1 !important;">
                                         <label class="label text-info text-uppercase fw-700 mb-1 d-block" style="color: #0369a1 !important; font-size: 10px; letter-spacing: 0.5px;">Selection Rule</label>
                                         <div class="fw-800 text-info" style="color: #0369a1 !important; font-size: 12px;">Select exactly {{ $booking->bookedSeats->count() }} new seats.</div>
                                     </div>
@@ -173,13 +171,15 @@
                                         </div>
                                     </div>
 
-                                    <div class="mt-auto p-3 rounded-3 bg-slate-900 text-white shadow-lg">
+                                    <div class="mt-auto p-3 rounded-3 border bg-light shadow-sm">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="fw-800 text-uppercase" style="font-size: 10px; color: #94a3b8;">New Selection</span>
+                                            <span class="fw-800 text-uppercase text-slate-500" style="font-size: 10px; letter-spacing: 0.5px;">New Selection</span>
                                             <span id="cust-counter-{{ $booking->id }}" class="badge bg-warning text-dark px-2 py-1 rounded-pill fw-800" style="font-size: 10px;">0 / {{ $booking->bookedSeats->count() }}</span>
                                         </div>
                                         <input type="hidden" name="new_seats" id="cust-input-{{ $booking->id }}">
-                                        <div id="cust-display-{{ $booking->id }}" class="bg-white rounded-2 p-2 text-center fw-800 text-dark d-flex align-items-center justify-content-center" style="min-height: 45px; font-size: 16px; border: 2px solid #FFC107;">
+                                        
+                                        <div id="cust-display-{{ $booking->id }}" class="bg-white rounded-2 p-2 text-center fw-800 text-dark d-flex align-items-center justify-content-center border-2" 
+                                            style="min-height: 48px; font-size: 16px; border-color: #FFC107 !important; border-style: dashed;">
                                             <span class="text-slate-400 fw-600 small italic">Pick new seats...</span>
                                         </div>
                                     </div>

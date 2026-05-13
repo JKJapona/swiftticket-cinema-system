@@ -29,8 +29,6 @@ return new class extends Migration
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->foreignId('showtime_id')->constrained()->onDelete('cascade');
             $table->string('seat_code', 5);
-            
-            // The "Hard Guard" to prevent double booking
             $table->unique(['showtime_id', 'seat_code'], 'unique_seat_per_showtime');
         });
     }

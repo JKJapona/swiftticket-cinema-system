@@ -505,7 +505,7 @@ class MovieSystemSeeder extends Seeder
             return;
         }
 
-        foreach (range(0, 6) as $dayOffset) {
+        foreach (range(0, 13) as $dayOffset) {
             $date = Carbon::today()->addDays($dayOffset)->toDateString();
 
             foreach ($halls as $hall) {

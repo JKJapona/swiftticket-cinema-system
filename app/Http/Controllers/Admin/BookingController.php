@@ -36,9 +36,9 @@ class BookingController extends Controller
             $search = $request->get('search');
             $query->where(function($q) use ($search) {
                 $q->where('reference_number', 'LIKE', "%{$search}%")
-                  ->orWhereHas('user', function($userQuery) use ($search) {
-                      $userQuery->where('full_name', 'LIKE', "%{$search}%");
-                  });
+                ->orWhereHas('user', function($userQuery) use ($search) {
+                    $userQuery->where('full_name', 'LIKE', "%{$search}%");
+                });
             });
         }
 
@@ -48,10 +48,13 @@ class BookingController extends Controller
 
         $bookings = $query->orderBy('created_at', 'desc')->get();
 
+        $statsData = DB::table('booking_analytics_view')->first();
+
         $stats = [
-            'total_revenue'   => $this->getTotalConfirmedRevenue(),
-            'pending_count'   => $this->getBookingCountByStatus('pending'),
-            'confirmed_count' => $this->getBookingCountByStatus('confirmed'),
+            'total_revenue'         => $statsData->total_revenue ?? 0,
+            'pending_count'         => $statsData->pending_count ?? 0,
+            'confirmed_count'       => $statsData->confirmed_count ?? 0,
+            'change_requests_count' => $statsData->change_requests_count ?? 0,
         ];
 
         return view('admin.bookings.index', compact('bookings', 'stats'));

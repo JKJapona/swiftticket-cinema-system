@@ -46,7 +46,6 @@
                         <div class="avatar-circle">
                             <span class="fs-1 fw-black">{{ substr(Auth::user()->full_name, 0, 1) }}</span>
                         </div>
-                        <div class="status-indicator"></div>
                     </div>
                     <div class="flex-grow-1 mt-3 mt-md-0">
                         <h2 class="fw-black text-white mb-1">{{ Auth::user()->full_name }}</h2>
@@ -268,9 +267,4 @@
     }
 }
 </style>
-
-
-
-
-
 @endsection

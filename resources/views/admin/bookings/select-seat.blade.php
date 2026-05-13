@@ -24,13 +24,13 @@
                         <div class="col-lg-4">
                             <div class="d-flex flex-column h-100 gap-3">
                                 {{-- Current Seats --}}
-                                <div class="p-3 bg-slate-50 rounded-3 border-start border-4 shadow-sm" style="border-color: #64748B !important;">
+                                <div class="p-3 bg-light rounded-3 border-0 border-start border-4 shadow-sm" style="border-left-color: #64748B !important;">
                                     <label class="label text-slate-500 text-uppercase fw-700 mb-1 d-block" style="font-size: 10px; letter-spacing: 0.5px;">Currently Booked</label>
                                     <div class="fw-800 text-slate-900 fs-6">{{ $booking->bookedSeats->pluck('seat_code')->implode(', ') }}</div>
                                 </div>
 
                                 {{-- Requested Change --}}
-                                <div class="p-3 rounded-3 border-start border-4 shadow-sm" style="background-color: #fffbeb; border-color: #FFC107 !important;">
+                                <div class="p-3 rounded-3 border-0 border-start border-4 shadow-sm" style="background-color: #fffbeb; border-left-color: #FFC107 !important;">
                                     <label class="label text-warning text-uppercase fw-700 mb-1 d-block" style="font-size: 10px; letter-spacing: 0.5px; color: #b45309 !important;">Requested Change</label>
                                     <div class="fw-800 text-warning fs-6" style="color: #b45309 !important;">{{ $booking->requested_seats ?? 'None' }}</div>
                                 </div>
@@ -55,7 +55,7 @@
                                 </div>
 
                                 {{-- Selection Status --}}
-                                <div class="mt-auto p-3 rounded-3 bg-slate-900 text-white shadow-lg">
+                                <div class="mt-auto p-3 rounded-3 bg-light border text-dark shadow-sm">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="fw-800 text-uppercase" style="font-size: 10px; color: #94a3b8; letter-spacing: 0.5px;">New Selection</span>
                                         <span id="admin-counter-{{ $booking->id }}" class="badge bg-warning text-dark px-2 py-1 rounded-pill fw-800" style="font-size: 10px;">0 / {{ $booking->bookedSeats->count() }}</span>

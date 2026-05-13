@@ -10,85 +10,77 @@
         </div>
     </div>
 
-{{-- STATS ROW --}}
-<div class="row g-3 mb-4">
-    {{-- Total Customers --}}
-    <div class="col-md-3">
-        <div class="section-card p-4 border-0 shadow-sm">
-            <span class="caption d-block mb-1">Total Customers</span>
-            <h3 class="stat-value mb-0 text-end">{{ number_format($stats['total_customers']) }}</h3>
-        </div>
-    </div>
-
-    {{-- Active (This Month) --}}
-    <div class="col-md-3">
-        <div class="section-card p-4 border-0 shadow-sm border-start border-primary border-4">
-            <span class="caption d-block mb-1">Active (This Month)</span>
-            <h3 class="stat-value mb-0 text-end">{{ number_format($stats['active_this_month']) }}</h3>
-        </div>
-    </div>
-
-    {{-- New Signups (Last 7 Days) --}}
-    <div class="col-md-3">
-        <div class="section-card p-4 border-0 shadow-sm border-start border-success border-4">
-            <div class="d-flex align-items-center justify-content-between mb-1">
-                <span class="caption text-success">New Signups</span>
-                <small class="text-secondary" style="font-size: 10px; font-weight: 500;">Last 7 days</small>
+    {{-- STATS ROW --}}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm">
+                <span class="caption d-block mb-1">Total Customers</span>
+                <h3 class="stat-value mb-0 text-end">{{ number_format($stats['total_customers']) }}</h3>
             </div>
-            <h3 class="stat-value mb-0 text-end">{{ number_format($stats['new_signups']) }}</h3>
+        </div>
+
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-primary border-4">
+                <span class="caption d-block mb-1">Active (This Month)</span>
+                <h3 class="stat-value mb-0 text-end">{{ number_format($stats['active_this_month']) }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-success border-4">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="caption text-success">New Signups</span>
+                    <small class="text-secondary" style="font-size: 10px; font-weight: 500;">Last 7 days</small>
+                </div>
+                <h3 class="stat-value mb-0 text-end">{{ number_format($stats['new_signups']) }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="section-card p-4 border-0 shadow-sm border-start border-danger border-4">
+                <span class="caption d-block mb-1 text-danger">Banned Accounts</span>
+                <h3 class="stat-value mb-0 text-end">{{ number_format($stats['banned_count']) }}</h3>
+            </div>
         </div>
     </div>
 
-    {{-- Banned/Inactive --}}
-    <div class="col-md-3">
-        <div class="section-card p-4 border-0 shadow-sm border-start border-danger border-4">
-            <span class="caption d-block mb-1 text-danger">Banned Accounts</span>
-            <h3 class="stat-value mb-0 text-end">{{ number_format($stats['banned_count']) }}</h3>
-        </div>
-    </div>
-</div>
+    {{-- CUSTOMER FILTERS --}}
+    <div class="section-card p-3 mb-4 border-0 shadow-sm">
+        <form action="{{ route('admin.customers.index') }}" method="GET">
+            <div class="row align-items-center g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="caption text-slate-500 text-nowrap">Search:</span>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0 text-slate-400 py-2">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="search" 
+                                   class="form-control border-start-0 ps-0 shadow-none py-2 fw-600" 
+                                   placeholder="Name or Email address..."
+                                   value="{{ request('search') }}"
+                                   style="border-color: #e2e8f0;">
+                        </div>
+                    </div>
+                </div>
 
-{{-- CUSTOMER FILTERS --}}
-<div class="section-card p-3 mb-4 border-0 shadow-sm">
-    <form action="{{ route('admin.customers.index') }}" method="GET">
-        <div class="row align-items-center g-3">
-            {{-- Search Input --}}
-            <div class="col-md-6">
-                <div class="d-flex align-items-center gap-3">
-                    <span class="caption text-slate-500 text-nowrap">Search:</span>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0 text-slate-400 py-2">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" 
-                               class="form-control border-start-0 ps-0 shadow-none py-2 fw-600" 
-                               placeholder="Name or Email address..."
-                               value="{{ request('search') }}"
-                               style="border-color: #e2e8f0;">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center justify-content-md-end gap-3">
+                        <span class="caption text-slate-500 text-nowrap">Status:</span>
+                        <select name="status" class="form-select form-select-sm shadow-none fw-600 w-auto" 
+                                style="border-color: #e2e8f0; min-width: 150px;">
+                            <option value="">All Account Status</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Only</option>
+                            <option value="banned" {{ request('status') == 'banned' ? 'selected' : '' }}>Banned Only</option>
+                        </select>
+                        <div class="vr mx-1 text-slate-300"></div>
+                        <button type="submit" class="btn btn-sm btn-primary bg-swift-blue px-3 fw-700 btn-small">Filter</button>
+                        <a href="{{ route('admin.customers.index') }}" class="btn btn-sm btn-light border px-3 fw-700">Reset</a>
                     </div>
                 </div>
             </div>
-
-            {{-- Status & Actions --}}
-            <div class="col-md-6">
-                <div class="d-flex align-items-center justify-content-md-end gap-3">
-                    <span class="caption text-slate-500 text-nowrap">Status:</span>
-                    <select name="status" class="form-select form-select-sm shadow-none fw-600 w-auto" 
-                            style="border-color: #e2e8f0; min-width: 150px;">
-                        <option value="">All Account Status</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Only</option>
-                        <option value="banned" {{ request('status') == 'banned' ? 'selected' : '' }}>Banned Only</option>
-                    </select>
-                    
-                    <div class="vr mx-1 text-slate-300"></div>
-                    
-                    <button type="submit" class="btn btn-sm btn-primary bg-swift-blue px-3 fw-700 btn-small">Filter</button>
-                    <a href="{{ route('admin.customers.index') }}" class="btn btn-sm btn-light border px-3 fw-700">Reset</a>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 
     {{-- Table --}}
     <div class="section-card shadow-sm border-0 overflow-hidden">
@@ -130,22 +122,20 @@
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-light text-primary border fw-700 px-3 py-2">
-                                    {{ $customer->bookings_count }}
+                                    {{ $customer->total_bookings_count }}
                                 </span>
                             </td>
                             <td>
-                                <div class="fw-600 text-slate-900 small">{{ $customer->created_at->format('M d, Y') }}</div>
-                                <div class="caption" style="font-size: 10px;">{{ $customer->created_at->diffForHumans() }}</div>
+                                <div class="fw-600 text-slate-900 small">{{ \Carbon\Carbon::parse($customer->created_at)->format('M d, Y') }}</div>
+                                <div class="caption" style="font-size: 10px;">{{ \Carbon\Carbon::parse($customer->created_at)->diffForHumans() }}</div>
                             </td>
                             <td class="text-end pe-4">
                                 <div class="d-flex align-items-center justify-content-end">
-                                    {{-- View Button --}}
                                     <button type="button" onclick="openCustomerModal({{ $customer->id }})" class="btn btn-sm btn-light border shadow-sm me-2">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     
-                                    {{-- Toggle Status Button --}}
-                                    <form id="toggle-customer-{{ $customer->id }}" action="{{ route('admin.customers.toggleStatus', $customer->id) }}" method="POST" class="d-inline customer-action-form">
+                                    <form id="toggle-customer-{{ $customer->id }}" action="{{ route('admin.customers.toggleStatus', $customer->id) }}" method="POST" class="d-inline">
                                         @csrf 
                                         @method('PATCH')
                                         <button type="button" 
@@ -155,8 +145,7 @@
                                                     'Are you sure you want to {{ $customer->status === 'active' ? 'ban this user? They will no longer be able to log in or book tickets.' : 'unban this user? They will regain full access to their account.' }}', 
                                                     '{{ $customer->status === 'active' ? 'danger' : 'primary' }}', 
                                                     () => document.getElementById('toggle-customer-{{ $customer->id }}').submit()
-                                                )"
-                                                title="{{ $customer->status === 'active' ? 'Ban User' : 'Unban User' }}">
+                                                )">
                                             <i class="bi {{ $customer->status === 'active' ? 'bi-slash-circle' : 'bi-check-circle' }}"></i>
                                         </button>
                                     </form>
@@ -175,10 +164,76 @@
             </table>
         </div>
     </div>
-
 </div>
 
-@include('admin.customers.view')
+<div class="modal fade" id="customerViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+            <div class="modal-header bg-slate-50 border-0 px-4 py-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-swift-blue text-white rounded-2 p-2 d-flex shadow-sm">
+                        <i class="bi bi-person-badge fs-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="h2 text-slate-900 mb-0" style="font-size: 18px !important;">Customer Details</h2>
+                        <p class="text-slate-500 caption mb-0 fw-600" id="m-id">Account Information</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body p-4 bg-white">
+                <div id="modal-data-content">
+                    <div class="text-center mb-4">
+                        <div id="m-avatar" class="avatar-letter mx-auto mb-2 shadow-sm d-flex align-items-center justify-content-center fw-800 text-white" style="width: 60px; height: 60px; font-size: 24px; border-radius: 15px; background: var(--swift-blue);"></div>
+                        <h4 id="m-name" class="fw-800 text-slate-900 mb-0"></h4>
+                        <p id="m-email" class="text-slate-500 small fw-600"></p>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="p-2 rounded-3 bg-slate-50 border">
+                                <label class="label text-slate-400 d-block mb-1">Phone Number</label>
+                                <span id="m-phone" class="fw-700 text-slate-900"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded-3 bg-slate-50 border">
+                                <label class="label text-slate-400 d-block mb-1">Account Status</label>
+                                <span id="m-status" class="badge rounded-pill fw-800" style="font-size: 10px;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashed-divider"></div>
+                    <h6 class="caption text-slate-900 mb-3"><i class="bi bi-clock-history me-1"></i> Recent Bookings</h6>
+                    <div id="m-bookings" class="list-group list-group-flush gap-2"></div>
+                </div>
+
+                {{-- Skeleton Loader --}}
+                <div id="modal-loader" class="d-none">
+                    <div class="text-center mb-4">
+                        <div class="skeleton mx-auto mb-2" style="width: 60px; height: 60px; border-radius: 15px;"></div>
+                        <div class="skeleton mx-auto mb-1" style="width: 150px; height: 20px;"></div>
+                        <div class="skeleton mx-auto" style="width: 100px; height: 14px;"></div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6"><div class="skeleton" style="width: 100%; height: 45px; border-radius: 8px;"></div></div>
+                        <div class="col-6"><div class="skeleton" style="width: 100%; height: 45px; border-radius: 8px;"></div></div>
+                    </div>
+                    <div class="dashed-divider"></div>
+                    <div class="skeleton mb-3" style="width: 100px; height: 12px;"></div>
+                    <div class="skeleton mb-2" style="width: 100%; height: 45px; border-radius: 8px;"></div>
+                    <div class="skeleton" style="width: 100%; height: 45px; border-radius: 8px;"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-slate-50 border-0 p-2 px-4 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-link text-slate-500 text-decoration-none fw-700 btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     function openCustomerModal(id) {
@@ -217,9 +272,7 @@
                 if (user.bookings && user.bookings.length > 0) {
                     user.bookings.slice(0, 3).forEach(b => {
                         const date = new Date(b.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
+                            month: 'short', day: 'numeric', year: 'numeric'
                         });
                         
                         bookingContainer.innerHTML += `
@@ -247,10 +300,7 @@
                 loader.classList.add('d-none');
                 dataContent.classList.remove('d-none');
                 document.getElementById('m-name').innerHTML = '<span class="text-danger">Error Loading Profile</span>';
-                document.getElementById('m-bookings').innerHTML = '<p class="text-center small text-danger">Could not retrieve booking history.</p>';
             });
     }
 </script>
-
-
 @endsection
