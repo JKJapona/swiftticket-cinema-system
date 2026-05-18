@@ -26,7 +26,8 @@ class BookingController extends Controller
     |--------------------------------------------------------------------------
     | View Actions
     |--------------------------------------------------------------------------
-    */
+    |
+     */
 
     public function index(Request $request)
     {
@@ -46,7 +47,9 @@ class BookingController extends Controller
             $query->where('status', $request->status);
         }
 
-        $bookings = $query->orderBy('created_at', 'desc')->get();
+        $bookings = $query->orderBy('created_at', 'desc')
+                          ->paginate(15)
+                          ->withQueryString();
 
         $statsData = DB::table('booking_analytics_view')->first();
 
@@ -72,7 +75,8 @@ class BookingController extends Controller
     |--------------------------------------------------------------------------
     | Status & Seat Management
     |--------------------------------------------------------------------------
-    */
+    |
+     */
 
     public function update(Request $request, Booking $booking)
     {
@@ -86,7 +90,7 @@ class BookingController extends Controller
         $booking->update([
             'status' => 'confirmed', 
             'cancellation_reason' => null
-            ]);
+        ]);
 
         return back()->with('success', "Booking #{$booking->reference_number} is now confirmed. Tickets are ready for pickup/entry.");
     }
@@ -99,7 +103,7 @@ class BookingController extends Controller
             $booking->update([
                 'status' => 'cancelled',
                 'cancellation_reason' => $request->cancellation_reason
-                ]);
+            ]);
             DB::table('booked_seats')->where('booking_id', $booking->id)->delete();
 
             DB::commit();
@@ -147,11 +151,13 @@ class BookingController extends Controller
     |--------------------------------------------------------------------------
     | Data Export & Utilities
     |--------------------------------------------------------------------------
-    */
+    |
+     */
 
     public function export(Request $request)
     {
         $fileName = 'bookings_export_' . date('Y-m-d') . '.csv';
+        
         $bookings = Booking::with(['user', 'showtime.movie'])->get();
 
         $headers = [

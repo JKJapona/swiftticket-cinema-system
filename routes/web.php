@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\MovieController;
+
+// Customer Namespace Controllers
+use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\Customer\MovieController;
 
 // Admin Namespace Controllers
 use App\Http\Controllers\Admin\DashboardController;

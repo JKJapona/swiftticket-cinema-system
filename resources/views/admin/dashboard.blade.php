@@ -182,13 +182,11 @@
                 const response = await fetch("{{ route('admin.api.stats') }}");
                 const data = await response.json();
 
-                // Update Stats
                 document.getElementById('stat-revenue').innerText = data.revenue;
                 document.getElementById('stat-bookings').innerText = data.bookings_count;
                 document.getElementById('stat-customers').innerText = data.customers_count;
                 document.getElementById('stat-movies').innerText = data.movies_count;
 
-                // Update System Card
                 const cpuBar = document.getElementById('cpu-bar');
                 const indicator = document.getElementById('db-indicator');
                 
@@ -197,14 +195,12 @@
                 document.getElementById('db-latency').innerText = data.db_latency;
                 document.getElementById('mem-usage').innerText = data.memory;
 
-                // Update Bar Color & Width
                 cpuBar.style.width = data.server_load + '%';
                 if(data.server_load > 80) {
                     cpuBar.classList.replace('bg-success', 'bg-danger');
                     document.getElementById('system-label').classList.replace('text-success', 'text-danger');
                 }
 
-                // Update DB Indicator
                 indicator.className = data.db_online ? 'bg-success rounded-circle me-2 pulse-light' : 'bg-danger rounded-circle me-2';
 
             } catch (error) {
@@ -212,8 +208,8 @@
             }
         }
 
-        loadStats(); // Run once on load
-        setInterval(loadStats, 60000); // Refresh every minute without reloading page
+        loadStats();
+        setInterval(loadStats, 60000);
     });
 </script>
 @endsection

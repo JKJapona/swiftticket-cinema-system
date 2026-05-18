@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +13,7 @@ namespace App\Http\Controllers;
 |
 */
 
+use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookedSeat;
 use App\Models\Showtime;

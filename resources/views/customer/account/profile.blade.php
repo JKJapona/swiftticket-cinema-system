@@ -139,7 +139,8 @@
                             </div>
 
                             @if($booking->status === 'cancelled')
-                                <div class="mb-3 p-3 rounded-3 border-start border-4 shadow-sm" style="background-color: #fef2f2; border-color: #ef4444 !important;">
+                                <div class="mb-3 p-3 rounded-3 border-0 border-start border-4 shadow-sm" 
+                                    style="background-color: #fef2f2; border-left-color: #ef4444 !important;">
                                     <div class="d-flex gap-2">
                                         <i class="bi bi-exclamation-octagon-fill text-danger"></i>
                                         <div>

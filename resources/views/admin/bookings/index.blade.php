@@ -211,7 +211,40 @@
                 </tbody>
             </table>
         </div>
-        
+
+        @if($bookings->hasPages())
+            <div class="d-flex justify-content-between align-items-center bg-white p-3 border-top" style="border-color: #e2e8f0 !important;">
+                <div class="small text-muted fw-600">
+                    Showing <span class="text-slate-900 fw-700">{{ $bookings->firstItem() }}</span> to <span class="text-slate-900 fw-700">{{ $bookings->lastItem() }}</span> of <span class="text-slate-900 fw-700">{{ $bookings->total() }}</span> entries
+                </div>
+                
+                <div class="d-flex align-items-center gap-1">
+                    {{-- Previous Page Link --}}
+                    @if ($bookings->onFirstPage())
+                        <button class="btn btn-sm btn-light border text-muted opacity-50 rounded-2" style="width: 32px; height: 32px;" disabled>
+                            <i class="bi bi-chevron-left" style="font-size: 12px; -webkit-text-stroke: 0.5px;"></i>
+                        </button>
+                    @else
+                        <a href="{{ $bookings->previousPageUrl() }}" class="btn btn-sm btn-light border text-slate-900 rounded-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-chevron-left" style="font-size: 12px; -webkit-text-stroke: 0.5px;"></i>
+                        </a>
+                    @endif
+
+                    {{-- Current Page / Total Indicator --}}
+                    <span class="px-2 caption text-slate-600 fw-700" style="font-size: 11px;">
+                        Page {{ $bookings->currentPage() }} of {{ $bookings->lastPage() }}
+                    </span>
+
+                    {{-- Next Page Link --}}
+                    @if ($bookings->hasMorePages())
+                        <a href="{{ $bookings->nextPageUrl() }}" class="btn btn-sm btn-light border text-slate-900 rounded-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-chevron-right" style="font-size: 12px; -webkit-text-stroke: 0.5px;"></i>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
     </div>
 </div>
 
