@@ -53,6 +53,16 @@
 
 ---
 
+## 📅 Project Development Timeline
+
+The design and implementation of SwiftTicket were executed systematically over a structured timeline following standard SDLC methodology frameworks:
+
+<p align="center">
+  <img src="./public/screenshots/project_gantt_timeline.png" alt="Project Development Gantt Chart Timeline" width="900">
+</p>
+
+---
+
 ## 📦 System Modules & Feature Scope
 
 ### 1. Movie Catalog Management (`Movies`)
