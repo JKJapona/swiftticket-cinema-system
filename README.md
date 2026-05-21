@@ -128,7 +128,7 @@ Follow these sequential steps to deploy a development replica of SwiftTicket on 
 
 1. **Clone the Repository:**
 ```bash
-git clone https://github.com
+git clone https://github.com/JKJapona/swiftticket-cinema-system.git
 cd swiftticket-cinema-system
 ```
 
@@ -160,7 +160,7 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=swiftticket_db
 DB_USERNAME=root
-DB_PASSWORD=your_local_password
+DB_PASSWORD=
 ```
 
 7. **Execute Migrations and Data Seeding:**
