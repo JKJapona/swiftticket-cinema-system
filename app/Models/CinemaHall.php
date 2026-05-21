@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CinemaHall extends Model
 {
-    protected $table = 'cinema_hall_analytics_view';
+    protected $table = 'cinema_halls';
     
     protected $fillable = [
         'name', 

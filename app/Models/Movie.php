@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class Movie extends Model
 {
-    protected $table = 'movie_details_view';
+    protected $table = 'movies';
     
     protected $fillable = [
         'title',

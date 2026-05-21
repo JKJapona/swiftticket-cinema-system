@@ -17,7 +17,6 @@ use App\Http\Controllers\Controller;
 use App\Models\CinemaHall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class CinemaHallController extends Controller
 {
@@ -25,11 +24,16 @@ class CinemaHallController extends Controller
     |--------------------------------------------------------------------------
     | View Actions
     |--------------------------------------------------------------------------
+    |
+    | Readings are directed to 'cinema_hall_analytics_view' to keep dashboard 
+    | statistical calculations like 'calculated_total_seats' intact.
+    |
     */
 
     public function index()
     {
-        $halls = CinemaHall::all(); 
+        // Read data directly from the view
+        $halls = CinemaHall::from('cinema_hall_analytics_view')->get(); 
 
         $stats = [
             'total_halls'       => $halls->count(),
@@ -45,6 +49,9 @@ class CinemaHallController extends Controller
     |--------------------------------------------------------------------------
     | Persistence Actions
     |--------------------------------------------------------------------------
+    |
+    | Writes target the physical table designated inside the modified Model.
+    |
     */
 
     public function store(Request $request)
@@ -81,6 +88,7 @@ class CinemaHallController extends Controller
     public function destroy(CinemaHall $cinemaHall)
     {
         $name = $cinemaHall->name;
+        
         $cinemaHall->delete();
 
         return redirect()->back()->with('success', "Cinema Hall '{$name}' has been removed from the system.");

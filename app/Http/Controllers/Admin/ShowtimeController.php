@@ -19,6 +19,7 @@ use App\Models\Showtime;
 use App\Models\Movie;
 use App\Models\CinemaHall;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class ShowtimeController extends Controller
 {
@@ -26,17 +27,23 @@ class ShowtimeController extends Controller
     |--------------------------------------------------------------------------
     | View Actions
     |--------------------------------------------------------------------------
+    |
+    | Readings are directed to 'showtime_analytics_view' to keep dashboard 
+    | statistical columns and occupancy calculations intact.
+    |
     */
 
     public function index(Request $request)
     {
         $selectedDate = $request->get('date', now()->format('Y-m-d'));
         
-        $todayShowtimes = Showtime::whereDate('show_date', $selectedDate)->get();
+        $todayShowtimes = Showtime::from('showtime_analytics_view')
+            ->whereDate('show_date', $selectedDate)
+            ->get();
         
         $stats = [
-            'total_showtimes'      => Showtime::count(),
-            'total_bookings'       => Showtime::sum('booked_seats'),
+            'total_showtimes'      => Showtime::from('showtime_analytics_view')->count(),
+            'total_bookings'       => Showtime::from('showtime_analytics_view')->sum('booked_seats'),
             'today_shows_count'    => $todayShowtimes->count(),
             'unique_movies_count'  => $todayShowtimes->unique('movie_id')->count(),
             'total_daily_capacity' => $todayShowtimes->sum('total_capacity'),
@@ -44,7 +51,9 @@ class ShowtimeController extends Controller
         ];
 
         $halls = CinemaHall::with(['showtimes' => function($query) use ($selectedDate) {
-            $query->whereDate('show_date', $selectedDate)->orderBy('show_time');
+            $query->from('showtime_analytics_view as showtimes')
+                ->whereDate('show_date', $selectedDate)
+                ->orderBy('show_time');
         }])->where('status', 'Active')->get();
 
         $allMovies = Movie::where('status', '!=', 'archived')->get();
@@ -59,7 +68,7 @@ class ShowtimeController extends Controller
         $allMovies = Movie::where('status', '!=', 'archived')->get();
         $selectedDate = $request->get('date', now()->format('Y-m-d'));
 
-        $query = Showtime::with(['hall', 'movie']);
+        $query = Showtime::from('showtime_analytics_view')->with(['hall', 'movie']);
 
         if ($request->filled('hall_id')) {
             $query->where('hall_id', $request->hall_id);
@@ -88,11 +97,14 @@ class ShowtimeController extends Controller
     |--------------------------------------------------------------------------
     | Persistence Actions
     |--------------------------------------------------------------------------
+    |
+    | Writes target the physical table designated inside the modified Model.
+    |
     */
 
     public function store(Request $request)
     {
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'movie_id'  => 'required|exists:movies,id',
             'hall_id'   => 'required|exists:cinema_halls,id',
             'show_date' => 'required|date|after_or_equal:today',
@@ -126,7 +138,7 @@ class ShowtimeController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'movie_id'  => 'required|exists:movies,id',
             'hall_id'   => 'required|exists:cinema_halls,id',
             'show_date' => 'required|date|after_or_equal:today',
@@ -139,7 +151,7 @@ class ShowtimeController extends Controller
         }
 
         $request->merge([
-            'show_time' => \Carbon\Carbon::parse($request->show_time)->format('H:i')
+            'show_time' => Carbon::parse($request->show_time)->format('H:i')
         ]);
 
         if ($this->hasSchedulingConflict($request, $id)) {
@@ -150,7 +162,7 @@ class ShowtimeController extends Controller
         $showtime = Showtime::findOrFail($id);
 
         if ($showtime->booked_seats > 0) {
-            $dateChanged = \Carbon\Carbon::parse($request->show_date)->format('Y-m-d') !== \Carbon\Carbon::parse($showtime->show_date)->format('Y-m-d');
+            $dateChanged = Carbon::parse($request->show_date)->format('Y-m-d') !== Carbon::parse($showtime->show_date)->format('Y-m-d');
             $movieChanged = $request->movie_id != $showtime->movie_id;
             $hallChanged = $request->hall_id != $showtime->hall_id;
 
@@ -167,9 +179,9 @@ class ShowtimeController extends Controller
         $data['show_time'] = $request->show_time;
         $data['total_capacity'] = $hall->total_seats;
 
+        // Safely updates inside physical 'showtimes' table
         $showtime->update($data);
 
-        $showtime = Showtime::findOrFail($id);
         return redirect()->back()->with('success', "Showtime for '{$showtime->movie->title}' updated. Changes are now live.");
     }
 
@@ -181,9 +193,8 @@ class ShowtimeController extends Controller
             return redirect()->back()->with('error', 'Cannot delete a showtime that already has bookings!');
         }
 
-        $showtime->delete();
-
         $movieTitle = $showtime->movie->title;
+        
         $showtime->delete();
 
         return redirect()->back()->with('success', "The screening for '{$movieTitle}' has been removed from the schedule.");

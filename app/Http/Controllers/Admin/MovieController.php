@@ -31,13 +31,13 @@ class MovieController extends Controller
 
     public function index()
     {
-        $movies = Movie::all();
+        $movies = Movie::from('movie_details_view')->get();
 
         $stats = [
             'total_count'        => $movies->count(),
             'now_showing_count'  => $movies->where('status', 'now_showing')->count(),
             'coming_soon_count'  => $movies->where('status', 'coming_soon')->count(),
-            'active_showtimes'   => $movies->sum('active_showtimes_count'), // Optimized!
+            'active_showtimes'   => $movies->sum('active_showtimes_count'),
         ];
 
         return view('admin.movies.index', compact('movies', 'stats'));

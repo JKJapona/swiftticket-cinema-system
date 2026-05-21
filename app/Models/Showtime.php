@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Showtime extends Model
 {
-    protected $table = 'showtime_analytics_view';
+    protected $table = 'showtimes';
     
     protected $fillable = [
         'movie_id', 
